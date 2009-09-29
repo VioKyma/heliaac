@@ -6,3 +6,4 @@
 =Chris:=
 
   * Fixing lighting
+  * Ground collision
