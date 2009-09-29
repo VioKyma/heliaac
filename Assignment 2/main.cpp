@@ -78,7 +78,8 @@ GLuint heliRotorList;
 GLuint groundList;
 
 int rotor = 0;
-int rotorSpeed = 10;
+const int MAX_ROTOR_SPEED = 10;
+int rotorSpeed = MAX_ROTOR_SPEED;
 int groundSize = 20;
 
 int windowWidth = 500;
@@ -476,7 +477,7 @@ void mouse(int button, int state, int x, int y)
 {
         last_mouse_x = x;
 
-        if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
         {
                 rightMouseDown = true;
         }
