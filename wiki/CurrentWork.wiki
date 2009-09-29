@@ -7,7 +7,7 @@
 
 =Chris:=
 
-  * Ground collision
+  * Ground collision - half done. Waiting to adjust for new model.
   * Pause game and time taken
 
 =Ashley:=
