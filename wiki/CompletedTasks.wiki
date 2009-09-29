@@ -1,2 +1,4 @@
+#summary Things that have been done.
+
   * Chase camera
   * F2 switch between fully shaded and wireframe
