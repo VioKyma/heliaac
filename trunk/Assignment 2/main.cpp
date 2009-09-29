@@ -51,7 +51,7 @@ bool checkSphereCollision(object object1, object object2);
 void drawBuilding(void);
 
 float cameraDistance = 5.0;
-objectBox heli = {0, 2, 0, 0, 2.4, 1, 2.4};
+object heli = {0, 2, 0, 0, 2};
 
 objectBox eye = {cameraDistance, heli.y, cameraDistance, 135, 0, 0, 0};
 objectBox building0 = {10, 5, 10, 0, 2, 5, 2};
@@ -298,11 +298,34 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
         return collision;
 }
 
+bool checkSphereBoxCollision(object object1, objectBox object2)
+{
+	bool collision = false;
+
+	objectBox diff = {0, 0, 0, 0};
+
+    //compute the absolute (positive) distance from object1 to object2
+    diff.x = abs(object1.x - object2.x);
+    diff.y = abs(object1.y - object2.y);
+    diff.z = abs(object1.z - object2.z);
+    diff.radx = object1.rad + object2.radx;
+    diff.rady = object1.rad + object2.rady;
+    diff.radz = object1.rad + object2.radz;
+
+    // If the distance between each of the three dimensions is within the radii combined, there is a collision
+    if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
+    {
+            collision = true;
+    }
+
+	return collision;
+}
+
 void checkHeliCollisions(void)
 {
         bool collision = false;
 
-        if ( checkBoxCollision(heli, building0) )
+        if ( checkSphereBoxCollision(heli, building0) )
         {
                 collision = true;
         }
@@ -577,36 +600,36 @@ void idle(void)
         }
         else if (movingBack)
         {
-                // move back
-                moveHeliBack(heliSpeed, true);
-                heliLeanFront = LEAN_FACTOR;
+            // move back
+            moveHeliBack(heliSpeed, true);
+            heliLeanFront = LEAN_FACTOR;
         }
         else
         {
-                heliLeanFront = 0;
+            heliLeanFront = 0;
         }
 
         if (turningLeft)
         {
-                // turn left
-                heli.rot += rotSpeed;
-                // Adjust the rotor spin to counter heli spin
-                rotor += rotorSpeed - rotSpeed;
-                heliLeanSide = -LEAN_FACTOR;
-        }
+            // turn left
+            heli.rot += rotSpeed;
+            // Adjust the rotor spin to counter heli spin
+            rotor += rotorSpeed - rotSpeed;
+            heliLeanSide = -LEAN_FACTOR;
+		}
         else if (turningRight)
         {
-                // turn right
-                heli.rot -= rotSpeed;
-                // Adjust the rotor spin to counter heli spin
-                rotor += rotorSpeed + rotSpeed;
-                heliLeanSide = LEAN_FACTOR;
+            // turn right
+            heli.rot -= rotSpeed;
+            // Adjust the rotor spin to counter heli spin
+            rotor += rotorSpeed + rotSpeed;
+            heliLeanSide = LEAN_FACTOR;
         }
         else
         {
-                // Turn the rotor normally
-                rotor += rotorSpeed;
-                heliLeanSide = 0;
+            // Turn the rotor normally
+            rotor += rotorSpeed;
+            heliLeanSide = 0;
         }
 
         if (movingUp)
@@ -615,7 +638,7 @@ void idle(void)
         }
         else if (movingDown)
         {
-			if(heli.y > groundHeight + 2)
+			if(heli.y > groundHeight + heli.rad/2.0)
 			{
                 moveHeliDown(heliSpeed, true);
 			}
