@@ -2,3 +2,4 @@
 
   * Chase camera
   * F2 switch between fully shaded and wireframe
+  * Lighting has been changed over from A1 settings
