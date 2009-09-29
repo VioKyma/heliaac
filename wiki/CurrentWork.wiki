@@ -1,4 +1,4 @@
 =Aleesha:=
 
-*Starting work on skids, tail rotor, etc. for new heli
-*Researching approaches to body
+  *Starting work on skids, tail rotor, etc. for new heli
+  *Researching approaches to body
