@@ -51,10 +51,10 @@ bool checkSphereCollision(object object1, object object2);
 void drawBuilding(void);
 
 float cameraDistance = 5.0;
-objectBox heli = {0, 0, 0, 0, 2.4, 1, 2.4};
+objectBox heli = {0, 2, 0, 0, 2.4, 1, 2.4};
 
 objectBox eye = {cameraDistance, heli.y, cameraDistance, 135, 0, 0, 0};
-objectBox building0 = {10, 0, 10, 0, 2, 5, 2};
+objectBox building0 = {10, 5, 10, 0, 2, 5, 2};
 
 bool movingForward = false;
 bool movingBack = false;
@@ -67,11 +67,11 @@ int font = (int)GLUT_BITMAP_HELVETICA_18;
 int textX = 20;
 int textY = 20;
 
-bool lighting = false;
-bool lights = false;
+bool light0 = false;
+bool light1 = false;
 
 float x = 1, y = 20, z = 1;
-GLfloat light_position[] = { x, y, z, 0 };
+GLfloat light0_position[] = { x, y, z, 0 };
 
 GLuint heliBodyList;
 GLuint heliRotorList;
@@ -81,6 +81,7 @@ int rotor = 0;
 const int MAX_ROTOR_SPEED = 10;
 int rotorSpeed = MAX_ROTOR_SPEED;
 int groundSize = 20;
+int groundHeight = 0;
 
 int windowWidth = 500;
 int windowHeight = 500;
@@ -113,6 +114,7 @@ float pi = 3.1415926535897932384626433832795;
 void init(void)
 {
         glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
         glShadeModel(GL_FLAT);
 
         // Make object materials equal to glColor3f() properties
@@ -140,7 +142,7 @@ void init(void)
         glClearColor(0.0, 0.0, 0.0, 0.0);
        
         // Set light position
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+        glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
         // Create light components
         GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
         GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
@@ -203,7 +205,6 @@ void drawHeliRotor()
         glutSolidCube(1.0);
         glPopMatrix();
 
-
         glPushMatrix();
         glRotatef(90, 0.0, 1.0, 0.0);
         glScalef(4.0, 0.2, 0.2);
@@ -220,10 +221,10 @@ void drawGround(void)
         glColor3f(1.0, 1.0, 0.0);
         // Draw the ground
         glBegin(GL_QUADS);
-        glVertex3f(-groundSize, 0, -groundSize);
-        glVertex3f(groundSize, 0, -groundSize);
-        glVertex3f(groundSize, 0, groundSize);
-        glVertex3f(-groundSize, 0, groundSize);
+        glVertex3f(-groundSize, groundHeight, -groundSize);
+        glVertex3f(groundSize, groundHeight, -groundSize);
+        glVertex3f(groundSize, groundHeight, groundSize);
+        glVertex3f(-groundSize, groundHeight, groundSize);
         glEnd();
 }
 
@@ -397,28 +398,16 @@ void special(int key, int mouseX, int mouseY)
                         // move "backward"
                         movingBack = true;
                         break;
-                case GLUT_KEY_F9:
+                case GLUT_KEY_F8:
                         // turn the light/s on or off
-                        lights = !lights;
-                        if (lights)
-                        {
-                                glEnable(GL_LIGHT0);
+                        light0 = !light0;
+						if (light0)
+						{                        
+								glEnable(GL_LIGHT0);
                         }
                         else
                         {
                                 glDisable(GL_LIGHT0);
-                        }
-                        break;
-                case GLUT_KEY_F10:
-                        // Enable/Disable lighting
-                        lighting = !lighting;
-                        if (lighting)
-                        {
-                                glEnable(GL_LIGHTING);
-                        }
-                        else
-                        {
-                                glDisable(GL_LIGHTING);
                         }
                         break;
 				case GLUT_KEY_F2:
@@ -515,7 +504,6 @@ void moveHeliBack(float speed, bool checkCol)
         eye.z += speed * sinDeg(heli.rot);
 
         checkHeliCollisions();
-       
 }
 
 void moveHeliUp(float speed, bool checkCol)
@@ -622,11 +610,14 @@ void idle(void)
 
         if (movingUp)
         {
-                moveHeliUp(heliSpeed, true);
+			moveHeliUp(heliSpeed, true);
         }
         else if (movingDown)
         {
+			if(heli.y > groundHeight + 2)
+			{
                 moveHeliDown(heliSpeed, true);
+			}
         }
 
         checkBounds();
@@ -679,7 +670,7 @@ void display(void)
 
         // Draw ground
         glPushMatrix();
-        glTranslatef(0, -5, 0);
+        glTranslatef(0, groundHeight, 0);
         glCallList(groundList);
         glPopMatrix();
 
