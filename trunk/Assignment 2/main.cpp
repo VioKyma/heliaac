@@ -115,6 +115,7 @@ void init(void)
 {
         glEnable(GL_DEPTH_TEST);
 		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
         glShadeModel(GL_FLAT);
 
         // Make object materials equal to glColor3f() properties
@@ -144,9 +145,9 @@ void init(void)
         // Set light position
         glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
         // Create light components
-        GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-        GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-        GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+        GLfloat ambientLight[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+        GLfloat diffuseLight[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+        GLfloat specularLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
         // Assign light components
         glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
