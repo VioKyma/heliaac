@@ -10,4 +10,4 @@
 
 =Ashley:=
 
-  *adding right-click menu shell
+  * adding right-click menu shell
