@@ -1,0 +1,2 @@
+  * Chase camera
+  * F2 switch between fully shaded and wireframe
