@@ -4,3 +4,7 @@ I had Visual C++ 2008 Express Edition, which I used to do assignment 1.
 For some reason, it won't open anymore, and even if it did, I'm not sure whether I would be able to make changes and upload them here. Where did you both get your Visual Studio 2008 from? I want to try and start my part as soon as I can
 
 --Aleesha
+
+You can get it for free at msdnaa.jcu.edu.au (I think you might have to be on campus or use Remote Access, I'm not sure though) or I still have the iso..
+
+Ashley
