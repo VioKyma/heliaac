@@ -401,6 +401,18 @@ void keyboardUp(unsigned char key, int mouseX, int mouseY)
         }
 }
 
+void shadingOrWireFrame()
+{
+	wire = !wire;
+						if (wire)
+							glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+						else
+						{
+							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+						}
+}
+
+
 // Catches special key presses
 void special(int key, int mouseX, int mouseY)
 {
@@ -435,13 +447,7 @@ void special(int key, int mouseX, int mouseY)
                         }
                         break;
 				case GLUT_KEY_F2:
-						wire = !wire;
-						if (wire)
-							glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-						else
-						{
-							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-						}
+						shadingOrWireFrame();
 						break;
 				case GLUT_KEY_PAGE_DOWN:
                         // Zoom out
@@ -729,13 +735,31 @@ void display(void)
         glutSwapBuffers();
 }
 
+//adding menu
+
+void mymenu(int choice)
+{
+	switch (choice) {
+	case 1: shadingOrWireFrame(); // Full Shading
+		break;
+	case 2: shadingOrWireFrame();  // Wireframe
+		break;
+	case 3:   // Help/Credits/Scores
+		break;
+	case 4: exit(0);  // exit program
+		break;
+	default: break;
+	}
+}
+
+
 int main(int argc, char** argv)
 {
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
         glutInitWindowSize(windowWidth, windowHeight);
         glutInitWindowPosition(windowPosWidth, windowPosHeight);
-        glutCreateWindow("Cp2060 Assignment 1 - Christopher Trott");
+        glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
         init();
         glutDisplayFunc(display);
         glutSpecialFunc(special);
@@ -746,6 +770,16 @@ int main(int argc, char** argv)
         glutKeyboardUpFunc(keyboardUp);
         glutMouseFunc(mouse);
         glutMotionFunc(mouseMotion);
+
+		// create main menu (no ID needed)
+		glutCreateMenu(mymenu);
+		glutAddMenuEntry("Full Shading", 1);
+		glutAddMenuEntry("Wire Frame", 2);
+		glutAddMenuEntry("Help/Credits/Scores", 3);
+		glutAddMenuEntry("Exit Program", 4);
+		// set the menu to the right button
+		glutAttachMenu(GLUT_RIGHT_BUTTON);  
+
         glutMainLoop();
         return 0;
 }
