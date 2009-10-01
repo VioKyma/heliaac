@@ -1,0 +1,12 @@
+#summary Controls and Commands used
+= Introduction =
+
+This page outlines the controls used in this project and what they do.
+
+
+= Details =
+
+  * Arrow keys - Turn the heli left and right and accelerate/brake/reverse.
+  * F1 - Pauses the game and displays a help screen/high score(s).
+  * F2 - Switches between wireframe to solid shapes.
+  * F8 - Switches light0 on and off. light0 is the main light source for the scene.
