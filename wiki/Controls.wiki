@@ -9,4 +9,12 @@ This page outlines the controls used in this project and what they do.
   * Arrow keys - Turn the heli left and right and accelerate/brake/reverse.
   * F1 - Pauses the game and displays a help screen/high score(s).
   * F2 - Switches between wireframe to solid shapes.
+  * {Not Implemented} F3 - Switches between texturing and no textures.
   * F8 - Switches light0 on and off. light0 is the main light source for the scene.
+  * a - Moves the heli up.
+  * z - Moves the heli down.
+  * {Not Implemented} s - Starts engine.
+  * {Not Implemented} x - Stops engine.
+  * Right Mouse Click - Brings up a game menu.
+  * Holding Left Click And Move Mouse - Rotates camera around the heli.
+  * Middle Mouse Click - Resets camera to chase position.
