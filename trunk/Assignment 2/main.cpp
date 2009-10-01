@@ -94,6 +94,9 @@ int time = 0;
 int timeBase = 0;
 float fps = 50.0;
 char* strFps = new char[4];     // FPS string for display on-screen
+char* strGameTime = new char[8];	// Game time string
+int gameTime = 0;
+
 
 const int ROTATE_SPEED = 180;
 const int HELI_SPEED = 12;
@@ -103,6 +106,7 @@ float heliLeanSide = 0.0;
 int rotSpeed = ROTATE_SPEED / fps;
 float heliSpeed = HELI_SPEED / fps;
 
+bool pause = false;
 bool wire = false;
 
 int last_mouse_x = 0;
@@ -404,12 +408,12 @@ void keyboardUp(unsigned char key, int mouseX, int mouseY)
 void shadingOrWireFrame()
 {
 	wire = !wire;
-						if (wire)
-							glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-						else
-						{
-							glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-						}
+	if (wire)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 
@@ -434,7 +438,13 @@ void special(int key, int mouseX, int mouseY)
                         // move "backward"
                         movingBack = true;
                         break;
-                case GLUT_KEY_F8:
+				case GLUT_KEY_F1:
+						pause = true;
+						break;
+				case GLUT_KEY_F2:
+						shadingOrWireFrame();
+						break;
+				case GLUT_KEY_F8:
                         // turn the light/s on or off
                         light0 = !light0;
 						if (light0)
@@ -446,9 +456,6 @@ void special(int key, int mouseX, int mouseY)
                                 glDisable(GL_LIGHT0);
                         }
                         break;
-				case GLUT_KEY_F2:
-						shadingOrWireFrame();
-						break;
 				case GLUT_KEY_PAGE_DOWN:
                         // Zoom out
                         break;
@@ -712,7 +719,13 @@ void display(void)
         // Update the FPS every second
         frames++;
         time = glutGet(GLUT_ELAPSED_TIME);
-       
+
+		gameTime += time - timeBase;	// Increment the time spent playing
+		int gameTimeMillisec = time % 1000;
+		int gameTimeSeconds = time % 60000 / 1000;
+		int gameTimeMinutes = time % 3600000 / 60000;
+		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);
+
         if (time - timeBase > 1000) // If a second has passed
         {
                 fps = frames * 1000.0 / (time - timeBase);              // calculate FPS
@@ -727,6 +740,7 @@ void display(void)
         setOrthographicProjection();
         glLoadIdentity();
         renderBitmapString(textX, textY, (void *)font, strFps);
+		renderBitmapString(textX, textY + 30, (void *)font, strGameTime);
         resetPerspectiveProjection();
         glPopMatrix();
 
