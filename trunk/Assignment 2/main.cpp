@@ -48,7 +48,17 @@ void moveHeliDown(float speed, bool checkCol);
 void moveHeliUp(float speed, bool checkCol);
 void checkBounds(void);
 bool checkSphereCollision(object object1, object object2);
+bool checkBoxCollision(objectBox object1, objectBox object2);
+bool checkSphereBoxCollision(object object1, objectBox object2);
+void checkHeliCollisions(void);
 void drawBuilding(void);
+void updateFPS(void);
+void updateGameTime(void);
+void displayText(void);
+void resetPerspectiveProjection(void);
+void setOrthographicProjection(void);
+void renderBitmapString(float x, float y, void *font,char *string);
+
 
 float cameraDistance = 5.0;
 object heli = {0, 2, 0, 0, 2};
@@ -67,7 +77,7 @@ int font = (int)GLUT_BITMAP_HELVETICA_18;
 int textX = 20;
 int textY = 20;
 
-bool light0 = false;
+bool light0 = true;
 bool light1 = false;
 
 float x = 1, y = 20, z = 1;
@@ -440,6 +450,7 @@ void special(int key, int mouseX, int mouseY)
                         break;
 				case GLUT_KEY_F1:
 						pause = true;
+							// Halt time increase
 						break;
 				case GLUT_KEY_F2:
 						shadingOrWireFrame();
@@ -449,11 +460,11 @@ void special(int key, int mouseX, int mouseY)
                         light0 = !light0;
 						if (light0)
 						{                        
-								glEnable(GL_LIGHT0);
+							glEnable(GL_LIGHT0);
                         }
                         else
                         {
-                                glDisable(GL_LIGHT0);
+                            glDisable(GL_LIGHT0);
                         }
                         break;
 				case GLUT_KEY_PAGE_DOWN:
@@ -559,6 +570,46 @@ void moveHeliDown(float speed, bool checkCol)
         checkHeliCollisions();
 }
 
+void updateGameTime()
+{
+	if(!pause)
+	{
+		gameTime += time - timeBase;	// Increment the time spent playing
+		int gameTimeMillisec = time % 1000 / 10;		// Get milliseconds from time
+		int gameTimeSeconds = time % 60000 / 1000;		// Get seconds from time
+		int gameTimeMinutes = time % 3600000 / 60000;	// Get minutes from time
+		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);
+	}
+}
+
+void updateFPS()
+{
+        // Update the FPS every second
+        frames++;
+        time = glutGet(GLUT_ELAPSED_TIME);
+
+        if (time - timeBase > 1000) // If a second has passed
+        {
+                fps = frames * 1000.0 / (time - timeBase);              // calculate FPS
+                sprintf(strFps, "FPS: %4.2f", fps);		// get the string value of integer FPS
+                timeBase = time;        // Set the base time to current time
+                frames = 0;     // Reset the frame count
+        }
+}
+
+void displayText()
+{
+	    // Write text to screen
+        glPushMatrix();
+        glColor3f(0.0, 1.0, 1.0);
+        setOrthographicProjection();
+        glLoadIdentity();
+        renderBitmapString(textX, textY, (void *)font, strFps);
+		renderBitmapString(textX, textY + 25, (void *)font, strGameTime);
+        resetPerspectiveProjection();
+        glPopMatrix();
+}
+
 // These next three functions are taken from Lighthouse 3D tutorials:
 // http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
 void setOrthographicProjection()
@@ -605,6 +656,8 @@ void renderBitmapString(float x, float y, void *font,char *string)
 // When there's nothing else to do, update animation
 void idle(void)
 {
+	if(!pause)
+	{
         if (movingForward)
         {
                 // move forward
@@ -658,8 +711,9 @@ void idle(void)
         }
 
         checkBounds();
-
+	
         glutPostRedisplay();
+	}
 }
 
 
@@ -716,33 +770,10 @@ void display(void)
         drawBuilding();
         glPopMatrix();
 
-        // Update the FPS every second
-        frames++;
-        time = glutGet(GLUT_ELAPSED_TIME);
+		updateFPS();
+		updateGameTime();
+		displayText();
 
-		gameTime += time - timeBase;	// Increment the time spent playing
-		int gameTimeMillisec = time % 1000;
-		int gameTimeSeconds = time % 60000 / 1000;
-		int gameTimeMinutes = time % 3600000 / 60000;
-		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);
-
-        if (time - timeBase > 1000) // If a second has passed
-        {
-                fps = frames * 1000.0 / (time - timeBase);              // calculate FPS
-                sprintf(strFps, "FPS: %4.2f", fps);
-                timeBase = time;        // Set the base time to current time
-                frames = 0;     // Reset the frame count
-        }
-
-        // Write text to screen
-        glPushMatrix();
-        glColor3f(0.0, 1.0, 1.0);
-        setOrthographicProjection();
-        glLoadIdentity();
-        renderBitmapString(textX, textY, (void *)font, strFps);
-		renderBitmapString(textX, textY + 30, (void *)font, strGameTime);
-        resetPerspectiveProjection();
-        glPopMatrix();
 
         glPopMatrix();
 
