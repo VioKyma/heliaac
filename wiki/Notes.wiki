@@ -1,0 +1,6 @@
+#Notes about current state
+
+Heli body
+* Old helicopter body is commented out
+* New one is there (best to switch to wireframe, and click to move camera, heli is not yet positioned properly)
+* Tail still needs to be put in the correct spot - but thought I would upload so everyone could have a look and make comments
