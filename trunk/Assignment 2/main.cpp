@@ -108,7 +108,7 @@ float fps = 50.0;
 char* strFps = new char[4];     // FPS string for display on-screen
 char* strGameTime = new char[8];	// Game time string
 int gameTime = 0;
-
+int gameTimeBase = 0;
 
 const int ROTATE_SPEED = 180;
 const int HELI_SPEED = 12;
@@ -385,6 +385,11 @@ float sinDeg(float heliRot)
 // Catches keyboard key presses
 void keyboard(unsigned char key, int mouseX, int mouseY)
 {
+		if(pause)
+		{
+			pause = false;
+		}
+
         switch (key)
         {
                 // If ESC key is pressed, exit
@@ -432,6 +437,12 @@ void shadingOrWireFrame()
 // Catches special key presses
 void special(int key, int mouseX, int mouseY)
 {
+		// If paused, unpause
+		if (pause && key != GLUT_KEY_F1)
+		{
+			pause = false;
+		}
+
         switch (key)
         {
                 case GLUT_KEY_LEFT:
@@ -451,8 +462,7 @@ void special(int key, int mouseX, int mouseY)
                         movingBack = true;
                         break;
 				case GLUT_KEY_F1:
-						pause = true;
-							// Halt time increase
+						pause = !pause;
 						break;
 				case GLUT_KEY_F2:
 						shadingOrWireFrame();
@@ -574,14 +584,16 @@ void moveHeliDown(float speed, bool checkCol)
 
 void updateGameTime()
 {
-	if(!pause)
+	if (!pause)
 	{
-		gameTime += time - timeBase;	// Increment the time spent playing
-		int gameTimeMillisec = time % 1000 / 10;		// Get milliseconds from time
-		int gameTimeSeconds = time % 60000 / 1000;		// Get seconds from time
-		int gameTimeMinutes = time % 3600000 / 60000;	// Get minutes from time
-		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);
+		gameTime += time - gameTimeBase;	// Increment the time spent playing
+		int gameTimeMillisec = (gameTime % 1000) / 10;		// Get milliseconds from time
+		int gameTimeSeconds = (gameTime % 60000) / 1000;		// Get seconds from time
+		int gameTimeMinutes = (gameTime % 3600000) / 60000;	// Get minutes from time
+		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);	
 	}
+
+	gameTimeBase = time;
 }
 
 void updateFPS()
@@ -713,9 +725,9 @@ void idle(void)
         }
 
         checkBounds();
-	
-        glutPostRedisplay();
 	}
+
+	glutPostRedisplay();
 }
 
 
