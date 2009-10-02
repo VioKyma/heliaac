@@ -1,4 +1,6 @@
-// Assignment 2.cpp by Christopher Trott
+// Assignment 2.cpp
+//Heliaac
+//Christopher Trott, Ashley Sexton, Aleesha Torkington
 // Created on 28/08/09
 // Last Modified on 28/08/09 @ 15:03
 //
