@@ -14,6 +14,7 @@
 
 using namespace std;
 
+
 struct vector
 {
         float x;
@@ -425,15 +426,19 @@ void keyboardUp(unsigned char key, int mouseX, int mouseY)
         }
 }
 
-void shadingOrWireFrame()
+void shadingOn()
 {
-	wire = !wire;
-	if (wire)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else
-	{
+	if (wire == true)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	wire = false;
+}
+
+void wireFrameOn()
+{
+	if (wire == false)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	wire = true;
+
 }
 
 
@@ -468,7 +473,10 @@ void special(int key, int mouseX, int mouseY)
 						pause = !pause;
 						break;
 				case GLUT_KEY_F2:
-						shadingOrWireFrame();
+					if (wire == false)
+						wireFrameOn();
+					else
+						shadingOn();
 						break;
 				case GLUT_KEY_F8:
                         // turn the light/s on or off
@@ -838,12 +846,13 @@ void display(void)
 
 void mymenu(int choice)
 {
+
 	switch (choice) {
-	case 1: shadingOrWireFrame(); // Full Shading
+	case 1: shadingOn(); // Full Shading
 		break;
-	case 2: shadingOrWireFrame();  // Wireframe
+	case 2: wireFrameOn();  // Wireframe
 		break;
-	case 3:   // Help/Credits/Scores
+	case 3: pause = !pause; // Help/Credits/Scores
 		break;
 	case 4: exit(0);  // exit program
 		break;
