@@ -60,6 +60,7 @@ void displayText(void);
 void resetPerspectiveProjection(void);
 void setOrthographicProjection(void);
 void renderBitmapString(float x, float y, void *font,char *string);
+void displayHelp(void);
 
 
 float cameraDistance = 5.0;
@@ -107,6 +108,8 @@ int timeBase = 0;
 float fps = 50.0;
 char* strFps = new char[4];     // FPS string for display on-screen
 char* strGameTime = new char[8];	// Game time string
+int bestTime = 0;
+char* strBestTime = new char[8];
 int gameTime = 0;
 int gameTimeBase = 0;
 
@@ -618,10 +621,47 @@ void displayText()
         glColor3f(0.0, 1.0, 1.0);
         setOrthographicProjection();
         glLoadIdentity();
+		// Display FPS
         renderBitmapString(textX, textY, (void *)font, strFps);
+		// Display game time
 		renderBitmapString(textX, textY + 25, (void *)font, strGameTime);
+
+		// If paused, display help/controls/scores
+		if (pause)
+		{
+			displayHelp();
+		}
+
         resetPerspectiveProjection();
         glPopMatrix();
+}
+
+void displayHelp()
+{
+	const int HELP_SPACE = 20;
+	const int HELP_YPOS = 100;
+
+	glColor3f(1.0, 0.7, 0.2);
+
+	renderBitmapString(HELP_SPACE, HELP_YPOS, (void *)font, "F1 - Pause and bring up this screen");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 2*HELP_SPACE, (void *)font, "F3 - Switch between textures and no textures");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 3*HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 4*HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 5*HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward");
+	renderBitmapString(2*HELP_SPACE, HELP_YPOS + 6*HELP_SPACE, (void *)font, " and Turn left/right");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 7*HELP_SPACE, (void *)font, "s/x - Start/stop engine");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 8*HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 9*HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 10*HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
+
+	// Display the best time
+	int bestTimeMinutes = (bestTime % 1000) / 10;
+	int bestTimeSeconds = (bestTime % 60000) / 1000;
+	int bestTimeMillisec = (bestTime % 3600000) / 60000;
+
+	sprintf(strBestTime, "Best Time: %.2i:%.2i:%.2i", bestTimeMinutes, bestTimeSeconds, bestTimeMillisec);
+	renderBitmapString(HELP_SPACE, 350, (void *)font, strBestTime);
 }
 
 // These next three functions are taken from Lighthouse 3D tutorials:
