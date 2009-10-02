@@ -13,4 +13,5 @@
 
 =Ashley:=
 
-  * adding right-click menu shell
+  * adding right-click menu shell - added function wireFrame/shading, pause screen and exit
+  * making helicopter blades start and stop
