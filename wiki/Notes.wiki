@@ -4,3 +4,9 @@ Heli body
  * Old helicopter body is commented out
  * New one is there (best to switch to wireframe, and click to move camera, heli is not yet positioned properly)
  * Tail still needs to be put in the correct spot - but thought I would upload so everyone could have a look and make comments
+
+-----
+
+ * Added iostream for testing
+ * Blade rotation doesn't increment slowly when held (?)
+ * Helicopter can not move in any way until at full speed, if you want to change this for testing purposes easiest thing is to just set bool helicopterOn to true
