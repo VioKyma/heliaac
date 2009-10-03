@@ -11,6 +11,7 @@
 #include<GL/freeglut.h>
 #include<math.h>
 #include<string>
+#include<iostream>
 
 using namespace std;
 
@@ -84,6 +85,9 @@ int textY = 20;
 bool light0 = true;
 bool light1 = false;
 
+//trying to implement start/stop without changing functions too much
+bool helicopterOn = false;
+
 float x = 1, y = 20, z = 1;
 GLfloat light0_position[] = { x, y, z, 0 };
 
@@ -93,7 +97,7 @@ GLuint groundList;
 
 int rotor = 0;
 const int MAX_ROTOR_SPEED = 10;
-int rotorSpeed = MAX_ROTOR_SPEED;
+int rotorSpeed = 0;
 int groundSize = 20;
 int groundHeight = 0;
 
@@ -538,6 +542,22 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
                         // Start moving the heli down
                         movingDown = true;
                         break;
+				case 's':
+						// Start Blades
+						if (rotorSpeed < MAX_ROTOR_SPEED)
+							rotorSpeed = rotorSpeed + 1;
+						if (rotorSpeed == MAX_ROTOR_SPEED)
+							helicopterOn = true;
+						else helicopterOn = false;
+						break;
+				case 'x':
+						//Stop Blades
+						if (rotorSpeed > 0)
+							rotorSpeed = rotorSpeed - 1;
+						if (rotorSpeed != MAX_ROTOR_SPEED)
+							helicopterOn = false;
+						else helicopterOn = true;
+						break;
         }
 }
 
@@ -850,60 +870,76 @@ void idle(void)
 {
 	if(!pause)
 	{
-        if (movingForward)
-        {
-                // move forward
-                moveHeliForward(heliSpeed, true);
-                heliLeanFront = -LEAN_FACTOR;
-        }
-        else if (movingBack)
-        {
-            // move back
-            moveHeliBack(heliSpeed, true);
-            heliLeanFront = LEAN_FACTOR;
-        }
-        else
-        {
-            heliLeanFront = 0;
-        }
-
-        if (turningLeft)
-        {
-            // turn left
-            heli.rot += rotSpeed;
-            // Adjust the rotor spin to counter heli spin
-            rotor += rotorSpeed - rotSpeed;
-            heliLeanSide = -LEAN_FACTOR;
-		}
-        else if (turningRight)
-        {
-            // turn right
-            heli.rot -= rotSpeed;
-            // Adjust the rotor spin to counter heli spin
-            rotor += rotorSpeed + rotSpeed;
-            heliLeanSide = LEAN_FACTOR;
-        }
-        else
-        {
-            // Turn the rotor normally
-            rotor += rotorSpeed;
-            heliLeanSide = 0;
-        }
-
-        if (movingUp)
-        {
-			moveHeliUp(heliSpeed, true);
-        }
-        else if (movingDown)
-        {
-			if(heli.y > groundHeight + heli.rad/2.0)
+		if (helicopterOn == true)
+		{
+			if (movingForward)
 			{
-                moveHeliDown(heliSpeed, true);
+					// move forward
+					moveHeliForward(heliSpeed, true);
+					heliLeanFront = -LEAN_FACTOR;
+				
 			}
-        }
+			else if (movingBack)
+			{
+				// move back
+				moveHeliBack(heliSpeed, true);
+				heliLeanFront = LEAN_FACTOR;
+			}
+			else
+			{
+				heliLeanFront = 0;
+			}
 
+			if (turningLeft)
+			{
+				// turn left
+				heli.rot += rotSpeed;
+				// Adjust the rotor spin to counter heli spin
+				rotor += rotorSpeed - rotSpeed;
+				heliLeanSide = -LEAN_FACTOR;
+			}
+			else if (turningRight)
+			{
+				// turn right
+				heli.rot -= rotSpeed;
+				// Adjust the rotor spin to counter heli spin
+				rotor += rotorSpeed + rotSpeed;
+				heliLeanSide = LEAN_FACTOR;
+			}
+		
+			else
+			{
+				// Turn the rotor normally
+				rotor += rotorSpeed;
+				heliLeanSide = 0;
+			}
+		}
+		else
+		{
+			//turn the rotor normally
+			rotor += rotorSpeed;
+			heliLeanSide = 0;
+		}
+
+		if (helicopterOn == true)
+		{
+			if (movingUp)
+			{
+				moveHeliUp(heliSpeed, true);
+			}
+			else if (movingDown)
+			{
+				if(heli.y > groundHeight + heli.rad/2.0)
+				{
+					moveHeliDown(heliSpeed, true);
+				}
+		}
+        
+	}
         checkBounds();
 	}
+
+	
 
 	glutPostRedisplay();
 }
