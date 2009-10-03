@@ -97,7 +97,7 @@ GLuint groundList;
 
 int rotor = 0;
 const int MAX_ROTOR_SPEED = 10;
-int rotorSpeed = 0;
+double rotorSpeed = 0.0;
 int groundSize = 20;
 int groundHeight = 0;
 
@@ -544,19 +544,15 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
                         break;
 				case 's':
 						// Start Blades
-						if (rotorSpeed < MAX_ROTOR_SPEED)
-							rotorSpeed = rotorSpeed + 1;
-						if (rotorSpeed == MAX_ROTOR_SPEED)
-							helicopterOn = true;
-						else helicopterOn = false;
-						break;
+					if (rotorSpeed < MAX_ROTOR_SPEED)
+						rotorSpeed += 0.1;
+						else helicopterOn = true;
 				case 'x':
 						//Stop Blades
 						if (rotorSpeed > 0)
-							rotorSpeed = rotorSpeed - 1;
-						if (rotorSpeed != MAX_ROTOR_SPEED)
+							rotorSpeed = rotorSpeed - 0.1;
+						if (rotorSpeed < MAX_ROTOR_SPEED)
 							helicopterOn = false;
-						else helicopterOn = true;
 						break;
         }
 }
