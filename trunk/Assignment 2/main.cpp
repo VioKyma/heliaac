@@ -95,8 +95,8 @@ GLuint heliBodyList;
 GLuint heliRotorList;
 GLuint groundList;
 
-int rotor = 0;
-const int MAX_ROTOR_SPEED = 10;
+double rotor = 0;
+const double MAX_ROTOR_SPEED = 10;
 double rotorSpeed = 0.0;
 int groundSize = 20;
 int groundHeight = 0;
@@ -545,8 +545,9 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 				case 's':
 						// Start Blades
 					if (rotorSpeed < MAX_ROTOR_SPEED)
-						rotorSpeed += 0.1;
-						else helicopterOn = true;
+						rotorSpeed = rotorSpeed + 0.1;
+					else helicopterOn = true;
+						break;
 				case 'x':
 						//Stop Blades
 						if (rotorSpeed > 0)
