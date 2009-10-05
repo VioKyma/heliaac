@@ -817,6 +817,17 @@ void displayHelp()
 
 	sprintf(strBestTime, "Best Time: %.2i:%.2i:%.2i", bestTimeMinutes, bestTimeSeconds, bestTimeMillisec);
 	renderBitmapString(HELP_SPACE, 350, (void *)font, strBestTime);
+
+	// Display a backing screen so that the text is readable
+	const float MARGIN = 5.0;
+	glColor3f(0.5, 0.5, 0.5);
+
+	glBegin(GL_QUADS);
+	glVertex2f(MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
+	glVertex2f(MARGIN, windowHeight - MARGIN);
+	glEnd();
 }
 
 // These next three functions are taken from Lighthouse 3D tutorials:
