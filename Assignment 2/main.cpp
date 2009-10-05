@@ -620,10 +620,14 @@ void special(int key, int mouseX, int mouseY)
 						pause = !pause;
 						break;
 				case GLUT_KEY_F2:
-					if (wire == false)
-						wireFrameOn();
-					else
-						shadingOn();
+						if (wire == false)
+						{
+							wireFrameOn();
+						}
+						else
+						{
+							shadingOn();
+						}
 						break;
 				case GLUT_KEY_F8:
                         // turn the light/s on or off
@@ -745,9 +749,9 @@ void updateGameTime()
 	if (!pause)
 	{
 		gameTime += time - gameTimeBase;	// Increment the time spent playing
-		int gameTimeMillisec = (gameTime % 1000) / 10;		// Get milliseconds from time
-		int gameTimeSeconds = (gameTime % 60000) / 1000;		// Get seconds from time
-		int gameTimeMinutes = (gameTime % 3600000) / 60000;	// Get minutes from time
+		int gameTimeMillisec = (gameTime % 1000) / 10;		// Get milliseconds from game time
+		int gameTimeSeconds = (gameTime % 60000) / 1000;	// Get seconds from game time
+		int gameTimeMinutes = (gameTime % 3600000) / 60000;	// Get minutes from game time
 		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);	
 	}
 
@@ -825,7 +829,6 @@ void displayHelp()
 	// Display a backing screen so that the text is readable
 	const float MARGIN = 5.0;
 	glColor4f(0.5, 0.5, 0.5, 0.5);	// Grey
-
 	glBegin(GL_QUADS);
 	glVertex2f(MARGIN, MARGIN);
 	glVertex2f(windowWidth - MARGIN, MARGIN);
@@ -950,6 +953,7 @@ void idle(void)
 		}
         
 	}
+		// Make sure heli is in the level's bounds
         checkBounds();
 	}
 
@@ -1015,7 +1019,6 @@ void display(void)
 		updateFPS();
 		updateGameTime();
 		displayText();
-
 
         glPopMatrix();
 
