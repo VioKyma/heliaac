@@ -5,12 +5,16 @@ Heli body
  * New one is there (best to switch to wireframe, and click to move camera, heli is not yet positioned properly)
  * Tail still needs to be put in the correct spot - but thought I would upload so everyone could have a look and make comments
 
-  * I had a look on one of my favorite sites and found this: 
-http://en.wikipedia.org/wiki/Polygon_mesh
-
-
 -----
 
  * Added iostream for testing
  * Blade rotation doesn't increment slowly when held (?)
  * Helicopter can not move in any way until at full speed, if you want to change this for testing purposes easiest thing is to just set bool helicopterOn to true
+
+-----
+
+  * I had a look on one of my favorite sites and found this: 
+http://en.wikipedia.org/wiki/Polygon_mesh
+  * This leads me to assume that you could write your own mesh object or something. Then I found this page:
+  http://www.opengl.org/registry/specs/SUN/mesh_array.txt
+  * Haven't had a good look, but might be worth using, just depends if it's worth the effort I spose.
