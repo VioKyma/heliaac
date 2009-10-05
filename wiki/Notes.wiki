@@ -5,6 +5,10 @@ Heli body
  * New one is there (best to switch to wireframe, and click to move camera, heli is not yet positioned properly)
  * Tail still needs to be put in the correct spot - but thought I would upload so everyone could have a look and make comments
 
+  * I had a look on one of my favorite sites and found this: 
+http://en.wikipedia.org/wiki/Polygon_mesh
+
+
 -----
 
  * Added iostream for testing
