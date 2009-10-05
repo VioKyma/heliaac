@@ -8,8 +8,7 @@
 =Chris:=
 
   * Ground collision - half done. Waiting to adjust for new model.
-  * Display the controls/help/scores in paused state (looking at making it pretty)
-    * Want to put a square behind the text so it is more readable
+  * Display the controls/help/scores in paused state
 
 =Ashley:=
 
