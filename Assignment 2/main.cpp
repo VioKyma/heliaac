@@ -818,9 +818,13 @@ void displayHelp()
 	sprintf(strBestTime, "Best Time: %.2i:%.2i:%.2i", bestTimeMinutes, bestTimeSeconds, bestTimeMillisec);
 	renderBitmapString(HELP_SPACE, 350, (void *)font, strBestTime);
 
+	// Display who wrote the project and it's purpose
+	renderBitmapString(HELP_SPACE, 400, (void *)font, "Written by Aleesha, Ashley and Chris");
+	renderBitmapString(HELP_SPACE, 425, (void *)font, "\tfor Cp2060 Assignment 2");
+
 	// Display a backing screen so that the text is readable
 	const float MARGIN = 5.0;
-	glColor3f(0.5, 0.5, 0.5);
+	glColor4f(0.5, 0.5, 0.5, 0.5);	// Grey
 
 	glBegin(GL_QUADS);
 	glVertex2f(MARGIN, MARGIN);
@@ -895,6 +899,7 @@ void idle(void)
 			}
 			else
 			{
+				// Reset the front lean and straighten up
 				heliLeanFront = 0;
 			}
 
@@ -919,6 +924,7 @@ void idle(void)
 			{
 				// Turn the rotor normally
 				rotor += rotorSpeed;
+				// Reset the lean and straighten up
 				heliLeanSide = 0;
 			}
 		}
