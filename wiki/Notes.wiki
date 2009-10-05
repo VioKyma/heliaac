@@ -14,7 +14,7 @@ Heli body
 -----
 
   * I had a look on one of my favorite sites and found this: 
-http://en.wikipedia.org/wiki/Polygon_mesh
+ http://en.wikipedia.org/wiki/Polygon_mesh
   * This leads me to assume that you could write your own mesh object or something. Then I found this page:
   http://www.opengl.org/registry/specs/SUN/mesh_array.txt
   * Haven't had a good look, but might be worth using, just depends if it's worth the effort I spose.
