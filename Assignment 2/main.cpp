@@ -194,17 +194,8 @@ void drawBuilding(void)
 // Draw the body
 void drawHeliBody()
 {
-	glPushMatrix();
-        //// Make color red
-        //glTranslatef(0.6, 0.0, 0.0);
-        //glColor3f(1.0, 0.0, 0.0);
-        //glutSolidCube(2.0);
-        //// Draw the tail boom
-        //glTranslatef(-1.2, 0.0, 0.0);
-        //glScalef(1.8, 0.4, 0.4);
-        //glutSolidCube(2.0);
-        //glPopMatrix();
-	
+		glPushMatrix();
+
 	//Side 1:
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_POLYGON);
@@ -253,8 +244,8 @@ void drawHeliBody()
 
 	glBegin(GL_POLYGON);
 	glVertex3f(3.0, 3.0, 0.0);
-	glVertex3f(3.0, 3.0, -1.0);
-	glVertex3f(2.0, 2.0, -1.0);
+	glVertex3f(3.0, 3.0, -2.0);
+	glVertex3f(2.0, 2.0, -2.0);
 	glVertex3f(2.0, 2.0, 0.0);
 	glEnd();
 
@@ -262,66 +253,66 @@ void drawHeliBody()
 	glBegin(GL_POLYGON);
 	glColor3f(0.0, 0.0, 1.0);
 	glVertex3f(2.0, 2.0, 0.0);
-	glVertex3f(2.0, 2.0, -1.0);
-	glVertex3f(0.5, 1.0, -1.0);
+	glVertex3f(2.0, 2.0, -2.0);
+	glVertex3f(0.5, 1.0, -2.0);
 	glVertex3f(0.5, 1.0, 0.0);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 	glColor3f(1.0, 0.0, 0.0);
 	glVertex3f(0.5, 1.0, 0.0);
-	glVertex3f(0.5, 1.0, -1.0);
-	glVertex3f(0.0, 0.0, -1.0);
+	glVertex3f(0.5, 1.0, -2.0);
+	glVertex3f(0.0, 0.0, -2.0);
 	glVertex3f(0.0, 0.0, 0.0);
 
 	//Another side:
 	glBegin(GL_POLYGON);
-	glVertex3f(0.0, 0.0, -1.0);
-	glVertex3f(0.5, 0.0, -1.0);
-	glVertex3f(0.5, 0.5, -1.0);
+	glVertex3f(0.0, 0.0, -2.0);
+	glVertex3f(0.5, 0.0, -2.0);
+	glVertex3f(0.5, 0.5, -2.0);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3f(0.0, 0.0, -1.0);
-	glVertex3f(0.5, 0.5, -1.0);
-	glVertex3f(0.5, 1.0, -1.0);
+	glVertex3f(0.0, 0.0, -2.0);
+	glVertex3f(0.5, 0.5, -2.0);
+	glVertex3f(0.5, 1.0, -2.0);
 	glEnd();
 
 
 	glBegin(GL_POLYGON);
-	glVertex3f(0.5, 0.0, -1.0);
-	glVertex3f(2.0, 0.0, -1.0);
-	glVertex3f(2.0, 1.0, -1.0);
+	glVertex3f(0.5, 0.0, -2.0);
+	glVertex3f(2.0, 0.0, -2.0);
+	glVertex3f(2.0, 1.0, -2.0);
 	glVertex3f(0.5, 1.0, -1.0);
 	glEnd();
 
 	//Needs to be transparent
 	glColor3f(0.0, 0.0, 1.0);
 	glBegin(GL_POLYGON);
-	glVertex3f(0.5, 1.0, -1.0);
-	glVertex3f(2.0, 1.0, -1.0);
-	glVertex3f(2.0, 2.0, -1.0);
+	glVertex3f(0.5, 1.0, -2.0);
+	glVertex3f(2.0, 1.0, -2.0);
+	glVertex3f(2.0, 2.0, -2.0);
 	glEnd();
 
 	glBegin(GL_POLYGON);
 	glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(2.0, 0.0, -1.0);
-	glVertex3f(3.0, 0.0, -1.0);
-	glVertex3f(3.0, 2.0, -1.0);
-	glVertex3f(2.0, 2.0, -1.0);
+	glVertex3f(2.0, 0.0, -2.0);
+	glVertex3f(3.0, 0.0, -2.0);
+	glVertex3f(3.0, 2.0, -2.0);
+	glVertex3f(2.0, 2.0, -2.0);
 	glEnd();
 
 	glBegin(GL_POLYGON);
-	glVertex3f(2.0, 2.0, -1.0);
-	glVertex3f(3.0, 2.0, -1.0);
-	glVertex3f(3.0, 3.0, -1.0);
+	glVertex3f(2.0, 2.0, -2.0);
+	glVertex3f(3.0, 2.0, -2.0);
+	glVertex3f(3.0, 3.0, -2.0);
 	glEnd();
 	
 	//Back
 	glBegin(GL_POLYGON);
 	glVertex3f(3.0, 3.0, 0.0);
-	glVertex3f(3.0, 3.0, -1.0);
-	glVertex3f(3.0, 0.0, -1.0);
+	glVertex3f(3.0, 3.0, -2.0);
+	glVertex3f(3.0, 0.0, -2.0);
 	glVertex3f(3.0, 0.0, 0.0);
 	glEnd();
 
@@ -329,8 +320,8 @@ void drawHeliBody()
 	glBegin(GL_POLYGON);
 	glVertex3f(0.0, 0.0, 0.0);
 	glVertex3f(3.0, 0.0, 0.0);
-	glVertex3f(3.0, 0.0, -1.0);
-	glVertex3f(0.0, 0.0, -1.0);
+	glVertex3f(3.0, 0.0, -2.0);
+	glVertex3f(0.0, 0.0, -2.0);
 	glEnd();
 
 	glPopMatrix();
@@ -340,6 +331,37 @@ void drawHeliBody()
 	glColor3f(1.0, 0.0, 0.0);
 	glTranslatef(3.5, 1.0, -0.5);
 	glScalef(3.0, 0.4, 0.4);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	//Skids
+	glPushMatrix();
+	glColor3f(0.0, 1.0, 0.0);
+	glRotatef(90, 1.0, 0.0, 0.0);
+	glTranslatef(1.0, -0.5, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glTranslatef(1.0, 0.0, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(1.5, -0.3, -0.5);
+	glScalef(2.5, 0.2, 0.2);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(0.0, 1.0, 0.0);
+	glRotatef(90, 1.0, 0.0, 0.0);
+	glTranslatef(1.0, -1.5, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glTranslatef(1.0, 0.0, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(1.5, -0.3, -1.5);
+	glScalef(2.5, 0.2, 0.2);
 	glutSolidCube(1.0);
 	glPopMatrix();
 }
