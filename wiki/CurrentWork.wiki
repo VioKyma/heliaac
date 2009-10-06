@@ -4,6 +4,8 @@
 
   * Starting work on skids, tail rotor, etc. for new heli
   * Researching approaches to body
+  * Transparency
+
 
 =Chris:=
 
