@@ -11,7 +11,6 @@
 =Chris:=
 
   * Ground collision - half done. Waiting to adjust for new model.
-  * Display the controls/help/scores in paused state
   * Textures for ground object
 
 =Ashley:=
