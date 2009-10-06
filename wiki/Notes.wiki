@@ -18,3 +18,7 @@ Heli body
  * This leads me to assume that you could write your own mesh object or something. Then I found this page:
  http://www.opengl.org/registry/specs/SUN/mesh_array.txt
  * Haven't had a good look, but might be worth using, just depends if it's worth the effort I spose.
+
+----
+
+ *hey guys, I thought you would be more likely to read this than anything else. I cant come to the prac or anything today, I'm sick and going to the docs.
