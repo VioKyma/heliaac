@@ -5,6 +5,7 @@
   * Starting work on skids, tail rotor, etc. for new heli
   * Researching approaches to body
   * Transparency
+  * Fixing top rotor, adding tail rotor
 
 
 =Chris:=
