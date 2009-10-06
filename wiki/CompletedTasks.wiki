@@ -4,3 +4,4 @@
   * F2 switch between fully shaded and wireframe
   * Lighting has been changed over from A1 settings
   * F1 Pause game and game time
+  * Pause game screen
