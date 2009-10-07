@@ -38,7 +38,9 @@ struct objectBox
         float x;        // x position
         float y;        // y position
         float z;        // z position
-        float rot;      // rotation angle of direction
+		float rotx;     // rotation angle in x axis
+        float roty;     // rotation angle of direction (y axis)
+		float rotz;		// rotation angle in z axis
         float radx;     // x radius (half-length) of bounding box
         float rady;     // y radius of bounding box
         float radz;     // z radius of bounding box
@@ -132,7 +134,8 @@ bool pause = false;
 bool wire = false;
 
 int last_mouse_x = 0;
-bool rightMouseDown = false;
+int last_mouse_y = 0;
+bool leftMouseDown = false;
 
 float pi = 3.1415926535897932384626433832795;
 
@@ -246,7 +249,7 @@ void drawBuilding(void)
 {
 	glPushMatrix();
 	glColor3f(0.5, 0.5, 0.5);
-	glRotatef(building0.rot, 0.0, 1.0, 0.0);
+	glRotatef(building0.roty, 0.0, 1.0, 0.0);
 	glTranslatef(building0.x, building0.y, building0.z);
 	glScalef(2 * building0.radx, 2 * building0.rady, 2 * building0.radz);
 	glutSolidCube(1.0);
@@ -262,13 +265,16 @@ void drawHeli()
         glRotatef(heli.rot, 0.0, 1.0, 0.0);
         glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
         glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
-        // Draw body
-        glCallList(heliBodyList);
-        // Animate rotor
-        glTranslatef(0.6, 0.0, 0.0);
+		// Animate rotor
+		glPushMatrix();
+        glTranslatef(1.0, 0.6, 0.0);
         glRotatef(rotor, 0.0, 1.0, 0.0);
         // Draw rotor
         glCallList(heliRotorList);
+		glPopMatrix();
+        // Draw body
+        glCallList(heliBodyList);
+
         glPopMatrix();
 
 }
@@ -799,29 +805,34 @@ void specialUp(int key, int mouseX, int mouseY)
 
 void mouseMotion(int x, int y)
 {
-        if (rightMouseDown)
+        if (leftMouseDown)
         {
-                float rotate = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
-                eye.rot += rotate;
+                float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
+				float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
+                eye.roty += rotateY;
+                eye.rotz -= rotateZ / 2.0;
                 last_mouse_x = x;
+				last_mouse_y = y;
+
         }
 }
 
 void mouse(int button, int state, int x, int y)
 {
         last_mouse_x = x;
+		last_mouse_y = y;
 
         if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
         {
-                rightMouseDown = true;
+                leftMouseDown = true;
         }
         else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
         {
-                eye.rot = 135;
+                eye.roty = 135;
         }
         else
         {
-                rightMouseDown = false;
+                leftMouseDown = false;
         }
 }
 
@@ -1107,7 +1118,8 @@ void display(void)
         // Rotate camera so that it is always behind the heli
         glPushMatrix();
         glTranslatef(heli.x, heli.y, heli.z);
-        glRotatef(-heli.rot + eye.rot, 0.0, 1.0, 0.0);
+        glRotatef(-heli.rot + eye.roty, 0.0, 1.0, 0.0);
+		glRotatef( eye.rotz, 0.0, 0.0, 1.0);
         glTranslatef(-heli.x, -heli.y, -heli.z);
 
         // Draw ground
