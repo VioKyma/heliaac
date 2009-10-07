@@ -193,6 +193,26 @@ void drawBuilding(void)
         glPopMatrix();
 }
 
+
+void drawHeli()
+{
+        glPushMatrix();
+        // Go to the heli position before drawing the heli
+        glTranslatef(heli.x, heli.y, heli.z);
+        glRotatef(heli.rot, 0.0, 1.0, 0.0);
+        glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
+        glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
+        // Draw body
+        glCallList(heliBodyList);
+        // Animate rotor
+        glTranslatef(0.6, 0.0, 0.0);
+        glRotatef(rotor, 0.0, 1.0, 0.0);
+        // Draw rotor
+        glCallList(heliRotorList);
+        glPopMatrix();
+
+}
+
 // Draw the body
 void drawHeliBody()
 {
@@ -1029,22 +1049,6 @@ void display(void)
         glRotatef(-heli.rot + eye.rot, 0.0, 1.0, 0.0);
         glTranslatef(-heli.x, -heli.y, -heli.z);
 
-        // Draw the helicopter
-        glPushMatrix();
-        // Go to the heli position before drawing the heli
-        glTranslatef(heli.x, heli.y, heli.z);
-        glRotatef(heli.rot, 0.0, 1.0, 0.0);
-        glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
-        glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
-        // Draw body
-        glCallList(heliBodyList);
-        // Animate rotor
-        glTranslatef(0.6, 0.0, 0.0);
-        glRotatef(rotor, 0.0, 1.0, 0.0);
-        // Draw rotor
-        glCallList(heliRotorList);
-        glPopMatrix();
-
         // Draw ground
         glPushMatrix();
         glTranslatef(0, groundHeight, 0);
@@ -1055,6 +1059,9 @@ void display(void)
         glPushMatrix();
         drawBuilding();
         glPopMatrix();
+
+		// Draw the helicopter
+		drawHeli();
 
 		updateFPS();
 		updateGameTime();
