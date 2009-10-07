@@ -7,6 +7,7 @@
 // Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 // Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
+// The Nate Robbins Texture Tutor helped with texture creation
 
 #include<GL/freeglut.h>
 #include<math.h>
@@ -43,6 +44,7 @@ struct objectBox
         float radz;     // z radius of bounding box
 };
 
+void drawHeli(void);
 void drawHeliBody(void);
 void drawHeliRotor(void);
 void drawGround(void);
@@ -63,7 +65,7 @@ void resetPerspectiveProjection(void);
 void setOrthographicProjection(void);
 void renderBitmapString(float x, float y, void *font,char *string);
 void displayHelp(void);
-
+GLuint loadTextureRAW( const char * filename, int wrap );
 
 float cameraDistance = 5.0;
 object heli = {0, 2, 0, 0, 2};
@@ -134,6 +136,8 @@ bool rightMouseDown = false;
 
 float pi = 3.1415926535897932384626433832795;
 
+GLuint textures[5];
+
 // Initialise the OpenGL properties
 void init(void)
 {
@@ -180,17 +184,73 @@ void init(void)
         glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
 
         timeBase = glutGet(GLUT_ELAPSED_TIME);
+
+		textures[0] = loadTextureRAW( "Textures/ground.raw", true );
+}
+
+// This function found at: http://www.nullterminator.net/gltexture.html
+// load a 256x256 RGB .RAW file as a texture
+GLuint loadTextureRAW( const char * filename, int wrap )
+{
+    GLuint texture;
+    int width, height;
+    BYTE * data;
+    FILE * file;
+
+    // open texture data
+    file = fopen( filename, "rb" );
+    if ( file == NULL )
+	{
+		cout << "Error loading texture image: " << filename << endl;
+		return 0;
+	}
+
+    // allocate buffer
+    width = 256;
+    height = 256;
+    data = (BYTE*)malloc( width * height * 3 );
+
+    // read texture data
+    fread( data, width * height * 3, 1, file );
+    fclose( file );
+
+    // allocate a texture name
+    glGenTextures( 1, &texture );
+
+    // select our current texture
+    glBindTexture( GL_TEXTURE_2D, texture );
+
+    // select modulate to mix texture with color for shading
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+    // when texture area is small, bilinear filter the closest mipmap
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+    // when texture area is large, bilinear filter the first mipmap
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+    // if wrap is true, the texture wraps over at the edges (repeat)
+    //       ... false, the texture ends at the edges (clamp)
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap ? GL_REPEAT : GL_CLAMP );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap ? GL_REPEAT : GL_CLAMP );
+
+    // build our texture mipmaps
+    gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data );
+
+    // free buffer
+    free( data );
+
+    return texture;
 }
 
 void drawBuilding(void)
 {
-        glPushMatrix();
-        glColor3f(0.5, 0.5, 0.5);
-        glRotatef(building0.rot, 0.0, 1.0, 0.0);
-        glTranslatef(building0.x, building0.y, building0.z);
-        glScalef(2 * building0.radx, 2 * building0.rady, 2 * building0.radz);
-        glutSolidCube(1.0);
-        glPopMatrix();
+	glPushMatrix();
+	glColor3f(0.5, 0.5, 0.5);
+	glRotatef(building0.rot, 0.0, 1.0, 0.0);
+	glTranslatef(building0.x, building0.y, building0.z);
+	glScalef(2 * building0.radx, 2 * building0.rady, 2 * building0.radz);
+	glutSolidCube(1.0);
+	glPopMatrix();
 }
 
 
@@ -216,10 +276,8 @@ void drawHeli()
 // Draw the body
 void drawHeliBody()
 {
-		glPushMatrix();
+	glPushMatrix();
 
-
-	
 	//Side 1:
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_POLYGON);
@@ -372,7 +430,7 @@ void drawHeliBody()
 
 	//Needs to be transparent
 	glBegin(GL_POLYGON);
-	glColor4f(0.0, 0.0, 0.8, 0.2);
+	glColor4f(0.0, 0.0, 0.8, 0.4);
 	glVertex3f(0.5, 1.0, 0.0);
 	glVertex3f(2.0, 1.0, 0.0);
 	glVertex3f(2.0, 2.0, 0.0);
@@ -380,7 +438,7 @@ void drawHeliBody()
 
 	//Needs to be transparent:
 	glBegin(GL_POLYGON);
-	glColor4f(0.0, 0.0, 0.8, 0.2);
+	glColor4f(0.0, 0.0, 0.8, 0.4);
 	glVertex3f(2.0, 2.0, 0.0);
 	glVertex3f(2.0, 2.0, -2.0);
 	glVertex3f(0.5, 1.0, -2.0);
@@ -388,7 +446,7 @@ void drawHeliBody()
 	glEnd();
 
 	//Needs to be transparent
-	glColor4f(0.0, 0.0, 0.8, 0.2);
+	glColor4f(0.0, 0.0, 0.8, 0.4);
 	glBegin(GL_POLYGON);
 	glVertex3f(0.5, 1.0, -2.0);
 	glVertex3f(2.0, 1.0, -2.0);
@@ -416,13 +474,13 @@ void drawHeliRotor()
         glColor3f(0.8, 0.8, 0.8);
         // Draw blades
         glTranslatef(0.0, 0.1, 0.0);
-        glScalef(4.0, 0.2, 0.2);
+        glScalef(4.0, 0.1, 0.2);
         glutSolidCube(1.0);
         glPopMatrix();
 
         glPushMatrix();
         glRotatef(90, 0.0, 1.0, 0.0);
-        glScalef(4.0, 0.2, 0.2);
+        glScalef(4.0, 0.1, 0.2);
         glutSolidCube(1.0);
         glPopMatrix();
 
@@ -432,15 +490,20 @@ void drawHeliRotor()
 // Make a yellow ground square with 2 x groundSize width and length
 void drawGround(void)
 {
-        // Make color yellow
-        glColor3f(1.0, 1.0, 0.0);
-        // Draw the ground
-        glBegin(GL_QUADS);
-        glVertex3f(-groundSize, groundHeight, -groundSize);
-        glVertex3f(groundSize, groundHeight, -groundSize);
-        glVertex3f(groundSize, groundHeight, groundSize);
-        glVertex3f(-groundSize, groundHeight, groundSize);
-        glEnd();
+	// Make color yellow
+	glColor3f(1.0, 1.0, 0.0);
+
+	glEnable(GL_TEXTURE_2D);
+	
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+	// Draw the ground
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(-groundSize, groundHeight, groundSize);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, groundSize);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(groundSize, groundHeight, -groundSize);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(-groundSize, groundHeight, -groundSize);
+	glEnd();
 }
 
 void checkBounds(void)
@@ -1010,14 +1073,12 @@ void idle(void)
 				{
 					moveHeliDown(heliSpeed, true);
 				}
+			}
 		}
-        
-	}
+
 		// Make sure heli is in the level's bounds
         checkBounds();
 	}
-
-	
 
 	glutPostRedisplay();
 }
