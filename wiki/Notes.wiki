@@ -21,6 +21,6 @@ Heli body
 
 ----
 
- *hey guys, I thought you would be more likely to read this than anything else. I cant come to the prac or anything today, I'm sick and going to the docs.
+ * hey guys, I thought you would be more likely to read this than anything else. I cant come to the prac or anything today, I'm sick and going to the docs.
 
  * Sorry I didn't make it in today either, Xander didn't go to sleep til 6am and I slept through my alarm (which doesn't really surprise me - probably should have just stayed awake) -- Chris
