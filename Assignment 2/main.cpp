@@ -198,6 +198,8 @@ void drawHeliBody()
 {
 		glPushMatrix();
 
+
+	
 	//Side 1:
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_POLYGON);
@@ -220,13 +222,7 @@ void drawHeliBody()
 	glVertex3f(0.5, 1.0, 0.0);
 	glEnd();
 
-	//Needs to be transparent
-	glBegin(GL_POLYGON);
-	glColor4f(0.0, 0.0, 0.6, 0.2);
-	glVertex3f(0.5, 1.0, 0.0);
-	glVertex3f(2.0, 1.0, 0.0);
-	glVertex3f(2.0, 2.0, 0.0);
-	glEnd();
+
 
 	glBegin(GL_POLYGON);
 	glColor3f(1.0, 0.0, 0.0);
@@ -251,14 +247,7 @@ void drawHeliBody()
 	glVertex3f(2.0, 2.0, 0.0);
 	glEnd();
 
-	//Needs to be transparent:
-	glBegin(GL_POLYGON);
-	glColor4f(0.0, 0.0, 0.6, 0.2);
-	glVertex3f(2.0, 2.0, 0.0);
-	glVertex3f(2.0, 2.0, -2.0);
-	glVertex3f(0.5, 1.0, -2.0);
-	glVertex3f(0.5, 1.0, 0.0);
-	glEnd();
+	
 
 	glBegin(GL_POLYGON);
 	glColor3f(1.0, 0.0, 0.0);
@@ -288,13 +277,7 @@ void drawHeliBody()
 	glVertex3f(0.5, 1.0, -1.0);
 	glEnd();
 
-	//Needs to be transparent
-	glColor4f(0.0, 0.0, 0.6, 0.2);
-	glBegin(GL_POLYGON);
-	glVertex3f(0.5, 1.0, -2.0);
-	glVertex3f(2.0, 1.0, -2.0);
-	glVertex3f(2.0, 2.0, -2.0);
-	glEnd();
+
 
 	glBegin(GL_POLYGON);
 	glColor3f(1.0, 0.0, 0.0);
@@ -366,6 +349,31 @@ void drawHeliBody()
 	glScalef(2.5, 0.2, 0.2);
 	glutSolidCube(1.0);
 	glPopMatrix();
+
+	//Needs to be transparent
+	glBegin(GL_POLYGON);
+	glColor4f(0.0, 0.0, 0.8, 0.2);
+	glVertex3f(0.5, 1.0, 0.0);
+	glVertex3f(2.0, 1.0, 0.0);
+	glVertex3f(2.0, 2.0, 0.0);
+	glEnd();
+
+	//Needs to be transparent:
+	glBegin(GL_POLYGON);
+	glColor4f(0.0, 0.0, 0.8, 0.2);
+	glVertex3f(2.0, 2.0, 0.0);
+	glVertex3f(2.0, 2.0, -2.0);
+	glVertex3f(0.5, 1.0, -2.0);
+	glVertex3f(0.5, 1.0, 0.0);
+	glEnd();
+
+	//Needs to be transparent
+	glColor4f(0.0, 0.0, 0.8, 0.2);
+	glBegin(GL_POLYGON);
+	glVertex3f(0.5, 1.0, -2.0);
+	glVertex3f(2.0, 1.0, -2.0);
+	glVertex3f(2.0, 2.0, -2.0);
+	glEnd();
 }
 
 // Draw the rotor blades
@@ -831,8 +839,9 @@ void displayHelp()
 {
 	const int HELP_SPACE = 20;
 	const int HELP_YPOS = 100;
+	const float MARGIN = 5.0;
 
-	glColor3f(1.0, 0.7, 0.2);
+	glColor4f(1.0, 0.7, 0.2, 1.0);
 
 	renderBitmapString(HELP_SPACE, HELP_YPOS, (void *)font, "F1 - Pause and bring up this screen");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
@@ -856,11 +865,10 @@ void displayHelp()
 
 	// Display who wrote the project and it's purpose
 	renderBitmapString(HELP_SPACE, 400, (void *)font, "Written by Aleesha, Ashley and Chris");
-	renderBitmapString(HELP_SPACE, 425, (void *)font, "\tfor Cp2060 Assignment 2");
+	renderBitmapString(HELP_SPACE, 425, (void *)font, " for Cp2060 Assignment 2");
 
 	// Display a backing screen so that the text is readable
-	const float MARGIN = 5.0;
-	glColor4f(0.5, 0.5, 0.5, 0.5);	// Grey
+	glColor4f(0.5, 0.5, 0.5, 0.8);	// Grey
 	glBegin(GL_QUADS);
 	glVertex2f(MARGIN, MARGIN);
 	glVertex2f(windowWidth - MARGIN, MARGIN);
