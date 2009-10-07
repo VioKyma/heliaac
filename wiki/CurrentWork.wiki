@@ -12,6 +12,7 @@
 
   * Ground collision - half done. Waiting to adjust for new model.
   * Textures for ground object
+  * Import image file
 
 =Ashley:=
 
