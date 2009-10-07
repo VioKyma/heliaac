@@ -138,6 +138,8 @@ float pi = 3.1415926535897932384626433832795;
 void init(void)
 {
         glEnable(GL_DEPTH_TEST);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
         glShadeModel(GL_FLAT);
@@ -220,7 +222,7 @@ void drawHeliBody()
 
 	//Needs to be transparent
 	glBegin(GL_POLYGON);
-	glColor3f(0.0, 0.0, 1.0);
+	glColor4f(0.0, 0.0, 0.6, 0.2);
 	glVertex3f(0.5, 1.0, 0.0);
 	glVertex3f(2.0, 1.0, 0.0);
 	glVertex3f(2.0, 2.0, 0.0);
@@ -251,7 +253,7 @@ void drawHeliBody()
 
 	//Needs to be transparent:
 	glBegin(GL_POLYGON);
-	glColor3f(0.0, 0.0, 1.0);
+	glColor4f(0.0, 0.0, 0.6, 0.2);
 	glVertex3f(2.0, 2.0, 0.0);
 	glVertex3f(2.0, 2.0, -2.0);
 	glVertex3f(0.5, 1.0, -2.0);
@@ -287,7 +289,7 @@ void drawHeliBody()
 	glEnd();
 
 	//Needs to be transparent
-	glColor3f(0.0, 0.0, 1.0);
+	glColor4f(0.0, 0.0, 0.6, 0.2);
 	glBegin(GL_POLYGON);
 	glVertex3f(0.5, 1.0, -2.0);
 	glVertex3f(2.0, 1.0, -2.0);
