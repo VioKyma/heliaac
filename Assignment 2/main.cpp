@@ -17,7 +17,7 @@
 using namespace std;
 
 
-struct vector
+struct vertex
 {
         float x;
         float y;
@@ -71,9 +71,10 @@ GLuint loadTextureRAW( const char * filename, int wrap );
 
 float cameraDistance = 5.0;
 object heli = {0, 2, 0, 0, 2};
+float windscreenRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.y, cameraDistance, 135, 0, 0, 0};
-objectBox building0 = {10, 5, 10, 0, 2, 5, 2};
+objectBox building0 = {10, 5, 10, 0, 0, 0, 2, 5, 2};
 
 bool movingForward = false;
 bool movingBack = false;
@@ -284,7 +285,173 @@ void drawHeliBody()
 {
 	glPushMatrix();
 
-	//Side 1:
+	// Body vertices
+	vertex v0 = { -0.8, 1.0, 1.0 };
+	vertex v1 = { 2.4, 1.0, 1.0 };
+	vertex v2 = { 0.8, -1.0, 1.0 };
+	vertex v3 = { 4.0, -1.0, 1.0 };
+	vertex v4 = { 3.6, 0.8, 0.5 };
+	vertex v5 = { 3.2, 0.0, 1.0 };
+	vertex v6 = { 4.2, 0.0, 0.5 };
+	vertex v7 = { 4.0, 1.0, 1.0 };
+	// Tail vertices
+	vertex v8 = { -2.0, 0.4, 0.4 };
+	vertex v9 = { -0.3, 0.4, 0.4 };
+	vertex v10 = { -2.0, -0.4, 0.4 };
+	vertex v11 = { 0.35, -0.4, 0.4 };
+
+	// Draw main body
+	glColor3f(1.0, 0.0, 0.0);	// Red
+	// Right Side Panel
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v0.x, v0.y, v0.z);
+	glVertex3f(v1.x, v1.y, v1.z);
+	glVertex3f(v2.x, v2.y, v2.z);
+	glVertex3f(v3.x, v3.y, v3.z);
+	glEnd();
+
+	// Top Panel
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v0.x, v0.y, v0.z);
+	glVertex3f(v1.x, v1.y, v1.z);
+	glVertex3f(v0.x, v0.y, -v0.z);
+	glVertex3f(v1.x, v1.y, -v1.z);
+	glEnd();
+
+	// Bottom Panel
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v2.x, v2.y, v2.z);
+	glVertex3f(v3.x, v3.y, v3.z);
+	glVertex3f(v2.x, v2.y, -v2.z);
+	glVertex3f(v3.x, v3.y, -v3.z);
+	glEnd();
+
+	// Left Panel
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v0.x, v0.y, -v0.z);
+	glVertex3f(v1.x, v1.y, -v1.z);
+	glVertex3f(v2.x, v2.y, -v2.z);
+	glVertex3f(v3.x, v3.y, -v3.z);
+	glEnd();
+
+	// Rear Panel
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v0.x, v0.y, v0.z);
+	glVertex3f(v2.x, v2.y, v2.z);
+	glVertex3f(v0.x, v0.y, -v0.z);
+	glVertex3f(v2.x, v2.y, -v2.z);
+	glEnd();
+
+	glPushMatrix();
+	glTranslatef(v2.x, v2.y, v2.z);
+	// Draw the Skids
+	glPushMatrix();
+	glColor3f(0.0, 1.0, 0.0);
+	glRotatef(90, 1.0, 0.0, 0.0);
+	glTranslatef(1.0, -0.5, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glTranslatef(1.0, 0.0, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(1.5, -0.3, -0.5);
+	glScalef(2.5, 0.2, 0.2);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(0.0, 1.0, 0.0);
+	glRotatef(90, 1.0, 0.0, 0.0);
+	glTranslatef(1.0, -1.5, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glTranslatef(1.0, 0.0, 0.0);
+	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(1.5, -0.3, -1.5);
+	glScalef(2.5, 0.2, 0.2);
+	glutSolidCube(1.0);
+	glPopMatrix();
+	// End Skids
+	glPopMatrix();
+
+	// Front heli nose
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4f(1.0, 0.0, 0.0, 1.0);
+	glVertex3f(v5.x, v5.y, v5.z);
+	glVertex3f(v3.x, v3.y, v3.z);
+	glVertex3f(v6.x, v6.y, v6.z);
+	glVertex3f(v3.x, v3.y, 0.0);
+	glVertex3f(v6.x, v6.y, -v6.z);
+	glVertex3f(v3.x, v3.y, -v3.z);
+	glVertex3f(v5.x, v5.y, -v5.z);
+	glEnd();
+
+	// Tail
+	glBegin(GL_TRIANGLE_STRIP);
+	// Left
+	glVertex3f(v8.x, v8.y, v8.z);
+	glVertex3f(v9.x, v9.y, v9.z);
+	glVertex3f(v10.x, v10.y, v10.z);
+	glVertex3f(v11.x, v11.y, v11.z);
+	// Bottom
+	glVertex3f(v10.x, v10.y, -v10.z);
+	glVertex3f(v11.x, v11.y, -v11.z);
+	// Right
+	glVertex3f(v8.x, v8.y, -v8.z);
+	glVertex3f(v9.x, v9.y, -v9.z);
+	// Top
+	glVertex3f(v8.x, v8.y, v8.z);
+	glVertex3f(v9.x, v9.y, v9.z);
+	// Back
+	glVertex3f(v10.x, v10.y, -v10.z);
+	glVertex3f(v10.x, v10.y, v10.z);
+	glEnd();
+
+	// Rotate cockpit windscreen
+	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
+	glRotatef(windscreenRot, 0.0, 0.0, 1.0);		// Rotate
+	glTranslatef(-v1.x, -v1.y, -v1.z);	// Translate -v1
+
+	// Draw cockpit window
+	glColor4f(0.0, 0.0, 0.6, 0.5);	// Blue
+	// Right Screen
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v1.x, v1.y, v1.z);
+	glVertex3f(v4.x, v4.y, v4.z);
+	glVertex3f(v5.x, v5.y, v5.z);
+	glVertex3f(v6.x, v6.y, v6.z);
+	glEnd();
+
+	// Front top screen
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v1.x, v1.y, v1.z);
+	glVertex3f(v4.x, v4.y, v4.z);
+	glVertex3f(v1.x, v1.y, 0.0);
+	glVertex3f(v4.x, v4.y, -v4.z);
+	glVertex3f(v1.x, v1.y, -v1.z);
+	glEnd();
+
+	// Front mid screen
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v4.x, v4.y, v4.z);
+	glVertex3f(v4.x, v4.y, -v4.z);
+	glVertex3f(v6.x, v6.y, v6.z);
+	glVertex3f(v6.x, v6.y, -v6.z);
+	glEnd();
+
+	// Left Screen
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v1.x, v1.y, -v1.z);
+	glVertex3f(v4.x, v4.y, -v4.z);
+	glVertex3f(v5.x, v5.y, -v5.z);
+	glVertex3f(v6.x, v6.y, -v6.z);
+	glEnd();
+
+	glPopMatrix();
+	/*//Side 1:
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_POLYGON);
 	glVertex3f(0.0, 0.0, 0.0);
@@ -457,17 +624,16 @@ void drawHeliBody()
 	glVertex3f(0.5, 1.0, -2.0);
 	glVertex3f(2.0, 1.0, -2.0);
 	glVertex3f(2.0, 2.0, -2.0);
-	glEnd();
+	glEnd();*/
 }
 
 // Draw the rotor blades
 void drawHeliRotor()
 {
         glPushMatrix();
-        glTranslatef(0.0, 1.2, 0.0);
+        glTranslatef(0.0, 0.6, 0.0);
 
-        glPushMatrix();
-       
+        glPushMatrix();     
         // Make color blue
         glColor3f(0.0f,0.0f,1.0f);
         // Draw rotor axle
@@ -810,7 +976,7 @@ void mouseMotion(int x, int y)
                 float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
 				float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
                 eye.roty += rotateY;
-                eye.rotz -= rotateZ / 2.0;
+                eye.rotz += rotateZ / 2.0;
                 last_mouse_x = x;
 				last_mouse_y = y;
 
@@ -1118,8 +1284,8 @@ void display(void)
         // Rotate camera so that it is always behind the heli
         glPushMatrix();
         glTranslatef(heli.x, heli.y, heli.z);
-        glRotatef(-heli.rot + eye.roty, 0.0, 1.0, 0.0);
 		glRotatef( eye.rotz, 0.0, 0.0, 1.0);
+		glRotatef(-heli.rot + eye.roty, 0.0, 1.0, 0.0);
         glTranslatef(-heli.x, -heli.y, -heli.z);
 
         // Draw ground
