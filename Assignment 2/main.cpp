@@ -73,7 +73,7 @@ float cameraDistance = 5.0;
 object heli = {0, 2, 0, 0, 2};
 float windscreenRot = 0.0;
 
-objectBox eye = {cameraDistance, heli.y, cameraDistance, 135, 0, 0, 0};
+objectBox eye = {cameraDistance, heli.y, cameraDistance, 0, 135, 0, 0, 0, 0};
 objectBox building0 = {10, 5, 10, 0, 0, 0, 2, 5, 2};
 
 bool movingForward = false;
@@ -1003,6 +1003,8 @@ void mouse(int button, int state, int x, int y)
         else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
         {
                 eye.roty = 135;
+				eye.rotx = 0;
+				eye.rotz = 0;
         }
         else
         {
