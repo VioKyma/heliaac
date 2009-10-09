@@ -274,7 +274,8 @@ void drawHeli()
         glCallList(heliRotorList);
 		glPopMatrix();
         // Draw body
-        glCallList(heliBodyList);
+        //glCallList(heliBodyList);
+		drawHeliBody();
 
         glPopMatrix();
 
@@ -411,9 +412,9 @@ void drawHeliBody()
 	glEnd();
 
 	// Rotate cockpit windscreen
-	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
-	glRotatef(windscreenRot, 0.0, 0.0, 1.0);		// Rotate
-	glTranslatef(-v1.x, -v1.y, -v1.z);	// Translate -v1
+	glTranslatef(v6.x, v6.y, v6.z);		// Translate v1
+	glRotatef(-windscreenRot, 0.0, 0.0, 1.0);		// Rotate
+	glTranslatef(-v6.x, -v6.y, -v6.z);	// Translate -v1
 
 	// Draw cockpit window
 	glColor4f(0.0, 0.0, 0.6, 0.5);	// Blue
@@ -829,6 +830,13 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
                 case 27:
                         glutLeaveMainLoop();
                         break;
+				case '1':
+						if( windscreenRot > 0 )
+							windscreenRot = 0.0;
+						else
+							windscreenRot = 35.0;
+						glutPostRedisplay();
+						break;
                 case 'a':
                         // Start moving the heli up
                         movingUp = true;
