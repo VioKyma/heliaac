@@ -13,7 +13,6 @@
   * Ground collision - half done. Waiting to adjust for new model.
   * Textures for ground object
   * Import image file (RAW or TGA)
-  * Creating checkpoints and their collision detection
 
 =Ashley:=
 
