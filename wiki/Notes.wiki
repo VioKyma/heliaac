@@ -13,11 +13,9 @@ Heli body
 
 -----
 
- * I had a look on one of my favorite sites and found this: 
- http://en.wikipedia.org/wiki/Polygon_mesh
- * This leads me to assume that you could write your own mesh object or something. Then I found this page:
- http://www.opengl.org/registry/specs/SUN/mesh_array.txt
- * Haven't had a good look, but might be worth using, just depends if it's worth the effort I spose.
+Just some notes on the checkpoints:
+  * They can only be rotated by right angles (90 degree increments) because of the collision detection right now. I hope to fix this, but for now it will have to do until other stuff is done.
+  * They start off red and turn to green when they have been passed through.
 
 ----
 
