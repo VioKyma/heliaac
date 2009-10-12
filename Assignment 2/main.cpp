@@ -13,9 +13,9 @@
 #include<math.h>
 #include<string>
 #include<iostream>
+#include "TextureLoader.h"
 
 using namespace std;
-
 
 struct vertex
 {
@@ -46,6 +46,19 @@ struct objectBox
         float radz;     // z radius of bounding box
 };
 
+struct checkPoint
+{
+	int checkpoint;
+	float xSize;
+	float ySize;
+	float zSize;
+	float xPos;
+	float yPos;
+	float zPos;
+	float rotY;
+	bool activated;
+};
+
 void drawHeli(void);
 void drawHeliBody(void);
 void drawHeliRotor(void);
@@ -67,7 +80,9 @@ void resetPerspectiveProjection(void);
 void setOrthographicProjection(void);
 void renderBitmapString(float x, float y, void *font,char *string);
 void displayHelp(void);
-GLuint loadTextureRAW( const char * filename, int wrap );
+float cosDeg(float degRot);
+float sinDeg(float degRot);
+GLuint loadTextureRAW( const char * filename, int wrap, int width, int height );
 
 float cameraDistance = 5.0;
 object heli = {0, 2, 0, 0, 2};
@@ -140,7 +155,10 @@ bool leftMouseDown = false;
 
 float pi = 3.1415926535897932384626433832795;
 
-GLuint textures[5];
+GLuint textures[10];
+
+const int MAX_CHECKPOINTS = 10;
+checkPoint points[MAX_CHECKPOINTS];
 
 // Initialise the OpenGL properties
 void init(void)
@@ -189,15 +207,41 @@ void init(void)
 
         timeBase = glutGet(GLUT_ELAPSED_TIME);
 
-		textures[0] = loadTextureRAW( "Textures/ground.raw", true );
+		textures[0] = loadTextureRAW( "Textures/ground.raw", true, 256, 256 );
+
+		points[0].checkpoint = 0;
+		points[0].xSize = 5.0;
+		points[0].ySize = 5.0;
+		points[0].zSize = 0.5;
+		points[0].xPos = 5.0;
+		points[0].yPos = 2.5;
+		points[0].zPos = 5.0;
+		points[0].rotY = 0;
+
+		points[1].checkpoint = 1;
+		points[1].xSize = 5.0;
+		points[1].ySize = 5.0;
+		points[1].zSize = 0.5;
+		points[1].xPos = -5.0;
+		points[1].yPos = points[1].ySize / 2;	// Make yPos so that the bottom edge is on the ground
+		points[1].zPos = 5.0;
+		points[1].rotY = 180;
+
+		points[2].checkpoint = 2;
+		points[2].xSize = 5.0;
+		points[2].ySize = 5.0;
+		points[2].zSize = 0.5;
+		points[2].xPos = -5.0;
+		points[2].yPos = points[2].ySize/2;		// Make yPos so that the bottom edge is on the ground
+		points[2].zPos = -5.0;
+		points[2].rotY = 90;
 }
 
 // This function found at: http://www.nullterminator.net/gltexture.html
 // load a 256x256 RGB .RAW file as a texture
-GLuint loadTextureRAW( const char * filename, int wrap )
+GLuint loadTextureRAW( const char * filename, int wrap, int width, int height )
 {
     GLuint texture;
-    int width, height;
     BYTE * data;
     FILE * file;
 
@@ -210,12 +254,13 @@ GLuint loadTextureRAW( const char * filename, int wrap )
 	}
 
     // allocate buffer
-    width = 256;
-    height = 256;
     data = (BYTE*)malloc( width * height * 3 );
 
     // read texture data
-    fread( data, width * height * 3, 1, file );
+	if( !fread( data, width * height * 3, 1, file ) )
+	{
+		cout << "No data in texture image (Texture is empty): " << filename << endl;
+	}
     fclose( file );
 
     // allocate a texture name
@@ -238,7 +283,10 @@ GLuint loadTextureRAW( const char * filename, int wrap )
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap ? GL_REPEAT : GL_CLAMP );
 
     // build our texture mipmaps
-    gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data );
+	if ( gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data ) )
+	{
+		cout << "Error creating texture mipmaps for texture: " << filename << ".\n";
+	}
 
     // free buffer
     free( data );
@@ -672,11 +720,33 @@ void drawGround(void)
 
 	// Draw the ground
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 0.0);		glVertex3f(-groundSize, groundHeight, groundSize);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, groundSize);
-	glTexCoord2f(1.0, 1.0);		glVertex3f(groundSize, groundHeight, -groundSize);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(-groundSize, groundHeight, -groundSize);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(-groundSize, groundHeight, groundSize);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(groundSize, groundHeight, groundSize);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, -groundSize);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(-groundSize, groundHeight, -groundSize);
 	glEnd();
+}
+
+void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float rotY, float xPos, float yPos, float zPos)
+{
+	glPushMatrix();
+	
+	if (points[checkpoint].activated)
+	{
+		// If the checkpoint has been activated, draw green
+		glColor4f(0.0, 1.0, 0.0, 0.5);
+	}
+	else
+	{
+		// Otherwise draw red
+		glColor4f(1.0, 0.0, 0.0, 0.5);
+	}
+
+	glTranslatef(xPos, yPos, zPos);
+	glRotatef(rotY, 0.0, 1.0, 0.0);
+	glScalef(xSize, ySize, zSize);
+	glutSolidCube(1.0);
+	glPopMatrix();
 }
 
 void checkBounds(void)
@@ -748,6 +818,37 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
         return collision;
 }
 
+bool checkPointCollision(object object1, checkPoint object2)
+{
+	bool collision = false;
+
+	objectBox diff = {0, 0, 0, 0};
+	checkPoint object3 = object2;
+
+	if (object3.rotY == 90 || object3.rotY == 270)
+	{
+		// Adjust the size values so collisions consider rotation
+		object3.xSize = object2.zSize;
+		object3.zSize = object2.xSize;
+	}
+
+	// Compute the absolute (positive) distance from object1 to object2
+	diff.x = abs(object1.x - object3.xPos);
+	diff.y = abs(object1.y - object3.yPos);
+	diff.z = abs(object1.z - object3.zPos);
+	diff.radx = object1.rad;
+	diff.rady = object1.rad;
+	diff.radz = object1.rad;
+
+    // If the distance between each of the three dimensions is within the radii combined, there is a collision
+    if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
+    {
+            collision = true;
+    }
+
+	return collision;
+}
+
 bool checkSphereBoxCollision(object object1, objectBox object2)
 {
 	bool collision = false;
@@ -771,48 +872,59 @@ bool checkSphereBoxCollision(object object1, objectBox object2)
 	return collision;
 }
 
+void checkHeliThruCollisions(void)
+{
+	for (int pointNum = 0; pointNum < MAX_CHECKPOINTS; pointNum++)
+	{
+		if ( checkPointCollision(heli, points[pointNum]) )
+		{
+			points[pointNum].activated = true;
+		}
+	}
+}
+
 void checkHeliCollisions(void)
 {
-        bool collision = false;
+    bool collision = false;
 
-        if ( checkSphereBoxCollision(heli, building0) )
-        {
-                collision = true;
-        }
+    if ( checkSphereBoxCollision(heli, building0) )
+    {
+            collision = true;
+    }
 
-        if (collision)
-        {
-                if (movingForward)
-                {
-                        moveHeliBack(heliSpeed, false);
-                }
-                else if (movingBack)
-                {
-                        moveHeliForward(heliSpeed, false);
-                }
+    if (collision)
+    {
+            if (movingForward)
+            {
+                    moveHeliBack(heliSpeed, false);
+            }
+            else if (movingBack)
+            {
+                    moveHeliForward(heliSpeed, false);
+            }
 
-                if (movingUp)
-                {
-                        moveHeliDown(heliSpeed, false);
-                }
-                else if (movingDown)
-                {
-                        moveHeliUp(heliSpeed, false);
-                }
-        }
+            if (movingUp)
+            {
+                    moveHeliDown(heliSpeed, false);
+            }
+            else if (movingDown)
+            {
+                    moveHeliUp(heliSpeed, false);
+            }
+    }
 }
 
 // Converts degrees (in) to radians and returns the cosine (out)
-float cosDeg(float heliRot)
+float cosDeg(float degRot)
 {
-        float radRot = heliRot * pi/180;
+        float radRot = degRot * pi/180;
         return (cos(radRot));
 }
 
 // Converts degrees(in) to radians and returns the sine (out)
-float sinDeg(float heliRot)
+float sinDeg(float degRot)
 {
-        float radRot = heliRot * pi/180;
+        float radRot = degRot * pi/180;
         return (sin(radRot));
 }
 
@@ -1023,6 +1135,7 @@ void moveHeliForward(float speed, bool checkCol)
         eye.z -= speed * sinDeg(heli.rot);
 
         checkHeliCollisions();
+		checkHeliThruCollisions();
 }
 
 void moveHeliBack(float speed, bool checkCol)
@@ -1036,6 +1149,7 @@ void moveHeliBack(float speed, bool checkCol)
         eye.z += speed * sinDeg(heli.rot);
 
         checkHeliCollisions();
+		checkHeliThruCollisions();
 }
 
 void moveHeliUp(float speed, bool checkCol)
@@ -1044,6 +1158,7 @@ void moveHeliUp(float speed, bool checkCol)
         eye.y += heliSpeed;
 
         checkHeliCollisions();
+		checkHeliThruCollisions();
 }
 
 void moveHeliDown(float speed, bool checkCol)
@@ -1052,6 +1167,7 @@ void moveHeliDown(float speed, bool checkCol)
         eye.y -= heliSpeed;
 
         checkHeliCollisions();
+		checkHeliThruCollisions();
 }
 
 void updateGameTime()
@@ -1311,6 +1427,12 @@ void display(void)
 
 		// Draw the helicopter
 		drawHeli();
+
+		// Draw the checkpoints
+		for (int i = 0; i < MAX_CHECKPOINTS; i++)
+		{
+			drawCheckpoint( points[i].checkpoint, points[i].xSize, points[i].ySize, points[i].zSize, points[i].rotY, points[i].xPos, points[i].yPos, points[i].zPos);
+		}
 
 		updateFPS();
 		updateGameTime();
