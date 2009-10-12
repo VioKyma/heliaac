@@ -333,16 +333,24 @@ void drawHeli()
 void drawHeliBody()
 {
 	glPushMatrix();
-
+	//
+	//v0---------------v1 \
+	//|				    |  \
+    //|                 |   v4
+    //|                 v5  |
+    //|                 |   v6
+    //|                 |  /
+	//v2---------------v3 /
+	//
 	// Body vertices
 	vertex v0 = { -0.8, 1.0, 1.0 };
-	vertex v1 = { 2.4, 1.0, 1.0 };
+	vertex v1 = { 1.4, 1.0, 1.0 };
 	vertex v2 = { 0.8, -1.0, 1.0 };
-	vertex v3 = { 4.0, -1.0, 1.0 };
-	vertex v4 = { 3.6, 0.8, 0.5 };
-	vertex v5 = { 3.2, 0.0, 1.0 };
-	vertex v6 = { 4.2, 0.0, 0.5 };
-	vertex v7 = { 4.0, 1.0, 1.0 };
+	vertex v3 = { 3.0, -1.0, 1.0 };
+	vertex v4 = { 2.6, 0.8, 0.5 };
+	vertex v5 = { 2.2, 0.0, 1.0 };
+	vertex v6 = { 3.2, 0.0, 0.5 };
+	vertex v7 = { 3.0, 1.0, 1.0 };
 	// Tail vertices
 	vertex v8 = { -2.0, 0.4, 0.4 };
 	vertex v9 = { -0.3, 0.4, 0.4 };
@@ -397,14 +405,14 @@ void drawHeliBody()
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
 	glRotatef(90, 1.0, 0.0, 0.0);
-	glTranslatef(1.0, -0.5, 0.0);
+	glTranslatef(0.5, -0.5, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
 	glTranslatef(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(1.5, -0.3, -0.5);
+	glTranslatef(1.0, -0.3, -0.5);
 	glScalef(2.5, 0.2, 0.2);
 	glutSolidCube(1.0);
 	glPopMatrix();
@@ -412,14 +420,14 @@ void drawHeliBody()
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
 	glRotatef(90, 1.0, 0.0, 0.0);
-	glTranslatef(1.0, -1.5, 0.0);
+	glTranslatef(0.5, -1.5, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
 	glTranslatef(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(1.5, -0.3, -1.5);
+	glTranslatef(1.0, -0.3, -1.5);
 	glScalef(2.5, 0.2, 0.2);
 	glutSolidCube(1.0);
 	glPopMatrix();
@@ -460,9 +468,9 @@ void drawHeliBody()
 	glEnd();
 
 	// Rotate cockpit windscreen
-	glTranslatef(v6.x, v6.y, v6.z);		// Translate v1
-	glRotatef(-windscreenRot, 0.0, 0.0, 1.0);		// Rotate
-	glTranslatef(-v6.x, -v6.y, -v6.z);	// Translate -v1
+	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
+	glRotatef(windscreenRot, 0.0, 0.0, 1.0);		// Rotate
+	glTranslatef(-v1.x, -v1.y, -v1.z);	// Translate -v1
 
 	// Draw cockpit window
 	glColor4f(0.0, 0.0, 0.6, 0.5);	// Blue
@@ -680,7 +688,7 @@ void drawHeliBody()
 void drawHeliRotor()
 {
         glPushMatrix();
-        glTranslatef(0.0, 0.6, 0.0);
+        glTranslatef(0.0, 0.8, 0.0);
 
         glPushMatrix();     
         // Make color blue
@@ -694,7 +702,7 @@ void drawHeliRotor()
         // Make color grey
         glColor3f(0.8, 0.8, 0.8);
         // Draw blades
-        glTranslatef(0.0, 0.1, 0.0);
+        glTranslatef(0.0, 0.05, 0.0);
         glScalef(4.0, 0.1, 0.2);
         glutSolidCube(1.0);
         glPopMatrix();
