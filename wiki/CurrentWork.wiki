@@ -13,6 +13,7 @@
   * Ground collision - half done. Waiting to adjust for new model.
   * Textures for ground object
   * Import image file (RAW or TGA)
+  * Figuring out maths for collision using a bounding box with *rotations*. Then implementing, which will change 3 functions into 1 :D
 
 =Ashley:=
 
