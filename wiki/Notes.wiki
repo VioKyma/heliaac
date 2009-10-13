@@ -22,3 +22,7 @@ Just some notes on the checkpoints:
  * hey guys, I thought you would be more likely to read this than anything else. I cant come to the prac or anything today, I'm sick and going to the docs.
 
  * Sorry I didn't make it in today either, Xander didn't go to sleep til 6am and I slept through my alarm (which doesn't really surprise me - probably should have just stayed awake) -- Chris
+
+----
+
+  * So I have a question for you guys, probably ask tomorrow during prac but thought I'd post it on here too. To do with the game logic, do we want the player to have to go through the check points in sequence eg you can't go through gate 2 til you go through gate 1 or just however they want to get through them? -- Chris
