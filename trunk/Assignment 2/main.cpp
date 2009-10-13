@@ -1,13 +1,13 @@
 // Assignment 2.cpp
-//Heliaac
-//Christopher Trott, Ashley Sexton, Aleesha Torkington
+// Heliaac
+// Christopher Trott, Ashley Sexton, Aleesha Torkington
 // Created on 28/08/09
-// Last Modified on 28/08/09 @ 15:03
+// Last Modified on 13/10/09 @ 13:08
 //
 // Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 // Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
-// The Nate Robbins Texture Tutor helped with texture creation
+// The Nate Robbins Texture Tutor helped with texture creation as well as : http://www.nullterminator.net/gltexture.html
 
 #include<GL/freeglut.h>
 #include<math.h>
@@ -24,26 +24,17 @@ struct vertex
     float z;
 };
 
-struct object
-{
-    float x;        // x position
-    float y;        // y position
-    float z;        // z position
-    float rot;      // rotation angle of direction
-    float rad;      // radius of bounding sphere
-};
-
 struct objectBox
 {
-    float x;        // x position
-    float y;        // y position
-    float z;        // z position
-	float rotx;     // rotation angle in x axis
-    float roty;     // rotation angle of direction (y axis)
-	float rotz;		// rotation angle in z axis
-    float radx;     // x radius (half-length) of bounding box
-    float rady;     // y radius of bounding box
-    float radz;     // z radius of bounding box
+    float xPos;        // x position
+    float yPos;        // y position
+    float zPos;        // z position
+	float rotX;     // rotation angle in x axis
+    float rotY;     // rotation angle of direction (y axis)
+	float rotZ;		// rotation angle in z axis
+    float xSize;     // x radius (half-length) of bounding box
+    float ySize;     // y radius of bounding box
+    float zSize;     // z radius of bounding box
 };
 
 struct checkPoint
@@ -68,9 +59,7 @@ void moveHeliBack(float speed, bool checkCol);
 void moveHeliDown(float speed, bool checkCol);
 void moveHeliUp(float speed, bool checkCol);
 void checkBounds(void);
-bool checkSphereCollision(object object1, object object2);
 bool checkBoxCollision(objectBox object1, objectBox object2);
-bool checkSphereBoxCollision(object object1, objectBox object2);
 void checkHeliCollisions(void);
 void drawBuilding(void);
 void updateFPS(void);
@@ -85,11 +74,11 @@ float sinDeg(float degRot);
 GLuint loadTextureRAW( const char * filename, int wrap, int width, int height );
 
 float cameraDistance = 5.0;
-object heli = {0, 2, 0, 0, 2};
+objectBox heli = {0, 2, 0, 0, 0, 0, 2, 2, 1};
 float windscreenRot = 0.0;
 
-objectBox eye = {cameraDistance, heli.y, cameraDistance, 0, 135, 0, 0, 0, 0};
-objectBox building0 = {10, 5, 10, 0, 0, 0, 2, 5, 2};
+objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
+objectBox building0 = {10, 5, 10, 0, 0, 0, 4, 10, 4};
 
 bool movingForward = false;
 bool movingBack = false;
@@ -108,8 +97,7 @@ bool light1 = false;
 //trying to implement start/stop without changing functions too much
 bool helicopterOn = false;
 
-float x = 1, y = 20, z = 1;
-GLfloat light0_position[] = { x, y, z, 0 };
+GLfloat light0_position[] = { 1, 20, 1, 0 };
 
 GLuint heliBodyList;
 GLuint heliRotorList;
@@ -225,7 +213,7 @@ void init(void)
 	points[1].xPos = -5.0;
 	points[1].yPos = points[1].ySize / 2;	// Make yPos so that the bottom edge is on the ground
 	points[1].zPos = 5.0;
-	points[1].rotY = 180;
+	points[1].rotY = 60;
 
 	points[2].checkpoint = 2;
 	points[2].xSize = 5.0;
@@ -234,7 +222,7 @@ void init(void)
 	points[2].xPos = -5.0;
 	points[2].yPos = points[2].ySize/2;		// Make yPos so that the bottom edge is on the ground
 	points[2].zPos = -5.0;
-	points[2].rotY = 90;
+	points[2].rotY = 45;
 }
 
 // This function found at: http://www.nullterminator.net/gltexture.html
@@ -298,9 +286,9 @@ void drawBuilding(void)
 {
 	glPushMatrix();
 	glColor3f(0.5, 0.5, 0.5);
-	glRotatef(building0.roty, 0.0, 1.0, 0.0);
-	glTranslatef(building0.x, building0.y, building0.z);
-	glScalef(2 * building0.radx, 2 * building0.rady, 2 * building0.radz);
+	glRotatef(building0.rotY, 0.0, 1.0, 0.0);
+	glTranslatef(building0.xPos, building0.yPos, building0.zPos);
+	glScalef(2 * building0.xSize, 2 * building0.ySize, 2 * building0.zSize);
 	glutSolidCube(1.0);
 	glPopMatrix();
 }
@@ -310,8 +298,8 @@ void drawHeli()
 {
     glPushMatrix();
     // Go to the heli position before drawing the heli
-    glTranslatef(heli.x, heli.y, heli.z);
-    glRotatef(heli.rot, 0.0, 1.0, 0.0);
+    glTranslatef(heli.xPos, heli.yPos, heli.zPos);
+    glRotatef(heli.rotY, 0.0, 1.0, 0.0);
     glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
     glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
 	// Animate rotor
@@ -334,14 +322,15 @@ void drawHeliBody()
 {
 	glPushMatrix();
 	//
-	//v0---------------v1 \
-	//|				    |  \
-    //|                 |   v4
-    //|                 v5  |
-    //|                 |   v6
-    //|                 |  /
-	//v2---------------v3 /
+	//     v12               v0---------------v1 \
+	//     | \               |                 |  \
+    //     |  v8-------------v9                |   v4
+    //     |   |             |                 v5  |
+    //    v13-v11------------v10               |   v6
+    //                       |                 |  /
+	//                       v2---------------v3 /
 	//
+
 	// Body vertices
 	vertex v0 = { -0.8, 1.0, 1.0 };
 	vertex v1 = { 1.4, 1.0, 1.0 };
@@ -356,6 +345,9 @@ void drawHeliBody()
 	vertex v9 = { -0.3, 0.4, 0.4 };
 	vertex v10 = { -2.0, -0.4, 0.4 };
 	vertex v11 = { 0.35, -0.4, 0.4 };
+	// TODO draw tail with v12 and v13
+	vertex v12 = {0, 0, 0};
+	vertex v13 = {0, 0, 0};
 
 	// Draw main body
 	glColor3f(1.0, 0.0, 0.0);	// Red
@@ -753,6 +745,7 @@ void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float
 	glTranslatef(xPos, yPos, zPos);
 	glRotatef(rotY, 0.0, 1.0, 0.0);
 	glScalef(xSize, ySize, zSize);
+	// draw checkpoint number?
 	glutSolidCube(1.0);
 	glPopMatrix();
 }
@@ -760,65 +753,54 @@ void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float
 void checkBounds(void)
 {
     // If outside of x bounds, move to within
-    if (heli.x < -groundSize)
+    if (heli.xPos < -groundSize)
     {      
-            heli.x = -groundSize;
-            eye.x = -groundSize + cameraDistance;
-    }
-    else if (heli.x > groundSize)
+        heli.xPos = -groundSize;
+        eye.xPos = -groundSize + cameraDistance;
+	}
+    else if (heli.xPos > groundSize)
     {
-            heli.x = groundSize;
-            eye.x = groundSize + cameraDistance;
+        heli.xPos = groundSize;
+        eye.xPos = groundSize + cameraDistance;
     }
 
     // If outside of z bounds, move to within
-    if (heli.z < -groundSize)
+    if (heli.zPos < -groundSize)
     {
-            heli.z = -groundSize;
-            eye.z = -groundSize + cameraDistance;
+        heli.zPos = -groundSize;
+        eye.zPos = -groundSize + cameraDistance;
     }
-    else if (heli.z > groundSize)
+    else if (heli.zPos > groundSize)
     {
-            heli.z = groundSize;
-            eye.z = groundSize + cameraDistance;
+        heli.zPos = groundSize;
+        eye.zPos = groundSize + cameraDistance;
     }
-}
-
-bool checkSphereCollision(object object1, object object2)
-{
-    bool collision = false;
-    object diff = {0, 0, 0, 0};
-
-    // compute the absolute (positive) distance from object1 to object2
-    diff.x = abs(object1.x - object2.x);
-    diff.y = abs(object1.y - object2.y);
-    diff.z = abs(object1.z - object2.z);
-    diff.rad = object1.rad + object2.rad;
-
-    // If the distance between each of the three dimensions is within the radii combined, there is a collision
-    if(diff.x < diff.rad && diff.y < diff.rad && diff.z < diff.rad)
-    {
-            collision = true;
-    }
-
-    return collision;
 }
 
 bool checkBoxCollision(objectBox object1, objectBox object2)
 {
     bool collision = false;
     objectBox diff = {0, 0, 0, 0};
+	objectBox object1a = object1;
+	objectBox object2a = object2;
+
+	// Rotate size in x and z to correspond with rotation of the object
+	object1a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
+	object1a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
+
+	object2a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
+	object2a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
 
     // compute the absolute (positive) distance from object1 to object2
-    diff.x = abs(object1.x - object2.x);
-    diff.y = abs(object1.y - object2.y);
-    diff.z = abs(object1.z - object2.z);
-    diff.radx = object1.radx + object2.radx;
-    diff.rady = object1.rady + object2.rady;
-    diff.radz = object1.radz + object2.radz;
+    diff.xPos = abs(object1.xPos - object2.xPos);
+    diff.yPos = abs(object1.yPos - object2.yPos);
+    diff.zPos = abs(object1.zPos - object2.zPos);
+    diff.xSize = object1a.xSize + object2a.xSize;
+    diff.ySize = object1a.ySize + object2a.ySize;
+    diff.zSize = object1a.zSize + object2a.zSize;
 
     // If the distance between each of the three dimensions is within the radii combined, there is a collision
-    if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
+    if(diff.xPos < diff.xSize && diff.yPos < diff.ySize && diff.zPos < diff.zSize)
     {
             collision = true;
     }
@@ -826,30 +808,31 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
     return collision;
 }
 
-bool checkPointCollision(object object1, checkPoint object2)
+bool checkPointCollision(objectBox object1, checkPoint object2)
 {
 	bool collision = false;
 
 	objectBox diff = {0, 0, 0, 0};
-	checkPoint object3 = object2;
+	objectBox object1a = object1;
+	checkPoint object2a = object2;
 
-	if (object3.rotY == 90 || object3.rotY == 270)
-	{
-		// Adjust the size values so collisions consider rotation
-		object3.xSize = object2.zSize;
-		object3.zSize = object2.xSize;
-	}
+	// Rotate size in x and z to correspond with rotation of the object
+	object1a.xSize = abs( cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize );
+	object1a.zSize = abs( sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize );
+
+	object2a.xSize = cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize;
+	object2a.zSize = sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
 
 	// Compute the absolute (positive) distance from object1 to object2
-	diff.x = abs(object1.x - object3.xPos);
-	diff.y = abs(object1.y - object3.yPos);
-	diff.z = abs(object1.z - object3.zPos);
-	diff.radx = object1.rad;
-	diff.rady = object1.rad;
-	diff.radz = object1.rad;
+	diff.xPos = abs(object1.xPos - object2.xPos);
+	diff.yPos = abs(object1.yPos - object2.yPos);
+	diff.zPos = abs(object1.zPos - object2.zPos);
+	diff.xSize = object2a.xSize;
+	diff.ySize = object2a.ySize;
+	diff.zSize = object2a.zSize;
 
     // If the distance between each of the three dimensions is within the radii combined, there is a collision
-    if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
+    if(diff.xPos < diff.xSize && diff.yPos < diff.ySize && diff.zPos < diff.zSize)
     {
             collision = true;
     }
@@ -857,7 +840,7 @@ bool checkPointCollision(object object1, checkPoint object2)
 	return collision;
 }
 
-bool checkSphereBoxCollision(object object1, objectBox object2)
+/*bool checkSphereBoxCollision(object object1, objectBox object2)
 {
 	bool collision = false;
 
@@ -878,7 +861,7 @@ bool checkSphereBoxCollision(object object1, objectBox object2)
     }
 
 	return collision;
-}
+}*/
 
 void checkHeliThruCollisions(void)
 {
@@ -895,7 +878,7 @@ void checkHeliCollisions(void)
 {
     bool collision = false;
 
-    if ( checkSphereBoxCollision(heli, building0) )
+    if ( checkBoxCollision(heli, building0) )
     {
             collision = true;
     }
@@ -1103,8 +1086,8 @@ void mouseMotion(int x, int y)
     {
         float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
 		float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
-        eye.roty += rotateY;
-        eye.rotz += rotateZ / 2.0;
+        eye.rotY += rotateY;
+        eye.rotZ += rotateZ / 2.0;
         last_mouse_x = x;
 		last_mouse_y = y;
 
@@ -1122,9 +1105,9 @@ void mouse(int button, int state, int x, int y)
     }
     else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
     {
-        eye.roty = 135;
-		eye.rotx = 0;
-		eye.rotz = 0;
+        eye.rotY = 135;
+		eye.rotX = 0;
+		eye.rotZ = 0;
     }
     else
     {
@@ -1135,12 +1118,12 @@ void mouse(int button, int state, int x, int y)
 void moveHeliForward(float speed, bool checkCol)
 {
     // Move heli
-    heli.x += speed * cosDeg(heli.rot);
-    heli.z -= speed * sinDeg(heli.rot);
+    heli.xPos += speed * cosDeg(heli.rotY);
+    heli.zPos -= speed * sinDeg(heli.rotY);
 
     // Move camera
-    eye.x += speed * cosDeg(heli.rot);
-    eye.z -= speed * sinDeg(heli.rot);
+    eye.xPos += speed * cosDeg(heli.rotY);
+    eye.zPos -= speed * sinDeg(heli.rotY);
 
     checkHeliCollisions();
 	checkHeliThruCollisions();
@@ -1149,12 +1132,12 @@ void moveHeliForward(float speed, bool checkCol)
 void moveHeliBack(float speed, bool checkCol)
 {
     // Move heli
-    heli.x -= speed * cosDeg(heli.rot);
-    heli.z += speed * sinDeg(heli.rot);
+    heli.xPos -= speed * cosDeg(heli.rotY);
+    heli.zPos += speed * sinDeg(heli.rotY);
 
     // Move camera
-    eye.x -= speed * cosDeg(heli.rot);
-    eye.z += speed * sinDeg(heli.rot);
+    eye.xPos -= speed * cosDeg(heli.rotY);
+    eye.zPos += speed * sinDeg(heli.rotY);
 
     checkHeliCollisions();
 	checkHeliThruCollisions();
@@ -1162,8 +1145,8 @@ void moveHeliBack(float speed, bool checkCol)
 
 void moveHeliUp(float speed, bool checkCol)
 {
-    heli.y += heliSpeed;
-    eye.y += heliSpeed;
+    heli.yPos += heliSpeed;
+    eye.yPos += heliSpeed;
 
     checkHeliCollisions();
 	checkHeliThruCollisions();
@@ -1171,8 +1154,8 @@ void moveHeliUp(float speed, bool checkCol)
 
 void moveHeliDown(float speed, bool checkCol)
 {
-    heli.y -= heliSpeed;
-    eye.y -= heliSpeed;
+    heli.yPos -= heliSpeed;
+    eye.yPos -= heliSpeed;
 
     checkHeliCollisions();
 	checkHeliThruCollisions();
@@ -1343,7 +1326,7 @@ void idle(void)
 			if (turningLeft)
 			{
 				// turn left
-				heli.rot += rotSpeed;
+				heli.rotY += rotSpeed;
 				// Adjust the rotor spin to counter heli spin
 				rotor += rotorSpeed - rotSpeed;
 				heliLeanSide = -LEAN_FACTOR;
@@ -1351,7 +1334,7 @@ void idle(void)
 			else if (turningRight)
 			{
 				// turn right
-				heli.rot -= rotSpeed;
+				heli.rotY -= rotSpeed;
 				// Adjust the rotor spin to counter heli spin
 				rotor += rotorSpeed + rotSpeed;
 				heliLeanSide = LEAN_FACTOR;
@@ -1380,7 +1363,7 @@ void idle(void)
 			}
 			else if (movingDown)
 			{
-				if(heli.y > groundHeight + heli.rad/2.0)
+				if(heli.yPos > groundHeight + heli.ySize/2.0)
 				{
 					moveHeliDown(heliSpeed, true);
 				}
@@ -1413,14 +1396,14 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    gluLookAt(eye.x, eye.y, eye.z, heli.x, heli.y, heli.z, 0.0, 1.0, 0.0);
+    gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
 
     // Rotate camera so that it is always behind the heli
     glPushMatrix();
-    glTranslatef(heli.x, heli.y, heli.z);
-	glRotatef( eye.rotz, 0.0, 0.0, 1.0);
-	glRotatef(-heli.rot + eye.roty, 0.0, 1.0, 0.0);
-    glTranslatef(-heli.x, -heli.y, -heli.z);
+    glTranslatef(heli.xPos, heli.yPos, heli.zPos);
+	glRotatef( eye.rotZ, 0.0, 0.0, 1.0);
+	glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
+    glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
     // Draw ground
     glPushMatrix();
