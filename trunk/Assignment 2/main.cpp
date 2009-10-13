@@ -19,31 +19,31 @@ using namespace std;
 
 struct vertex
 {
-        float x;
-        float y;
-        float z;
+    float x;
+    float y;
+    float z;
 };
 
 struct object
 {
-        float x;        // x position
-        float y;        // y position
-        float z;        // z position
-        float rot;      // rotation angle of direction
-        float rad;      // radius of bounding sphere
+    float x;        // x position
+    float y;        // y position
+    float z;        // z position
+    float rot;      // rotation angle of direction
+    float rad;      // radius of bounding sphere
 };
 
 struct objectBox
 {
-        float x;        // x position
-        float y;        // y position
-        float z;        // z position
-		float rotx;     // rotation angle in x axis
-        float roty;     // rotation angle of direction (y axis)
-		float rotz;		// rotation angle in z axis
-        float radx;     // x radius (half-length) of bounding box
-        float rady;     // y radius of bounding box
-        float radz;     // z radius of bounding box
+    float x;        // x position
+    float y;        // y position
+    float z;        // z position
+	float rotx;     // rotation angle in x axis
+    float roty;     // rotation angle of direction (y axis)
+	float rotz;		// rotation angle in z axis
+    float radx;     // x radius (half-length) of bounding box
+    float rady;     // y radius of bounding box
+    float radz;     // z radius of bounding box
 };
 
 struct checkPoint
@@ -163,78 +163,78 @@ checkPoint points[MAX_CHECKPOINTS];
 // Initialise the OpenGL properties
 void init(void)
 {
-        glEnable(GL_DEPTH_TEST);
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-        glShadeModel(GL_FLAT);
+    glEnable(GL_DEPTH_TEST);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+    glShadeModel(GL_FLAT);
 
-        // Make object materials equal to glColor3f() properties
-        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-        glEnable(GL_COLOR_MATERIAL);
+    // Make object materials equal to glColor3f() properties
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
 
-        // Define the heliBody display list
-        heliBodyList = glGenLists(1);
-        glNewList(heliBodyList, GL_COMPILE);
-        drawHeliBody();
-        glEndList();
-       
-        // Define the heliRotor display list
-        heliRotorList = glGenLists(1);
-        glNewList(heliRotorList, GL_COMPILE);
-        drawHeliRotor();
-        glEndList();
+    // Define the heliBody display list
+    heliBodyList = glGenLists(1);
+    glNewList(heliBodyList, GL_COMPILE);
+    drawHeliBody();
+    glEndList();
+   
+    // Define the heliRotor display list
+    heliRotorList = glGenLists(1);
+    glNewList(heliRotorList, GL_COMPILE);
+    drawHeliRotor();
+    glEndList();
 
-        // Define the ground display list
-        groundList = glGenLists(1);
-        glNewList(groundList, GL_COMPILE);
-        drawGround();
-        glEndList();
+    // Define the ground display list
+    groundList = glGenLists(1);
+    glNewList(groundList, GL_COMPILE);
+    drawGround();
+    glEndList();
 
-        glClearColor(0.0, 0.0, 0.0, 0.0);
-       
-        // Set light position
-        glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-        // Create light components
-        GLfloat ambientLight[] = { 0.6f, 0.6f, 0.6f, 1.0f };
-        GLfloat diffuseLight[] = { 0.9f, 0.9f, 0.9f, 1.0f };
-        GLfloat specularLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
-        // Assign light components
-        glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-        glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+   
+    // Set light position
+    glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+    // Create light components
+    GLfloat ambientLight[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+    GLfloat diffuseLight[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+    GLfloat specularLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+    // Assign light components
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
 
-        timeBase = glutGet(GLUT_ELAPSED_TIME);
+    timeBase = glutGet(GLUT_ELAPSED_TIME);
 
-		textures[0] = loadTextureRAW( "Textures/ground.raw", true, 256, 256 );
+	textures[0] = loadTextureRAW( "Textures/ground.raw", true, 256, 256 );
 
-		points[0].checkpoint = 0;
-		points[0].xSize = 5.0;
-		points[0].ySize = 5.0;
-		points[0].zSize = 0.5;
-		points[0].xPos = 5.0;
-		points[0].yPos = 2.5;
-		points[0].zPos = 5.0;
-		points[0].rotY = 0;
+	points[0].checkpoint = 0;
+	points[0].xSize = 5.0;
+	points[0].ySize = 5.0;
+	points[0].zSize = 0.5;
+	points[0].xPos = 5.0;
+	points[0].yPos = 2.5;
+	points[0].zPos = 5.0;
+	points[0].rotY = 0;
 
-		points[1].checkpoint = 1;
-		points[1].xSize = 5.0;
-		points[1].ySize = 5.0;
-		points[1].zSize = 0.5;
-		points[1].xPos = -5.0;
-		points[1].yPos = points[1].ySize / 2;	// Make yPos so that the bottom edge is on the ground
-		points[1].zPos = 5.0;
-		points[1].rotY = 180;
+	points[1].checkpoint = 1;
+	points[1].xSize = 5.0;
+	points[1].ySize = 5.0;
+	points[1].zSize = 0.5;
+	points[1].xPos = -5.0;
+	points[1].yPos = points[1].ySize / 2;	// Make yPos so that the bottom edge is on the ground
+	points[1].zPos = 5.0;
+	points[1].rotY = 180;
 
-		points[2].checkpoint = 2;
-		points[2].xSize = 5.0;
-		points[2].ySize = 5.0;
-		points[2].zSize = 0.5;
-		points[2].xPos = -5.0;
-		points[2].yPos = points[2].ySize/2;		// Make yPos so that the bottom edge is on the ground
-		points[2].zPos = -5.0;
-		points[2].rotY = 90;
+	points[2].checkpoint = 2;
+	points[2].xSize = 5.0;
+	points[2].ySize = 5.0;
+	points[2].zSize = 0.5;
+	points[2].xPos = -5.0;
+	points[2].yPos = points[2].ySize/2;		// Make yPos so that the bottom edge is on the ground
+	points[2].zPos = -5.0;
+	points[2].rotY = 90;
 }
 
 // This function found at: http://www.nullterminator.net/gltexture.html
@@ -308,24 +308,24 @@ void drawBuilding(void)
 
 void drawHeli()
 {
-        glPushMatrix();
-        // Go to the heli position before drawing the heli
-        glTranslatef(heli.x, heli.y, heli.z);
-        glRotatef(heli.rot, 0.0, 1.0, 0.0);
-        glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
-        glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
-		// Animate rotor
-		glPushMatrix();
-        glTranslatef(1.0, 0.6, 0.0);
-        glRotatef(rotor, 0.0, 1.0, 0.0);
-        // Draw rotor
-        glCallList(heliRotorList);
-		glPopMatrix();
-        // Draw body
-        //glCallList(heliBodyList);
-		drawHeliBody();
+    glPushMatrix();
+    // Go to the heli position before drawing the heli
+    glTranslatef(heli.x, heli.y, heli.z);
+    glRotatef(heli.rot, 0.0, 1.0, 0.0);
+    glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
+    glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
+	// Animate rotor
+	glPushMatrix();
+    glTranslatef(1.0, 0.6, 0.0);
+    glRotatef(rotor, 0.0, 1.0, 0.0);
+    // Draw rotor
+    glCallList(heliRotorList);
+	glPopMatrix();
+    // Draw body
+    //glCallList(heliBodyList);
+	drawHeliBody();
 
-        glPopMatrix();
+    glPopMatrix();
 
 }
 
@@ -722,7 +722,7 @@ void drawGround(void)
 	// Make color yellow
 	glColor3f(1.0, 1.0, 0.0);
 
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
@@ -759,71 +759,71 @@ void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float
 
 void checkBounds(void)
 {
-        // If outside of x bounds, move to within
-        if (heli.x < -groundSize)
-        {      
-                heli.x = -groundSize;
-                eye.x = -groundSize + cameraDistance;
-        }
-        else if (heli.x > groundSize)
-        {
-                heli.x = groundSize;
-                eye.x = groundSize + cameraDistance;
-        }
+    // If outside of x bounds, move to within
+    if (heli.x < -groundSize)
+    {      
+            heli.x = -groundSize;
+            eye.x = -groundSize + cameraDistance;
+    }
+    else if (heli.x > groundSize)
+    {
+            heli.x = groundSize;
+            eye.x = groundSize + cameraDistance;
+    }
 
-        // If outside of z bounds, move to within
-        if (heli.z < -groundSize)
-        {
-                heli.z = -groundSize;
-                eye.z = -groundSize + cameraDistance;
-        }
-        else if (heli.z > groundSize)
-        {
-                heli.z = groundSize;
-                eye.z = groundSize + cameraDistance;
-        }
+    // If outside of z bounds, move to within
+    if (heli.z < -groundSize)
+    {
+            heli.z = -groundSize;
+            eye.z = -groundSize + cameraDistance;
+    }
+    else if (heli.z > groundSize)
+    {
+            heli.z = groundSize;
+            eye.z = groundSize + cameraDistance;
+    }
 }
 
 bool checkSphereCollision(object object1, object object2)
 {
-        bool collision = false;
-        object diff = {0, 0, 0, 0};
+    bool collision = false;
+    object diff = {0, 0, 0, 0};
 
-        // compute the absolute (positive) distance from object1 to object2
-        diff.x = abs(object1.x - object2.x);
-        diff.y = abs(object1.y - object2.y);
-        diff.z = abs(object1.z - object2.z);
-        diff.rad = object1.rad + object2.rad;
+    // compute the absolute (positive) distance from object1 to object2
+    diff.x = abs(object1.x - object2.x);
+    diff.y = abs(object1.y - object2.y);
+    diff.z = abs(object1.z - object2.z);
+    diff.rad = object1.rad + object2.rad;
 
-        // If the distance between each of the three dimensions is within the radii combined, there is a collision
-        if(diff.x < diff.rad && diff.y < diff.rad && diff.z < diff.rad)
-        {
-                collision = true;
-        }
+    // If the distance between each of the three dimensions is within the radii combined, there is a collision
+    if(diff.x < diff.rad && diff.y < diff.rad && diff.z < diff.rad)
+    {
+            collision = true;
+    }
 
-        return collision;
+    return collision;
 }
 
 bool checkBoxCollision(objectBox object1, objectBox object2)
 {
-        bool collision = false;
-        objectBox diff = {0, 0, 0, 0};
+    bool collision = false;
+    objectBox diff = {0, 0, 0, 0};
 
-        // compute the absolute (positive) distance from object1 to object2
-        diff.x = abs(object1.x - object2.x);
-        diff.y = abs(object1.y - object2.y);
-        diff.z = abs(object1.z - object2.z);
-        diff.radx = object1.radx + object2.radx;
-        diff.rady = object1.rady + object2.rady;
-        diff.radz = object1.radz + object2.radz;
+    // compute the absolute (positive) distance from object1 to object2
+    diff.x = abs(object1.x - object2.x);
+    diff.y = abs(object1.y - object2.y);
+    diff.z = abs(object1.z - object2.z);
+    diff.radx = object1.radx + object2.radx;
+    diff.rady = object1.rady + object2.rady;
+    diff.radz = object1.radz + object2.radz;
 
-        // If the distance between each of the three dimensions is within the radii combined, there is a collision
-        if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
-        {
-                collision = true;
-        }
+    // If the distance between each of the three dimensions is within the radii combined, there is a collision
+    if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
+    {
+            collision = true;
+    }
 
-        return collision;
+    return collision;
 }
 
 bool checkPointCollision(object object1, checkPoint object2)
@@ -902,98 +902,98 @@ void checkHeliCollisions(void)
 
     if (collision)
     {
-            if (movingForward)
-            {
-                    moveHeliBack(heliSpeed, false);
-            }
-            else if (movingBack)
-            {
-                    moveHeliForward(heliSpeed, false);
-            }
+        if (movingForward)
+        {
+                moveHeliBack(heliSpeed, false);
+        }
+        else if (movingBack)
+        {
+                moveHeliForward(heliSpeed, false);
+        }
 
-            if (movingUp)
-            {
-                    moveHeliDown(heliSpeed, false);
-            }
-            else if (movingDown)
-            {
-                    moveHeliUp(heliSpeed, false);
-            }
+        if (movingUp)
+        {
+                moveHeliDown(heliSpeed, false);
+        }
+        else if (movingDown)
+        {
+                moveHeliUp(heliSpeed, false);
+        }
     }
 }
 
 // Converts degrees (in) to radians and returns the cosine (out)
 float cosDeg(float degRot)
 {
-        float radRot = degRot * pi/180;
-        return (cos(radRot));
+    float radRot = degRot * pi/180;
+    return (cos(radRot));
 }
 
 // Converts degrees(in) to radians and returns the sine (out)
 float sinDeg(float degRot)
 {
-        float radRot = degRot * pi/180;
-        return (sin(radRot));
+    float radRot = degRot * pi/180;
+	return (sin(radRot));
 }
 
 // Catches keyboard key presses
 void keyboard(unsigned char key, int mouseX, int mouseY)
 {
-		if(pause)
-		{
-			pause = false;
-		}
+	if(pause)
+	{
+		pause = false;
+	}
 
-        switch (key)
-        {
-                // If ESC key is pressed, exit
-                case 27:
-                        glutLeaveMainLoop();
-                        break;
-				case '1':
-						if( windscreenRot > 0 )
-							windscreenRot = 0.0;
-						else
-							windscreenRot = 35.0;
-						glutPostRedisplay();
-						break;
-                case 'a':
-                        // Start moving the heli up
-                        movingUp = true;
-                        break;
-                case 'z':
-                        // Start moving the heli down
-                        movingDown = true;
-                        break;
-				case 's':
-						// Start Blades
-					if (rotorSpeed < MAX_ROTOR_SPEED)
-						rotorSpeed = rotorSpeed + 0.1;
-					else helicopterOn = true;
-						break;
-				case 'x':
-						//Stop Blades
-						if (rotorSpeed > 0)
-							rotorSpeed = rotorSpeed - 0.1;
-						if (rotorSpeed < MAX_ROTOR_SPEED)
-							helicopterOn = false;
-						break;
-        }
+    switch (key)
+    {
+        // If ESC key is pressed, exit
+        case 27:
+                glutLeaveMainLoop();
+                break;
+		case '1':
+				if( windscreenRot > 0 )
+					windscreenRot = 0.0;
+				else
+					windscreenRot = 35.0;
+				glutPostRedisplay();
+				break;
+        case 'a':
+                // Start moving the heli up
+                movingUp = true;
+                break;
+        case 'z':
+                // Start moving the heli down
+                movingDown = true;
+                break;
+		case 's':
+				// Start Blades
+			if (rotorSpeed < MAX_ROTOR_SPEED)
+				rotorSpeed = rotorSpeed + 0.1;
+			else helicopterOn = true;
+				break;
+		case 'x':
+				//Stop Blades
+				if (rotorSpeed > 0)
+					rotorSpeed = rotorSpeed - 0.1;
+				if (rotorSpeed < MAX_ROTOR_SPEED)
+					helicopterOn = false;
+				break;
+    }
 }
 
 void keyboardUp(unsigned char key, int mouseX, int mouseY)
 {
-        switch (key)
-        {
-                case 'a':
-                        // Stop moving the heli up
-                        movingUp = false;
-                        break;
-                case 'z':
-                        // Stop moving the heli down
-                        movingDown = false;
-                        break;
-        }
+    switch (key)
+    {
+        case 'a':
+                // Stop moving the heli up
+                movingUp = false;
+                break;
+        case 'z':
+                // Stop moving the heli down
+                movingDown = false;
+                break;
+    }
 }
 
 void shadingOn()
@@ -1015,167 +1015,167 @@ void wireFrameOn()
 // Catches special key presses
 void special(int key, int mouseX, int mouseY)
 {
-		// If paused, unpause
-		if (pause && key != GLUT_KEY_F1)
-		{
-			pause = false;
-		}
+	// If paused, unpause
+	if (pause && key != GLUT_KEY_F1)
+	{
+		pause = false;
+	}
 
-        switch (key)
-        {
-                case GLUT_KEY_LEFT:
-                        // rotate heli left
-                        turningLeft = true;
-                        break;
-                case GLUT_KEY_RIGHT:
-                        // rotate heli right
-                        turningRight = true;
-                        break;
-                case GLUT_KEY_UP:
-                        // move "forward"
-                        movingForward = true;
-                        break;
-                case GLUT_KEY_DOWN:
-                        // move "backward"
-                        movingBack = true;
-                        break;
-				case GLUT_KEY_F1:
-						pause = !pause;
-						break;
-				case GLUT_KEY_F2:
-						if (wire == false)
-						{
-							wireFrameOn();
-						}
-						else
-						{
-							shadingOn();
-						}
-						break;
-				case GLUT_KEY_F8:
-                        // turn the light/s on or off
-                        light0 = !light0;
-						if (light0)
-						{                        
-							glEnable(GL_LIGHT0);
-                        }
-                        else
-                        {
-                            glDisable(GL_LIGHT0);
-                        }
-                        break;
-				case GLUT_KEY_PAGE_DOWN:
-                        // Zoom out
-                        break;
-                case GLUT_KEY_PAGE_UP:
-                        // Zoom in
-                        break;
-        }
+    switch (key)
+    {
+        case GLUT_KEY_LEFT:
+                // rotate heli left
+                turningLeft = true;
+                break;
+        case GLUT_KEY_RIGHT:
+                // rotate heli right
+                turningRight = true;
+                break;
+        case GLUT_KEY_UP:
+                // move "forward"
+                movingForward = true;
+                break;
+        case GLUT_KEY_DOWN:
+                // move "backward"
+                movingBack = true;
+                break;
+		case GLUT_KEY_F1:
+				pause = !pause;
+				break;
+		case GLUT_KEY_F2:
+				if (wire == false)
+				{
+					wireFrameOn();
+				}
+				else
+				{
+					shadingOn();
+				}
+				break;
+		case GLUT_KEY_F8:
+                // turn the light/s on or off
+                light0 = !light0;
+				if (light0)
+				{                        
+					glEnable(GL_LIGHT0);
+                }
+                else
+                {
+                    glDisable(GL_LIGHT0);
+                }
+                break;
+		case GLUT_KEY_PAGE_DOWN:
+                // Zoom out
+                break;
+        case GLUT_KEY_PAGE_UP:
+                // Zoom in
+                break;
+    }
 }
 
 
 void specialUp(int key, int mouseX, int mouseY)
 {
-        switch(key)
-        {
-                case GLUT_KEY_UP:
-                        // move "forward"
-                        movingForward = false;
-                        break;
-                case GLUT_KEY_DOWN:
-                        // move "backward"
-                        movingBack = false;
-                        break;
-                case GLUT_KEY_LEFT:
-                        // rotate heli left
-                        turningLeft = false;
-                        break;
-                case GLUT_KEY_RIGHT:
-                        // rotate heli right
-                        turningRight = false;
-                        break;
-        }
+    switch(key)
+    {
+        case GLUT_KEY_UP:
+                // move "forward"
+                movingForward = false;
+                break;
+        case GLUT_KEY_DOWN:
+                // move "backward"
+                movingBack = false;
+                break;
+        case GLUT_KEY_LEFT:
+                // rotate heli left
+                turningLeft = false;
+                break;
+        case GLUT_KEY_RIGHT:
+                // rotate heli right
+                turningRight = false;
+                break;
+    }
 }
 
 void mouseMotion(int x, int y)
 {
-        if (leftMouseDown)
-        {
-                float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
-				float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
-                eye.roty += rotateY;
-                eye.rotz += rotateZ / 2.0;
-                last_mouse_x = x;
-				last_mouse_y = y;
+    if (leftMouseDown)
+    {
+        float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
+		float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
+        eye.roty += rotateY;
+        eye.rotz += rotateZ / 2.0;
+        last_mouse_x = x;
+		last_mouse_y = y;
 
-        }
+    }
 }
 
 void mouse(int button, int state, int x, int y)
 {
-        last_mouse_x = x;
-		last_mouse_y = y;
+    last_mouse_x = x;
+	last_mouse_y = y;
 
-        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-        {
-                leftMouseDown = true;
-        }
-        else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
-        {
-                eye.roty = 135;
-				eye.rotx = 0;
-				eye.rotz = 0;
-        }
-        else
-        {
-                leftMouseDown = false;
-        }
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+        leftMouseDown = true;
+    }
+    else if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
+    {
+        eye.roty = 135;
+		eye.rotx = 0;
+		eye.rotz = 0;
+    }
+    else
+    {
+        leftMouseDown = false;
+    }
 }
 
 void moveHeliForward(float speed, bool checkCol)
 {
-        // Move heli
-        heli.x += speed * cosDeg(heli.rot);
-        heli.z -= speed * sinDeg(heli.rot);
+    // Move heli
+    heli.x += speed * cosDeg(heli.rot);
+    heli.z -= speed * sinDeg(heli.rot);
 
-        // Move camera
-        eye.x += speed * cosDeg(heli.rot);
-        eye.z -= speed * sinDeg(heli.rot);
+    // Move camera
+    eye.x += speed * cosDeg(heli.rot);
+    eye.z -= speed * sinDeg(heli.rot);
 
-        checkHeliCollisions();
-		checkHeliThruCollisions();
+    checkHeliCollisions();
+	checkHeliThruCollisions();
 }
 
 void moveHeliBack(float speed, bool checkCol)
 {
-        // Move heli
-        heli.x -= speed * cosDeg(heli.rot);
-        heli.z += speed * sinDeg(heli.rot);
+    // Move heli
+    heli.x -= speed * cosDeg(heli.rot);
+    heli.z += speed * sinDeg(heli.rot);
 
-        // Move camera
-        eye.x -= speed * cosDeg(heli.rot);
-        eye.z += speed * sinDeg(heli.rot);
+    // Move camera
+    eye.x -= speed * cosDeg(heli.rot);
+    eye.z += speed * sinDeg(heli.rot);
 
-        checkHeliCollisions();
-		checkHeliThruCollisions();
+    checkHeliCollisions();
+	checkHeliThruCollisions();
 }
 
 void moveHeliUp(float speed, bool checkCol)
 {
-        heli.y += heliSpeed;
-        eye.y += heliSpeed;
+    heli.y += heliSpeed;
+    eye.y += heliSpeed;
 
-        checkHeliCollisions();
-		checkHeliThruCollisions();
+    checkHeliCollisions();
+	checkHeliThruCollisions();
 }
 
 void moveHeliDown(float speed, bool checkCol)
 {
-        heli.y -= heliSpeed;
-        eye.y -= heliSpeed;
+    heli.y -= heliSpeed;
+    eye.y -= heliSpeed;
 
-        checkHeliCollisions();
-		checkHeliThruCollisions();
+    checkHeliCollisions();
+	checkHeliThruCollisions();
 }
 
 void updateGameTime()
@@ -1194,39 +1194,39 @@ void updateGameTime()
 
 void updateFPS()
 {
-        // Update the FPS every second
-        frames++;
-        time = glutGet(GLUT_ELAPSED_TIME);
+    // Update the FPS every second
+    frames++;
+    time = glutGet(GLUT_ELAPSED_TIME);
 
-        if (time - timeBase > 1000) // If a second has passed
-        {
-                fps = frames * 1000.0 / (time - timeBase);              // calculate FPS
-                sprintf(strFps, "FPS: %4.2f", fps);		// get the string value of integer FPS
-                timeBase = time;        // Set the base time to current time
-                frames = 0;     // Reset the frame count
-        }
+    if (time - timeBase > 1000) // If a second has passed
+    {
+        fps = frames * 1000.0 / (time - timeBase);              // calculate FPS
+        sprintf(strFps, "FPS: %4.2f", fps);		// get the string value of integer FPS
+        timeBase = time;        // Set the base time to current time
+        frames = 0;     // Reset the frame count
+    }
 }
 
 void displayText()
 {
-	    // Write text to screen
-        glPushMatrix();
-        glColor3f(0.0, 1.0, 1.0);
-        setOrthographicProjection();
-        glLoadIdentity();
-		// Display FPS
-        renderBitmapString(textX, textY, (void *)font, strFps);
-		// Display game time
-		renderBitmapString(textX, textY + 25, (void *)font, strGameTime);
+    // Write text to screen
+    glPushMatrix();
+    glColor3f(0.0, 1.0, 1.0);
+    setOrthographicProjection();
+    glLoadIdentity();
+	// Display FPS
+    renderBitmapString(textX, textY, (void *)font, strFps);
+	// Display game time
+	renderBitmapString(textX, textY + 25, (void *)font, strGameTime);
 
-		// If paused, display help/controls/scores
-		if (pause)
-		{
-			displayHelp();
-		}
+	// If paused, display help/controls/scores
+	if (pause)
+	{
+		displayHelp();
+	}
 
-        resetPerspectiveProjection();
-        glPopMatrix();
+    resetPerspectiveProjection();
+    glPopMatrix();
 }
 
 void displayHelp()
@@ -1275,42 +1275,42 @@ void displayHelp()
 // http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
 void setOrthographicProjection()
 {
-        // switch to projection mode
-        glMatrixMode(GL_PROJECTION);
-        // save previous matrix which contains the
-        //settings for the perspective projection
-        glPushMatrix();
-        // reset matrix
-        glLoadIdentity();
-        // set a 2D orthographic projection
-        gluOrtho2D(0, windowWidth, 0, windowHeight);
-        // invert the y axis, down is positive
-        glScalef(1, -1, 1);
-        // move the origin from the bottom left corner
-        // to the upper left corner
-        glTranslatef(0, -windowHeight, 0);
-        glMatrixMode(GL_MODELVIEW);
+    // switch to projection mode
+    glMatrixMode(GL_PROJECTION);
+    // save previous matrix which contains the
+    //settings for the perspective projection
+    glPushMatrix();
+    // reset matrix
+    glLoadIdentity();
+    // set a 2D orthographic projection
+    gluOrtho2D(0, windowWidth, 0, windowHeight);
+    // invert the y axis, down is positive
+    glScalef(1, -1, 1);
+    // move the origin from the bottom left corner
+    // to the upper left corner
+    glTranslatef(0, -windowHeight, 0);
+    glMatrixMode(GL_MODELVIEW);
 }
 
 // Set projection back to it's starting point
 void resetPerspectiveProjection()
 {
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
 
 // Draw the string on the screen
 void renderBitmapString(float x, float y, void *font,char *string)
 {
-        char *c;
-        // Set the draw co-ordinates
-        glRasterPos2f(x, y);
-        for (c=string; *c != '\0'; c++)
-        {
-                // Display each character in the array
-                glutBitmapCharacter(font, *c);
-        }
+    char *c;
+    // Set the draw co-ordinates
+    glRasterPos2f(x, y);
+    for (c=string; *c != '\0'; c++)
+    {
+        // Display each character in the array
+        glutBitmapCharacter(font, *c);
+    }
 }
 // End lighthouse 3D code
 
@@ -1323,10 +1323,10 @@ void idle(void)
 		{
 			if (movingForward)
 			{
-					// move forward
-					moveHeliForward(heliSpeed, true);
-					heliLeanFront = -LEAN_FACTOR;
-				
+				// move forward
+				moveHeliForward(heliSpeed, true);
+				heliLeanFront = -LEAN_FACTOR;
+			
 			}
 			else if (movingBack)
 			{
@@ -1399,56 +1399,56 @@ void idle(void)
 // When the window is reshaped, this function updates the camera and display
 void reshape(int w, int h)
 {
-        glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
-        glMatrixMode(GL_MODELVIEW);
+    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+    glMatrixMode(GL_MODELVIEW);
 }
 
 
 // Display the scene and it's components
 void display(void)
 {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
 
-        gluLookAt(eye.x, eye.y, eye.z, heli.x, heli.y, heli.z, 0.0, 1.0, 0.0);
+    gluLookAt(eye.x, eye.y, eye.z, heli.x, heli.y, heli.z, 0.0, 1.0, 0.0);
 
-        // Rotate camera so that it is always behind the heli
-        glPushMatrix();
-        glTranslatef(heli.x, heli.y, heli.z);
-		glRotatef( eye.rotz, 0.0, 0.0, 1.0);
-		glRotatef(-heli.rot + eye.roty, 0.0, 1.0, 0.0);
-        glTranslatef(-heli.x, -heli.y, -heli.z);
+    // Rotate camera so that it is always behind the heli
+    glPushMatrix();
+    glTranslatef(heli.x, heli.y, heli.z);
+	glRotatef( eye.rotz, 0.0, 0.0, 1.0);
+	glRotatef(-heli.rot + eye.roty, 0.0, 1.0, 0.0);
+    glTranslatef(-heli.x, -heli.y, -heli.z);
 
-        // Draw ground
-        glPushMatrix();
-        glTranslatef(0, groundHeight, 0);
-        glCallList(groundList);
-        glPopMatrix();
+    // Draw ground
+    glPushMatrix();
+    glTranslatef(0, groundHeight, 0);
+    glCallList(groundList);
+    glPopMatrix();
 
-        // Draw building
-        glPushMatrix();
-        drawBuilding();
-        glPopMatrix();
+    // Draw building
+    glPushMatrix();
+    drawBuilding();
+    glPopMatrix();
 
-		// Draw the helicopter
-		drawHeli();
+	// Draw the helicopter
+	drawHeli();
 
-		// Draw the checkpoints
-		for (int i = 0; i < MAX_CHECKPOINTS; i++)
-		{
-			drawCheckpoint( points[i].checkpoint, points[i].xSize, points[i].ySize, points[i].zSize, points[i].rotY, points[i].xPos, points[i].yPos, points[i].zPos);
-		}
+	// Draw the checkpoints
+	for (int checkPoint = 0; checkPoint < MAX_CHECKPOINTS; checkPoint++)
+	{
+		drawCheckpoint( points[checkPoint].checkpoint, points[checkPoint].xSize, points[checkPoint].ySize, points[checkPoint].zSize, points[checkPoint].rotY, points[checkPoint].xPos, points[checkPoint].yPos, points[checkPoint].zPos);
+	}
 
-		updateFPS();
-		updateGameTime();
-		displayText();
+	updateFPS();
+	updateGameTime();
+	displayText();
 
-        glPopMatrix();
+    glPopMatrix();
 
-        glutSwapBuffers();
+    glutSwapBuffers();
 }
 
 //adding menu
@@ -1472,32 +1472,31 @@ void mymenu(int choice)
 
 int main(int argc, char** argv)
 {
-        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-        glutInitWindowSize(windowWidth, windowHeight);
-        glutInitWindowPosition(windowPosWidth, windowPosHeight);
-        glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
-        init();
-        glutDisplayFunc(display);
-        glutSpecialFunc(special);
-        glutSpecialUpFunc(specialUp);
-        glutReshapeFunc(reshape);
-        glutIdleFunc(idle);
-        glutKeyboardFunc(keyboard);
-        glutKeyboardUpFunc(keyboardUp);
-        glutMouseFunc(mouse);
-        glutMotionFunc(mouseMotion);
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(windowWidth, windowHeight);
+    glutInitWindowPosition(windowPosWidth, windowPosHeight);
+    glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
+    init();
+    glutDisplayFunc(display);
+    glutSpecialFunc(special);
+    glutSpecialUpFunc(specialUp);
+    glutReshapeFunc(reshape);
+    glutIdleFunc(idle);
+    glutKeyboardFunc(keyboard);
+    glutKeyboardUpFunc(keyboardUp);
+    glutMouseFunc(mouse);
+    glutMotionFunc(mouseMotion);
 
-		// create main menu (no ID needed)
-		glutCreateMenu(mymenu);
-		glutAddMenuEntry("Full Shading", 1);
-		glutAddMenuEntry("Wire Frame", 2);
-		glutAddMenuEntry("Help/Credits/Scores", 3);
-		glutAddMenuEntry("Exit Program", 4);
-		// set the menu to the right button
-		glutAttachMenu(GLUT_RIGHT_BUTTON);  
+	// create main menu (no ID needed)
+	glutCreateMenu(mymenu);
+	glutAddMenuEntry("Full Shading", 1);
+	glutAddMenuEntry("Wire Frame", 2);
+	glutAddMenuEntry("Help/Credits/Scores", 3);
+	glutAddMenuEntry("Exit Program", 4);
+	// set the menu to the right button
+	glutAttachMenu(GLUT_RIGHT_BUTTON);  
 
-        glutMainLoop();
-        return 0;
+    glutMainLoop();
+    return 0;
 }
-
