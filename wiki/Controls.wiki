@@ -13,8 +13,9 @@ This page outlines the controls used in this project and what they do.
   * F8 - Switches light0 on and off. light0 is the main light source for the scene.
   * a - Moves the heli up.
   * z - Moves the heli down.
-  * {Not Implemented} s - Starts engine.
-  * {Not Implemented} x - Stops engine.
+  * s - Starts engine.
+  * x - Stops engine.
   * Right Mouse Click - Brings up a game menu.
   * Holding Left Click And Move Mouse - Rotates camera around the heli.
   * Middle Mouse Click - Resets camera to chase position.
+  * 1 - Lift up/Close the windscreen.
