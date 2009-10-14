@@ -7,13 +7,13 @@
 // Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 // Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
-// The Nate Robbins Texture Tutor helped with texture creation as well as : http://www.nullterminator.net/gltexture.html
+// Bitmap.h and Bitmap.cpp found at: http://www.gamedev.net/reference/articles/article1966.asp
 
 #include<GL/freeglut.h>
 #include<math.h>
 #include<string>
 #include<iostream>
-#include "TextureLoader.h"
+#include"Bitmap.h"
 
 using namespace std;
 
@@ -71,7 +71,7 @@ void renderBitmapString(float x, float y, void *font,char *string);
 void displayHelp(void);
 float cosDeg(float degRot);
 float sinDeg(float degRot);
-GLuint loadTextureRAW( const char * filename, int wrap, int width, int height );
+GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
 
 float cameraDistance = 5.0;
 objectBox heli = {0, 2, 0, 0, 0, 0, 2, 2, 1};
@@ -195,7 +195,7 @@ void init(void)
 
     timeBase = glutGet(GLUT_ELAPSED_TIME);
 
-	textures[0] = loadTextureRAW( "Textures/ground.raw", true, 256, 256 );
+	textures[0] = loadTextureBMP( "Textures/ground.bmp", true, 256, 256 );
 
 	points[0].checkpoint = 0;
 	points[0].xSize = 5.0;
@@ -225,59 +225,49 @@ void init(void)
 	points[2].rotY = 45;
 }
 
-// This function found at: http://www.nullterminator.net/gltexture.html
-// load a 256x256 RGB .RAW file as a texture
-GLuint loadTextureRAW( const char * filename, int wrap, int width, int height )
+GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 {
+	Bitmap *image;
     GLuint texture;
-    BYTE * data;
-    FILE * file;
 
-    // open texture data
-    file = fopen( filename, "rb" );
-    if ( file == NULL )
-	{
-		cout << "Error loading texture image: " << filename << endl;
-		return 0;
+	image = new Bitmap();
+
+	if (image == NULL) {
+		cout << "Could not create Bitmap class.\n";
+		return -1;
 	}
 
-    // allocate buffer
-    data = (BYTE*)malloc( width * height * 3 );
-
-    // read texture data
-	if( !fread( data, width * height * 3, 1, file ) )
+	if (image->loadBMP(filename))
 	{
-		cout << "No data in texture image (Texture is empty): " << filename << endl;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		/*// when texture area is small, bilinear filter the closest mipmap
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+		// when texture area is large, bilinear filter the first mipmap
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );*/
+
+		// if wrap is true, the texture wraps over at the edges (repeat)
+		//       ... false, the texture ends at the edges (clamp)
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap ? GL_REPEAT : GL_CLAMP );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap ? GL_REPEAT : GL_CLAMP );
+
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+
+		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 	}
-    fclose( file );
-
-    // allocate a texture name
-    glGenTextures( 1, &texture );
-
-    // select our current texture
-    glBindTexture( GL_TEXTURE_2D, texture );
-
-    // select modulate to mix texture with color for shading
-    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-
-    // when texture area is small, bilinear filter the closest mipmap
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-    // when texture area is large, bilinear filter the first mipmap
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-    // if wrap is true, the texture wraps over at the edges (repeat)
-    //       ... false, the texture ends at the edges (clamp)
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap ? GL_REPEAT : GL_CLAMP );
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap ? GL_REPEAT : GL_CLAMP );
-
-    // build our texture mipmaps
-	if ( gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data ) )
+	else 
 	{
-		cout << "Error creating texture mipmaps for texture: " << filename << ".\n";
+		cout << "Could not load bitmap " << filename << ".\n";
+		return -1;
 	}
 
-    // free buffer
-    free( data );
+	if (image)
+	{
+		delete image;
+	}
 
     return texture;
 }
@@ -292,7 +282,6 @@ void drawBuilding(void)
 	glutSolidCube(1.0);
 	glPopMatrix();
 }
-
 
 void drawHeli()
 {
@@ -314,7 +303,6 @@ void drawHeli()
 	drawHeliBody();
 
     glPopMatrix();
-
 }
 
 // Draw the body
@@ -711,20 +699,22 @@ void drawHeliRotor()
 // Make a yellow ground square with 2 x groundSize width and length
 void drawGround(void)
 {
-	// Make color yellow
-	glColor3f(1.0, 1.0, 0.0);
-
-	//glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
 	
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
+	// Make color yellow
+	glColor3f(1.0, 1.0, 0.0);
+
 	// Draw the ground
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(-groundSize, groundHeight, groundSize);
-	glTexCoord2f(1.0, 1.0);		glVertex3f(groundSize, groundHeight, groundSize);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(-groundSize, groundHeight, groundSize);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, groundSize);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, -groundSize);
-	glTexCoord2f(0.0, 0.0);		glVertex3f(-groundSize, groundHeight, -groundSize);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(-groundSize, groundHeight, -groundSize);
 	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float rotY, float xPos, float yPos, float zPos)
@@ -780,7 +770,7 @@ void checkBounds(void)
 bool checkBoxCollision(objectBox object1, objectBox object2)
 {
     bool collision = false;
-    objectBox diff = {0, 0, 0, 0};
+    objectBox diff = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	objectBox object1a = object1;
 	objectBox object2a = object2;
 
