@@ -78,7 +78,7 @@ objectBox heli = {0, 2, 0, 0, 0, 0, 2, 2, 1};
 float windscreenRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
-objectBox building0 = {10, 5, 10, 0, 0, 0, 4, 10, 4};
+objectBox building0 = {10, 5, 10, 0, 0, 0, 2, 5, 2};
 
 bool movingForward = false;
 bool movingBack = false;
