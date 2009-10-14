@@ -737,6 +737,37 @@ float sinDeg(float degRot)
 	return (sin(radRot));
 }
 
+//start copter 
+void heliStart(int i) 
+{
+	if (rotorSpeed < MAX_ROTOR_SPEED)
+	{
+		rotorSpeed = rotorSpeed + 0.2; 
+		heli.yPos += 0.02; 
+		eye.yPos += 0.02; 
+		glutTimerFunc(40, heliStart, ++i); 
+	} 
+	else helicopterOn = true; 
+} 
+
+//stop copter 
+void heliStop(int i) 
+{ 
+	if (rotorSpeed > 0)
+	{ 
+		rotorSpeed = rotorSpeed - 0.2; 
+	} 
+			if (heli.yPos > groundHeight + 1.5)
+		{ 
+			heli.yPos -= 0.02; 
+			eye.yPos -= 0.02; 
+			glutTimerFunc(40, heliStop, ++i); 
+		}
+			if (rotorSpeed < MAX_ROTOR_SPEED) 
+				helicopterOn = false;
+} 
+
+
 // Catches keyboard key presses
 void keyboard(unsigned char key, int mouseX, int mouseY)
 {
@@ -768,17 +799,12 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
                 break;
 		case 's':
 				// Start Blades
-			if (rotorSpeed < MAX_ROTOR_SPEED)
-				rotorSpeed = rotorSpeed + 0.1;
-			else helicopterOn = true;
-				break;
+			heliStart(0);
+			break;
 		case 'x':
 				//Stop Blades
-				if (rotorSpeed > 0)
-					rotorSpeed = rotorSpeed - 0.1;
-				if (rotorSpeed < MAX_ROTOR_SPEED)
-					helicopterOn = false;
-				break;
+			heliStop(rotorSpeed);	
+			break;
     }
 }
 
