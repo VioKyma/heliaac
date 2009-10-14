@@ -232,6 +232,8 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 
 	image = new Bitmap();
 
+	glEnable(GL_TEXTURE_2D);
+
 	if (image == NULL) {
 		cout << "Could not create Bitmap class.\n";
 		return -1;
@@ -704,14 +706,14 @@ void drawGround(void)
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
 	// Make color yellow
-	glColor3f(1.0, 1.0, 0.0);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 
 	// Draw the ground
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 0.0);		glVertex3f(-groundSize, groundHeight, groundSize);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, groundSize);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(groundSize, groundHeight, -groundSize);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(-groundSize, groundHeight, -groundSize);
+	glTexCoord2f(0.0, 0.0);						glVertex3f(-groundSize, groundHeight, groundSize);
+	glTexCoord2f(groundSize/2, 0.0);			glVertex3f(groundSize, groundHeight, groundSize);
+	glTexCoord2f(groundSize/2, groundSize/2);	glVertex3f(groundSize, groundHeight, -groundSize);
+	glTexCoord2f(0.0, groundSize/2);			glVertex3f(-groundSize, groundHeight, -groundSize);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
@@ -1398,7 +1400,7 @@ void display(void)
     // Draw ground
     glPushMatrix();
     glTranslatef(0, groundHeight, 0);
-    glCallList(groundList);
+	drawGround();
     glPopMatrix();
 
     // Draw building
