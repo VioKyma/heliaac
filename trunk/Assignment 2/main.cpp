@@ -335,9 +335,9 @@ void drawHeliBody()
 	vertex v9 = { -0.3, 0.4, 0.4 };
 	vertex v10 = { -2.0, -0.4, 0.4 };
 	vertex v11 = { 0.35, -0.4, 0.4 };
-	// TODO draw tail with v12 and v13
-	vertex v12 = {0, 0, 0};
-	vertex v13 = {0, 0, 0};
+	// Tip of tail
+	vertex v12 = {-2.3, 1.0, 0.4};
+	vertex v13 = {-2.3, -0.4, 0.4};
 
 	// Draw main body
 	glColor3f(1.0, 0.0, 0.0);	// Red
@@ -381,8 +381,49 @@ void drawHeliBody()
 	glVertex3f(v2.x, v2.y, -v2.z);
 	glEnd();
 
+	// Tip of tail (top)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v8.x, v8.y, v8.z);
+	glVertex3f(v12.x, v12.y, v12.z);
+	glVertex3f(v8.x, v8.y, -v8.z);
+	glVertex3f(v12.x, v12.y, -v12.z);
+	glEnd();
+
+	// Tip of tail (back)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v12.x, v12.y, v12.z);
+	glVertex3f(v13.x, v13.y, v13.z);
+	glVertex3f(v12.x, v12.y, -v12.z);
+	glVertex3f(v13.x, v13.y, -v13.z);
+	glEnd();
+
+	// Tip of tail (side1)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v12.x, v12.y, v12.z);
+	glVertex3f(v8.x, v8.y, v8.z);
+	glVertex3f(v13.x, v13.y, v13.z);
+	glVertex3f(v11.x, v11.y, v11.z);
+	glEnd();
+
+	// Tip of tail (side2)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v12.x, v12.y, -v12.z);
+	glVertex3f(v8.x, v8.y, -v8.z);
+	glVertex3f(v13.x, v13.y, -v13.z);
+	glVertex3f(v11.x, v11.y, -v11.z);
+	glEnd();
+
+	// Tip of tail (bottom)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v11.x, v11.y, v11.z);
+	glVertex3f(v13.x, v13.y, v13.z);
+	glVertex3f(v11.x, v11.y, -v11.z);
+	glVertex3f(v13.x, v13.y, -v13.z);
+	glEnd();
+
 	glPushMatrix();
 	glTranslatef(v2.x, v2.y, v2.z);
+
 	// Draw the Skids
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
