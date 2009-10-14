@@ -424,6 +424,22 @@ void drawHeliBody()
 	glPushMatrix();
 	glTranslatef(v2.x, v2.y, v2.z);
 
+	
+	//Chair
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glTranslatef(0.5, 0.9, -1.0);
+	glScalef(0.2, 1.5, 1.5);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glTranslatef(1.0, 0.25, -1.0);
+	glScalef(0.75, 0.2, 1.5);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
 	// Draw the Skids
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
