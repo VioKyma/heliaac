@@ -61,7 +61,7 @@ void moveHeliUp(float speed, bool checkCol);
 void checkBounds(void);
 bool checkBoxCollision(objectBox object1, objectBox object2);
 void checkHeliCollisions(void);
-void drawBuilding(void);
+void drawBuilding(objectBox building, int textureNum);
 void updateFPS(void);
 void updateGameTime(void);
 void displayText(void);
@@ -72,13 +72,14 @@ void displayHelp(void);
 float cosDeg(float degRot);
 float sinDeg(float degRot);
 GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
+void displayDashboard(void);
 
 float cameraDistance = 5.0;
-objectBox heli = {0, 2, 0, 0, 0, 0, 2, 2, 1};
+objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
 float windscreenRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
-objectBox building0 = {10, 5, 10, 0, 0, 0, 2, 5, 2};
+objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 4, 4};
 
 bool movingForward = false;
 bool movingBack = false;
@@ -158,11 +159,13 @@ void init(void)
 	glEnable(GL_LIGHT0);
     glShadeModel(GL_FLAT);
 
-    // Make object materials equal to glColor3f() properties
+    // Make object materials equal to glColor*() properties
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
-    // Define the heliBody display list
+	heli.yPos = groundHeight + heli.ySize;
+
+    // Define the heliBody display 
     heliBodyList = glGenLists(1);
     glNewList(heliBodyList, GL_COMPILE);
     drawHeliBody();
@@ -172,12 +175,6 @@ void init(void)
     heliRotorList = glGenLists(1);
     glNewList(heliRotorList, GL_COMPILE);
     drawHeliRotor();
-    glEndList();
-
-    // Define the ground display list
-    groundList = glGenLists(1);
-    glNewList(groundList, GL_COMPILE);
-    drawGround();
     glEndList();
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -196,6 +193,13 @@ void init(void)
     timeBase = glutGet(GLUT_ELAPSED_TIME);
 
 	textures[0] = loadTextureBMP( "Textures/ground.bmp", true, 256, 256 );
+	textures[1] = loadTextureBMP( "Textures/building.bmp", true, 256, 256 );
+
+	// Define the ground display list
+    groundList = glGenLists(1);
+    glNewList(groundList, GL_COMPILE);
+    drawGround();
+    glEndList();
 
 	points[0].checkpoint = 0;
 	points[0].xSize = 5.0;
@@ -274,15 +278,69 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
     return texture;
 }
 
-void drawBuilding(void)
+void drawBuilding(objectBox building, int textureNum)
 {
-	glPushMatrix();
-	glColor3f(0.5, 0.5, 0.5);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[textureNum]);
+//	   -------
+//   /       /|
+//	v2-----v3 |
+//	|       | |
+//	|       | |
+//	|       | |
+//	|       | |
+//	|       |/
+//	v0-----v1
+
+	vertex v0 = {-building.xSize, 0.0, building.zSize};
+	vertex v1 = {building.xSize, 0.0, building.zSize};
+	vertex v2 = {-building.xSize, building.ySize, building.zSize};
+	vertex v3 = {building.xSize, building.ySize, building.zSize};
+
+	glTranslatef(building0.xPos, building0.yPos, building0.zPos);
+	glRotatef(building0.rotY, 0.0, 1.0, 0.0);
+
+	glBegin(GL_QUADS);
+	// Draw wall
+	glTexCoord2f(0.0, 0.0);							glVertex3f(v0.x, v0.y, v0.z);
+	glTexCoord2f(building.xSize, 0.0);				glVertex3f(v1.x, v1.y, v1.z);
+	glTexCoord2f(building.xSize, building.ySize);	glVertex3f(v3.x, v3.y, v3.z);
+	glTexCoord2f(0.0, building.ySize);				glVertex3f(v2.x, v2.y, v2.z);
+	// Draw wall
+	glTexCoord2f(0.0,0.0);							glVertex3f(v0.x, v0.y, -v0.z);
+	glTexCoord2f(building.xSize,0.0);				glVertex3f(v1.x, v1.y, -v1.z);
+	glTexCoord2f(building.xSize,building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(0.0,building.ySize);				glVertex3f(v2.x, v2.y, -v2.z);
+	// Draw wall
+	glTexCoord2f(0.0, building.ySize);				glVertex3f(v2.x, v2.y, -v2.z);
+	glTexCoord2f(0.0, 0.0);							glVertex3f(v0.x, v0.y, -v0.z);
+	glTexCoord2f(building.xSize, 0.0);				glVertex3f(v0.x, v0.y, v0.z);
+	glTexCoord2f(building.xSize, building.ySize);	glVertex3f(v2.x, v2.y, v2.z);
+	// Draw wall
+	glTexCoord2f(0.0, 0.0);							glVertex3f(v1.x, v1.y, v1.z);
+	glTexCoord2f(0.0, building.ySize);				glVertex3f(v3.x, v3.y, v3.z);
+	glTexCoord2f(building.xSize, building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(building.xSize, 0.0);				glVertex3f(v1.x, v1.y, -v1.z);
+	// Draw floor
+	glVertex3f(v0.x, v0.y, v0.z);
+	glVertex3f(v1.x, v1.y, v1.z);
+	glVertex3f(v1.x, v1.y, -v1.z);
+	glVertex3f(v0.x, v0.y, -v0.z);
+	// Draw roof
+	glVertex3f(v2.x, v2.y, v2.z);
+	glVertex3f(v3.x, v3.y, v3.z);
+	glVertex3f(v3.x, v3.y, -v3.z);
+	glVertex3f(v2.x, v2.y, -v2.z);
+	glEnd();
+
+	/*glPushMatrix();
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glRotatef(building0.rotY, 0.0, 1.0, 0.0);
 	glTranslatef(building0.xPos, building0.yPos, building0.zPos);
-	glScalef(2 * building0.xSize, 2 * building0.ySize, 2 * building0.zSize);
 	glutSolidCube(1.0);
-	glPopMatrix();
+	glPopMatrix();*/
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void drawHeli()
@@ -293,6 +351,22 @@ void drawHeli()
     glRotatef(heli.rotY, 0.0, 1.0, 0.0);
     glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
     glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
+	
+	// Draw bounding box
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(-heli.xSize, -heli.ySize, -heli.zSize);
+	glVertex3f(heli.xSize, -heli.ySize, -heli.zSize);
+	glVertex3f(heli.xSize, heli.ySize, -heli.zSize);
+	glVertex3f(-heli.xSize, heli.ySize, -heli.zSize);
+	glVertex3f(-heli.xSize, -heli.ySize, -heli.zSize);
+	glVertex3f(-heli.xSize, -heli.ySize, heli.zSize);
+	glVertex3f(heli.xSize, -heli.ySize, heli.zSize);
+	glVertex3f(heli.xSize, heli.ySize, heli.zSize);
+	glVertex3f(-heli.xSize, heli.ySize, heli.zSize);
+	glVertex3f(-heli.xSize, -heli.ySize, heli.zSize);
+	glEnd();
+
 	// Animate rotor
 	glPushMatrix();
     glTranslatef(1.0, 0.6, 0.0);
@@ -322,22 +396,22 @@ void drawHeliBody()
 	//
 
 	// Body vertices
-	vertex v0 = { -0.8, 1.0, 1.0 };
-	vertex v1 = { 1.4, 1.0, 1.0 };
-	vertex v2 = { 0.8, -1.0, 1.0 };
-	vertex v3 = { 3.0, -1.0, 1.0 };
-	vertex v4 = { 2.6, 0.8, 0.5 };
-	vertex v5 = { 2.2, 0.0, 1.0 };
-	vertex v6 = { 3.2, 0.0, 0.5 };
-	vertex v7 = { 3.0, 1.0, 1.0 };
+	vertex v0 = { -1.3, 1.0, 1.0 };
+	vertex v1 = { 0.9, 1.0, 1.0 };
+	vertex v2 = { 0.3, -1.0, 1.0 };
+	vertex v3 = { 2.5, -1.0, 1.0 };
+	vertex v4 = { 2.1, 0.8, 0.5 };
+	vertex v5 = { 1.7, 0.0, 1.0 };
+	vertex v6 = { 2.7, 0.0, 0.5 };
+	vertex v7 = { 2.5, 1.0, 1.0 };
 	// Tail vertices
-	vertex v8 = { -2.0, 0.4, 0.4 };
-	vertex v9 = { -0.3, 0.4, 0.4 };
-	vertex v10 = { -2.0, -0.4, 0.4 };
-	vertex v11 = { 0.35, -0.4, 0.4 };
+	vertex v8 = { -2.5, 0.4, 0.4 };
+	vertex v9 = { -0.8, 0.4, 0.4 };
+	vertex v10 = { -2.5, -0.4, 0.4 };
+	vertex v11 = { 0.85, -0.4, 0.4 };
 	// Tip of tail
-	vertex v12 = {-2.3, 1.0, 0.4};
-	vertex v13 = {-2.3, -0.4, 0.4};
+	vertex v12 = {-2.8, 1.0, 0.4};
+	vertex v13 = {-2.8, -0.4, 0.4};
 
 	// Draw main body
 	glColor3f(1.0, 0.0, 0.0);	// Red
@@ -740,11 +814,15 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 
 void checkHeliThruCollisions(void)
 {
+	// for each checkpoint, if it is not activated, check for collision with helicopter
 	for (int pointNum = 0; pointNum < MAX_CHECKPOINTS; pointNum++)
 	{
-		if ( checkPointCollision(heli, points[pointNum]) )
+		if ( !points[pointNum].activated )
 		{
-			points[pointNum].activated = true;
+			if ( checkPointCollision(heli, points[pointNum]) )
+			{
+				points[pointNum].activated = true;
+			}
 		}
 	}
 }
@@ -814,15 +892,17 @@ void heliStop(int i)
 	{ 
 		rotorSpeed = rotorSpeed - 0.2; 
 	} 
-			if (heli.yPos > groundHeight + 1.5)
-		{ 
-			heli.yPos -= 0.02; 
-			eye.yPos -= 0.02; 
-			glutTimerFunc(40, heliStop, ++i); 
-		}
-			if (rotorSpeed < MAX_ROTOR_SPEED) 
-				helicopterOn = false;
-} 
+	if (heli.yPos > groundHeight + heli.ySize)
+	{ 
+		heli.yPos -= 0.02; 
+		eye.yPos -= 0.02; 
+		glutTimerFunc(40, heliStop, ++i); 
+	}
+	if (rotorSpeed < MAX_ROTOR_SPEED) 
+	{
+		helicopterOn = false;
+	}
+}
 
 
 // Catches keyboard key presses
@@ -991,8 +1071,12 @@ void mouseMotion(int x, int y)
         eye.rotZ += rotateZ / 2.0;
         last_mouse_x = x;
 		last_mouse_y = y;
-
     }
+
+	if(eye.rotZ > 15 && heli.yPos < heli.ySize)
+	{
+		eye.rotZ = 15;
+	}
 }
 
 void mouse(int button, int state, int x, int y)
@@ -1100,8 +1184,6 @@ void displayText()
     glLoadIdentity();
 	// Display FPS
     renderBitmapString(textX, textY, (void *)font, strFps);
-	// Display game time
-	renderBitmapString(textX, textY + 25, (void *)font, strGameTime);
 
 	// If paused, display help/controls/scores
 	if (pause)
@@ -1109,6 +1191,7 @@ void displayText()
 		displayHelp();
 	}
 
+	displayDashboard();
     resetPerspectiveProjection();
     glPopMatrix();
 }
@@ -1153,6 +1236,35 @@ void displayHelp()
 	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
 	glVertex2f(MARGIN, windowHeight - MARGIN);
 	glEnd();
+}
+
+void displayDashboard()
+{
+	const float DASH_HEIGHT_PC = 0.2;
+	const float DASH_WIDTH_PC = 0.0;
+
+	float dashHeight = windowHeight - (DASH_HEIGHT_PC * windowHeight);
+	float dashWidth = windowWidth - (DASH_WIDTH_PC * windowWidth);
+
+	glColor4f(0.0, 1.0, 0.5, 1.0);	// Green
+	// Display game time
+	renderBitmapString(30, dashHeight + 30, (void *)font, strGameTime);
+
+	// Display speed
+
+	// Display altitude
+
+	// Display checkpoint number
+
+	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
+	glBegin(GL_QUADS);
+	glVertex2f(0.0, dashHeight);
+	glVertex2f(dashWidth, dashHeight);
+	glVertex2f(dashWidth, windowHeight);
+	glVertex2f(0.0, windowHeight);
+	glEnd();
+
+	
 }
 
 // These next three functions are taken from Lighthouse 3D tutorials:
@@ -1205,6 +1317,8 @@ void idle(void)
 	{
 		if (helicopterOn == true)
 		{
+			// Update speed
+			heliSpeed = HELI_SPEED / fps;
 			if (movingForward)
 			{
 				// move forward
@@ -1302,19 +1416,19 @@ void display(void)
     // Rotate camera so that it is always behind the heli
     glPushMatrix();
     glTranslatef(heli.xPos, heli.yPos, heli.zPos);
-	glRotatef( eye.rotZ, 0.0, 0.0, 1.0);
+	glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 	glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
     glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
     // Draw ground
     glPushMatrix();
     glTranslatef(0, groundHeight, 0);
-	drawGround();
+	glCallList(groundList);
     glPopMatrix();
 
     // Draw building
     glPushMatrix();
-    drawBuilding();
+    drawBuilding(building0, 1);
     glPopMatrix();
 
 	// Draw the helicopter
@@ -1329,6 +1443,7 @@ void display(void)
 	updateFPS();
 	updateGameTime();
 	displayText();
+	displayDashboard();
 
     glPopMatrix();
 
