@@ -1345,9 +1345,13 @@ void mymenu(int choice)
 		break;
 	case 2: wireFrameOn();  // Wireframe
 		break;
-	case 3: pause = !pause; // Help/Credits/Scores
+	case 3: glEnable(GL_TEXTURE_2D); // enable texture mapping
 		break;
-	case 4: exit(0);  // exit program
+	case 4: glDisable(GL_TEXTURE_2D); // disable texture mapping
+		break;
+	case 5: pause = !pause; // Help/Credits/Scores
+		break;
+	case 6: exit(0);  // exit program
 		break;
 	default: break;
 	}
@@ -1372,12 +1376,22 @@ int main(int argc, char** argv)
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotion);
 
-	// create main menu (no ID needed)
-	glutCreateMenu(mymenu);
+	// create a sub menu 1
+	int subMenu1 = glutCreateMenu(mymenu);
 	glutAddMenuEntry("Full Shading", 1);
 	glutAddMenuEntry("Wire Frame", 2);
-	glutAddMenuEntry("Help/Credits/Scores", 3);
-	glutAddMenuEntry("Exit Program", 4);
+
+	// create a sub menu 2 
+	int subMenu2 = glutCreateMenu(mymenu);
+	glutAddMenuEntry("Enable", 3);
+	glutAddMenuEntry("Disable", 4);
+
+	// create main menu (no ID needed)
+	glutCreateMenu(mymenu);
+	glutAddSubMenu("Shading", subMenu1);
+	glutAddSubMenu("Textures", subMenu2);
+	glutAddMenuEntry("Help/Credits/Scores", 5);
+	glutAddMenuEntry("Exit Program", 6);
 	// set the menu to the right button
 	glutAttachMenu(GLUT_RIGHT_BUTTON);  
 
