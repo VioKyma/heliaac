@@ -75,6 +75,7 @@ GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
 void displayDashboard(void);
 
 float cameraDistance = 5.0;
+float cameraZoom = 1.5;
 objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
 float windscreenRot = 0.0;
 
@@ -126,6 +127,7 @@ int bestTime = 0;
 char* strBestTime = new char[8];
 int gameTime = 0;
 int gameTimeBase = 0;
+int penaltyTime = 0;
 
 const int ROTATE_SPEED = 180;
 const int HELI_SPEED = 12;
@@ -148,6 +150,9 @@ GLuint textures[10];
 
 const int MAX_CHECKPOINTS = 10;
 checkPoint points[MAX_CHECKPOINTS];
+int checkpointNum = 0;
+
+bool heliTextures = true;
 
 // Initialise the OpenGL properties
 void init(void)
@@ -194,6 +199,7 @@ void init(void)
 
 	textures[0] = loadTextureBMP( "Textures/ground.bmp", true, 256, 256 );
 	textures[1] = loadTextureBMP( "Textures/building.bmp", true, 256, 256 );
+	textures[2] = loadTextureBMP( "Textures/heliTex.bmp", true, 256, 256 );
 
 	// Define the ground display list
     groundList = glGenLists(1);
@@ -269,6 +275,12 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 		cout << "Could not load bitmap " << filename << ".\n";
 		return -1;
 	}
+
+	/*if ( gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, image->data ) )
+    {
+		cout << "Error creating texture mipmaps for texture: " << filename << ".\n";
+    }*/
+
 
 	if (image)
 	{
@@ -384,6 +396,12 @@ void drawHeli()
 // Draw the body
 void drawHeliBody()
 {
+	if (heliTextures)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textures[2]);
+	}
+
 	glPushMatrix();
 	//
 	//     v12               v0---------------v1 \
@@ -414,90 +432,89 @@ void drawHeliBody()
 	vertex v13 = {-2.8, -0.4, 0.4};
 
 	// Draw main body
-	glColor3f(1.0, 0.0, 0.0);	// Red
+	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Red
 	// Right Side Panel
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v0.x, v0.y, v0.z);
-	glVertex3f(v1.x, v1.y, v1.z);
-	glVertex3f(v2.x, v2.y, v2.z);
-	glVertex3f(v3.x, v3.y, v3.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v1.x, v1.y, v1.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, v2.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, v3.z);
 	glEnd();
 
 	// Top Panel
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v0.x, v0.y, v0.z);
-	glVertex3f(v1.x, v1.y, v1.z);
-	glVertex3f(v0.x, v0.y, -v0.z);
-	glVertex3f(v1.x, v1.y, -v1.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v1.x, v1.y, v1.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v0.x, v0.y, -v0.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v1.x, v1.y, -v1.z);
 	glEnd();
 
 	// Bottom Panel
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v2.x, v2.y, v2.z);
-	glVertex3f(v3.x, v3.y, v3.z);
-	glVertex3f(v2.x, v2.y, -v2.z);
-	glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v2.x, v2.y, v2.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v3.x, v3.y, v3.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, -v2.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, -v3.z);
 	glEnd();
 
 	// Left Panel
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v0.x, v0.y, -v0.z);
-	glVertex3f(v1.x, v1.y, -v1.z);
-	glVertex3f(v2.x, v2.y, -v2.z);
-	glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, -v0.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v1.x, v1.y, -v1.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, -v2.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, -v3.z);
 	glEnd();
 
 	// Rear Panel
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v0.x, v0.y, v0.z);
-	glVertex3f(v2.x, v2.y, v2.z);
-	glVertex3f(v0.x, v0.y, -v0.z);
-	glVertex3f(v2.x, v2.y, -v2.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v2.x, v2.y, v2.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v0.x, v0.y, -v0.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v2.x, v2.y, -v2.z);
 	glEnd();
 
 	// Tip of tail (top)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v8.x, v8.y, v8.z);
-	glVertex3f(v12.x, v12.y, v12.z);
-	glVertex3f(v8.x, v8.y, -v8.z);
-	glVertex3f(v12.x, v12.y, -v12.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v12.x, v12.y, v12.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v12.x, v12.y, -v12.z);
 	glEnd();
 
 	// Tip of tail (back)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v12.x, v12.y, v12.z);
-	glVertex3f(v13.x, v13.y, v13.z);
-	glVertex3f(v12.x, v12.y, -v12.z);
-	glVertex3f(v13.x, v13.y, -v13.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v12.x, v12.y, v12.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v13.x, v13.y, v13.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v12.x, v12.y, -v12.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v13.x, v13.y, -v13.z);
 	glEnd();
 
 	// Tip of tail (side1)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v12.x, v12.y, v12.z);
-	glVertex3f(v8.x, v8.y, v8.z);
-	glVertex3f(v13.x, v13.y, v13.z);
-	glVertex3f(v11.x, v11.y, v11.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v12.x, v12.y, v12.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v13.x, v13.y, v13.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
 	glEnd();
 
 	// Tip of tail (side2)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v12.x, v12.y, -v12.z);
-	glVertex3f(v8.x, v8.y, -v8.z);
-	glVertex3f(v13.x, v13.y, -v13.z);
-	glVertex3f(v11.x, v11.y, -v11.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v12.x, v12.y, -v12.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v13.x, v13.y, -v13.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, -v11.z);
 	glEnd();
 
 	// Tip of tail (bottom)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v11.x, v11.y, v11.z);
-	glVertex3f(v13.x, v13.y, v13.z);
-	glVertex3f(v11.x, v11.y, -v11.z);
-	glVertex3f(v13.x, v13.y, -v13.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v13.x, v13.y, v13.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v13.x, v13.y, -v13.z);
 	glEnd();
 
 	glPushMatrix();
 	glTranslatef(v2.x, v2.y, v2.z);
-
 	
 	//Chair
 	glPushMatrix();
@@ -549,35 +566,35 @@ void drawHeliBody()
 
 	// Front heli nose
 	glBegin(GL_TRIANGLE_STRIP);
-	glColor4f(1.0, 0.0, 0.0, 1.0);
-	glVertex3f(v5.x, v5.y, v5.z);
-	glVertex3f(v3.x, v3.y, v3.z);
-	glVertex3f(v6.x, v6.y, v6.z);
-	glVertex3f(v3.x, v3.y, 0.0);
-	glVertex3f(v6.x, v6.y, -v6.z);
-	glVertex3f(v3.x, v3.y, -v3.z);
-	glVertex3f(v5.x, v5.y, -v5.z);
+	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Blue
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v5.x, v5.y, v5.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v3.x, v3.y, v3.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v6.x, v6.y, v6.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, 0.0);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v6.x, v6.y, -v6.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v5.x, v5.y, -v5.z);
 	glEnd();
 
 	// Tail
 	glBegin(GL_TRIANGLE_STRIP);
 	// Left
-	glVertex3f(v8.x, v8.y, v8.z);
-	glVertex3f(v9.x, v9.y, v9.z);
-	glVertex3f(v10.x, v10.y, v10.z);
-	glVertex3f(v11.x, v11.y, v11.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
 	// Bottom
-	glVertex3f(v10.x, v10.y, -v10.z);
-	glVertex3f(v11.x, v11.y, -v11.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v10.x, v10.y, -v10.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
 	// Right
-	glVertex3f(v8.x, v8.y, -v8.z);
-	glVertex3f(v9.x, v9.y, -v9.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v9.x, v9.y, -v9.z);
 	// Top
-	glVertex3f(v8.x, v8.y, v8.z);
-	glVertex3f(v9.x, v9.y, v9.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
 	// Back
-	glVertex3f(v10.x, v10.y, -v10.z);
-	glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, v10.z);
 	glEnd();
 
 	// Rotate cockpit windscreen
@@ -621,6 +638,11 @@ void drawHeliBody()
 	glEnd();
 
 	glPopMatrix();
+
+	if (heliTextures)
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
 }
 
 // Draw the rotor blades
@@ -642,13 +664,13 @@ void drawHeliRotor()
         glColor3f(0.8, 0.8, 0.8);
         // Draw blades
         glTranslatef(0.0, 0.05, 0.0);
-        glScalef(4.0, 0.1, 0.2);
+        glScalef(3.0, 0.1, 0.2);
         glutSolidCube(1.0);
         glPopMatrix();
 
         glPushMatrix();
         glRotatef(90, 0.0, 1.0, 0.0);
-        glScalef(4.0, 0.1, 0.2);
+        glScalef(3.0, 0.1, 0.2);
         glutSolidCube(1.0);
         glPopMatrix();
 
@@ -694,7 +716,7 @@ void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float
 	glTranslatef(xPos, yPos, zPos);
 	glRotatef(rotY, 0.0, 1.0, 0.0);
 	glScalef(xSize, ySize, zSize);
-	// draw checkpoint number?
+	// TODO draw checkpoint number
 	glutSolidCube(1.0);
 	glPopMatrix();
 }
@@ -821,7 +843,21 @@ void checkHeliThruCollisions(void)
 		{
 			if ( checkPointCollision(heli, points[pointNum]) )
 			{
-				points[pointNum].activated = true;
+				// If the checkpoint entered is not the checkpoint that is next, penalize 10s per gate missed
+				if ( checkpointNum != pointNum )
+				{
+					penaltyTime += (pointNum - checkpointNum) * 10000;
+					// Activate all the points leading up to incorrectly activated point
+					for (checkpointNum; checkpointNum < pointNum; checkpointNum++)
+					{
+						points[checkpointNum].activated = true;
+					}
+				}
+				else
+				{
+					points[pointNum].activated = true;
+					checkpointNum = pointNum + 1;
+				}
 			}
 		}
 	}
@@ -935,11 +971,11 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
                 movingDown = true;
                 break;
 		case 's':
-				// Start Blades
+			// Start Blades
 			heliStart(0);
 			break;
 		case 'x':
-				//Stop Blades
+			//Stop Blades
 			heliStop(rotorSpeed);	
 			break;
     }
@@ -974,7 +1010,6 @@ void wireFrameOn()
 	wire = true;
 
 }
-
 
 // Catches special key presses
 void special(int key, int mouseX, int mouseY)
@@ -1016,6 +1051,9 @@ void special(int key, int mouseX, int mouseY)
 					shadingOn();
 				}
 				break;
+		case GLUT_KEY_F3:
+				heliTextures = !heliTextures;
+				break;
 		case GLUT_KEY_F8:
                 // turn the light/s on or off
                 light0 = !light0;
@@ -1030,9 +1068,18 @@ void special(int key, int mouseX, int mouseY)
                 break;
 		case GLUT_KEY_PAGE_DOWN:
                 // Zoom out
+				if (cameraZoom > 1.0)
+				{
+					cameraZoom -= 0.1;
+				}
                 break;
         case GLUT_KEY_PAGE_UP:
                 // Zoom in
+				if (cameraZoom < 3.0)
+				{
+					cameraZoom += 0.1;
+					//reshape(windowWidth, windowHeight);
+				}
                 break;
     }
 }
@@ -1251,10 +1298,28 @@ void displayDashboard()
 	renderBitmapString(30, dashHeight + 30, (void *)font, strGameTime);
 
 	// Display speed
+	char* strHeliSpeed = new char[12];
+	sprintf(strHeliSpeed, "Speed: %.2f", heliSpeed);
+	renderBitmapString(dashWidth / 2.3, dashHeight + 30, (void *)font, strHeliSpeed);
 
 	// Display altitude
+	char* strAltitude = new char[14];
+	sprintf(strAltitude, "Altitude: %.2f", heli.yPos);
+	renderBitmapString(3 * (dashWidth / 4), dashHeight + 30, (void *)font, strAltitude);
 
 	// Display checkpoint number
+	char* strCheckpoint = new char[14];
+	sprintf(strCheckpoint, "Checkpoint: %.2i", checkpointNum);
+	renderBitmapString(3 * (dashWidth / 5), dashHeight + 60, (void *)font, strCheckpoint);
+
+	// Display altitude
+	char* strPenalty = new char[22];
+	int penaltyTimeMinutes = (penaltyTime % 1000) / 10;
+	int penaltyTimeSeconds = (penaltyTime % 60000) / 1000;
+	int penaltyTimeMillisec = (penaltyTime % 3600000) / 60000;
+
+	sprintf(strPenalty, "Penalty Time: %.2i:%.2i:%.2i", penaltyTimeMinutes, penaltyTimeSeconds, penaltyTimeMillisec);
+	renderBitmapString(30, dashHeight + 60, (void *)font, strPenalty);
 
 	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
 	glBegin(GL_QUADS);
@@ -1263,8 +1328,6 @@ void displayDashboard()
 	glVertex2f(dashWidth, windowHeight);
 	glVertex2f(0.0, windowHeight);
 	glEnd();
-
-	
 }
 
 // These next three functions are taken from Lighthouse 3D tutorials:
@@ -1400,8 +1463,11 @@ void reshape(int w, int h)
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+    glFrustum(-1.0, 1.0, -1.0, 1.0, cameraZoom, 30.0);
     glMatrixMode(GL_MODELVIEW);
+
+	windowWidth = w;
+	windowHeight = h;
 }
 
 
