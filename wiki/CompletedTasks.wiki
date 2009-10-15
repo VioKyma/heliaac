@@ -5,4 +5,6 @@
   * Lighting has been changed over from A1 settings
   * F1 Pause game and game time
   * Pause game screen
-  * Created checkpoints and their collision detection ( Note: They can only be rotated 90/270 degrees or 0/180 degrees while maintaining proper collision detection)
+  * Created checkpoints and their collision detection and can now be rotated
+  * Loading a bitmap from a file
+  * Applied a texture to the ground
