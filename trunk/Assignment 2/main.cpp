@@ -1477,6 +1477,11 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
+	updateFPS();
+	updateGameTime();
+	displayText();
+	displayDashboard();
+
     gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
 
     // Rotate camera so that it is always behind the heli
@@ -1505,11 +1510,6 @@ void display(void)
 	{
 		drawCheckpoint( points[checkPoint].checkpoint, points[checkPoint].xSize, points[checkPoint].ySize, points[checkPoint].zSize, points[checkPoint].rotY, points[checkPoint].xPos, points[checkPoint].yPos, points[checkPoint].zPos);
 	}
-
-	updateFPS();
-	updateGameTime();
-	displayText();
-	displayDashboard();
 
     glPopMatrix();
 
