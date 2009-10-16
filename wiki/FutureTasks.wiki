@@ -1,5 +1,18 @@
 #summary Things to be done in the future.
 
 = Things To Do In Future =
+==Part A==
 
-  * 
+  * Tail rotor
+  * Opening door on heli
+  * Point A and point B
+  * Moving checkpoint (?)
+  * One more light (at point B? - moving?)
+  * Headlight on Helicopter (switchable on/off)
+
+==Part B==
+
+  * Key-framed animation - e.g. takeoff/landing auto-pilot
+  * Random/dynamic creation of environment (terrain, object locations) [Check discussion board for answer to our question]
+  * Another helicopter using the same struct/class (not controlled the same) OR...
+  * GLSL programmable shaders
