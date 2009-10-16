@@ -1011,6 +1011,16 @@ void wireFrameOn()
 
 }
 
+void heliTexturesOn()
+{
+		heliTextures = true;
+}
+
+void heliTexturesOff()
+{
+		heliTextures = false;
+}
+
 // Catches special key presses
 void special(int key, int mouseX, int mouseY)
 {
@@ -1052,7 +1062,14 @@ void special(int key, int mouseX, int mouseY)
 				}
 				break;
 		case GLUT_KEY_F3:
-				heliTextures = !heliTextures;
+				if (heliTextures == false)
+				{
+					heliTexturesOn();
+				}
+				else
+				{
+					heliTexturesOff();
+				}
 				break;
 		case GLUT_KEY_F8:
                 // turn the light/s on or off
@@ -1526,9 +1543,9 @@ void mymenu(int choice)
 		break;
 	case 2: wireFrameOn();  // Wireframe
 		break;
-	case 3: glEnable(GL_TEXTURE_2D); // enable texture mapping
+	case 3: heliTexturesOn(); // enable texture mapping
 		break;
-	case 4: glDisable(GL_TEXTURE_2D); // disable texture mapping
+	case 4: heliTexturesOff(); // disable texture mapping
 		break;
 	case 5: pause = !pause; // Help/Credits/Scores
 		break;
@@ -1557,22 +1574,27 @@ int main(int argc, char** argv)
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotion);
 
-	// create a sub menu 1
+	// create sub menu 1
 	int subMenu1 = glutCreateMenu(mymenu);
 	glutAddMenuEntry("Full Shading", 1);
 	glutAddMenuEntry("Wire Frame", 2);
 
-	// create a sub menu 2 
+	// create sub menu 2 
 	int subMenu2 = glutCreateMenu(mymenu);
 	glutAddMenuEntry("Enable", 3);
 	glutAddMenuEntry("Disable", 4);
 
+	//create sub menu 3
+	int subMenu3 = glutCreateMenu(mymenu);
+	glutAddMenuEntry("Yes", 6);
+	glutAddMenuEntry("No", 0);
+
 	// create main menu (no ID needed)
 	glutCreateMenu(mymenu);
 	glutAddSubMenu("Shading", subMenu1);
-	glutAddSubMenu("Textures", subMenu2);
+	glutAddSubMenu("Helicopter Textures", subMenu2);
 	glutAddMenuEntry("Help/Credits/Scores", 5);
-	glutAddMenuEntry("Exit Program", 6);
+	glutAddSubMenu("Exit Program", subMenu3);
 	// set the menu to the right button
 	glutAttachMenu(GLUT_RIGHT_BUTTON);  
 
