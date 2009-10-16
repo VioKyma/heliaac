@@ -675,6 +675,36 @@ void drawHeliRotor()
         glPopMatrix();
 
         glPopMatrix();
+
+		//Tail Rotor
+
+		glPushMatrix();
+		glRotatef(90, 1.0, 0.0, 0.0);
+		glTranslatef(-3.5, 0.6, 0.5);
+        glPushMatrix();     
+        // Make color blue
+        glColor3f(0.0f,0.0f,1.0f);
+        // Draw rotor axle
+        glRotatef(90, 1.0, 0.0, 0.0);
+        glutSolidCylinder(0.2, 0.2, 15, 15);
+        glPopMatrix();
+
+        glPushMatrix();
+        // Make color grey
+        glColor3f(0.8, 0.8, 0.8);
+        // Draw blades
+        glTranslatef(0.0, 0.05, 0.0);
+        glScalef(1.5, 0.05, 0.1);
+        glutSolidCube(1.0);
+        glPopMatrix();
+
+        glPushMatrix();
+        glRotatef(90, 0.0, 1.0, 0.0);
+        glScalef(1.5, 0.05, 0.1);
+        glutSolidCube(1.0);
+        glPopMatrix();
+
+		glPopMatrix();
 }
 
 // Make a yellow ground square with 2 x groundSize width and length
