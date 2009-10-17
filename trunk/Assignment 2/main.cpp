@@ -148,7 +148,7 @@ float pi = 3.1415926535897932384626433832795;
 
 GLuint textures[10];
 
-const int MAX_CHECKPOINTS = 10;
+const int MAX_CHECKPOINTS = 5;		// Cannot exceed 100. Only set as high as is required.
 checkPoint points[MAX_CHECKPOINTS];
 int checkpointNum = 0;
 
@@ -728,8 +728,19 @@ void drawGround(void)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float rotY, float xPos, float yPos, float zPos)
+void drawCheckpoint(int checkpoint)
 {
+	// TODO draw checkpoint number
+	const int POINT_NUM_STR = 2;
+	char* pointStr = new char[POINT_NUM_STR];
+	sprintf(pointStr, "%.2i", checkpoint);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glRasterPos3f(points[checkpoint].xPos, points[checkpoint].yPos, points[checkpoint].zPos);
+	for(int i = 0; i < POINT_NUM_STR; i++)
+	{
+		glutBitmapCharacter((void *)font, pointStr[i]);
+	}
+
 	glPushMatrix();
 	
 	if (points[checkpoint].activated)
@@ -743,10 +754,9 @@ void drawCheckpoint(int checkpoint, float xSize, float ySize, float zSize, float
 		glColor4f(1.0, 0.0, 0.0, 0.5);
 	}
 
-	glTranslatef(xPos, yPos, zPos);
-	glRotatef(rotY, 0.0, 1.0, 0.0);
-	glScalef(xSize, ySize, zSize);
-	// TODO draw checkpoint number
+	glTranslatef(points[checkpoint].xPos, points[checkpoint].yPos, points[checkpoint].zPos);
+	glRotatef(points[checkpoint].rotY, 0.0, 1.0, 0.0);
+	glScalef(points[checkpoint].xSize, points[checkpoint].ySize, points[checkpoint].zSize);
 	glutSolidCube(1.0);
 	glPopMatrix();
 }
@@ -1351,7 +1361,7 @@ void displayDashboard()
 
 	// Display altitude
 	char* strAltitude = new char[14];
-	sprintf(strAltitude, "Altitude: %.2f", heli.yPos);
+	sprintf(strAltitude, "Altitude: %.2f", heli.yPos - heli.ySize);
 	renderBitmapString(3 * (dashWidth / 4), dashHeight + 30, (void *)font, strAltitude);
 
 	// Display checkpoint number
@@ -1412,6 +1422,7 @@ void renderBitmapString(float x, float y, void *font,char *string)
     char *c;
     // Set the draw co-ordinates
     glRasterPos2f(x, y);
+
     for (c=string; *c != '\0'; c++)
     {
         // Display each character in the array
@@ -1464,7 +1475,6 @@ void idle(void)
 				rotor += rotorSpeed + rotSpeed;
 				heliLeanSide = LEAN_FACTOR;
 			}
-		
 			else
 			{
 				// Turn the rotor normally
@@ -1501,8 +1511,6 @@ void idle(void)
 
 	glutPostRedisplay();
 }
-
-
 
 // When the window is reshaped, this function updates the camera and display
 void reshape(int w, int h)
@@ -1555,7 +1563,7 @@ void display(void)
 	// Draw the checkpoints
 	for (int checkPoint = 0; checkPoint < MAX_CHECKPOINTS; checkPoint++)
 	{
-		drawCheckpoint( points[checkPoint].checkpoint, points[checkPoint].xSize, points[checkPoint].ySize, points[checkPoint].zSize, points[checkPoint].rotY, points[checkPoint].xPos, points[checkPoint].yPos, points[checkPoint].zPos);
+		drawCheckpoint( points[checkPoint].checkpoint);
 	}
 
     glPopMatrix();
