@@ -16,3 +16,6 @@
   * Random/dynamic creation of environment (terrain, object locations) [Check discussion board for answer to our question]
   * Another helicopter using the same struct/class (not controlled the same) OR...
   * GLSL programmable shaders
+
+
+  * I regards to the random generation of stuff, I was thinking that we could randomly choose a position of the next checkpoint wrt the last one. So this would mean that we could have just about any combination of paths and it would be entirely random... sort of. What do you think?
