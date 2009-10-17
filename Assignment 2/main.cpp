@@ -146,7 +146,8 @@ bool leftMouseDown = false;
 
 float pi = 3.1415926535897932384626433832795;
 
-GLuint textures[10];
+const int MAX_TEXTURES = 10;
+GLuint textures[MAX_TEXTURES];
 
 const int MAX_CHECKPOINTS = 5;		// Cannot exceed 100. Only set as high as is required.
 checkPoint points[MAX_CHECKPOINTS];
@@ -345,13 +346,6 @@ void drawBuilding(objectBox building, int textureNum)
 	glVertex3f(v2.x, v2.y, -v2.z);
 	glEnd();
 
-	/*glPushMatrix();
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glRotatef(building0.rotY, 0.0, 1.0, 0.0);
-	glTranslatef(building0.xPos, building0.yPos, building0.zPos);
-	glutSolidCube(1.0);
-	glPopMatrix();*/
-
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -386,6 +380,17 @@ void drawHeli()
     // Draw rotor
     glCallList(heliRotorList);
 	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(90, 1.0, 0.0, 0.0);
+	glTranslatef(-2.7, 0.2, -0.5);
+    glRotatef(rotor, 0.0, 1.0, 0.0);
+	glScalef(0.4, 0.4, 0.4);
+
+    // Draw tail rotor
+    glCallList(heliRotorList);
+	glPopMatrix();
+
     // Draw body
     //glCallList(heliBodyList);
 	drawHeliBody();
@@ -512,10 +517,46 @@ void drawHeliBody()
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v13.x, v13.y, -v13.z);
 	glEnd();
+	
+	// Front Heli Nose
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Red
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v5.x, v5.y, v5.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v3.x, v3.y, v3.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v6.x, v6.y, v6.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, 0.0);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v6.x, v6.y, -v6.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v5.x, v5.y, -v5.z);
+	glEnd();
 
+	// Main Heli Tail
+	glBegin(GL_TRIANGLE_STRIP);
+	// Left
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
+	// Bottom
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v10.x, v10.y, -v10.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	// Right
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	// Top
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
+	// Back
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glEnd();
+
+	
 	glPushMatrix();
 	glTranslatef(v2.x, v2.y, v2.z);
-	
+	// Change texture for chair
+	glBindTexture(GL_TEXTURE_2D, textures[4]);
+
 	//Chair
 	glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
@@ -564,38 +605,6 @@ void drawHeliBody()
 	// End Skids
 	glPopMatrix();
 
-	// Front heli nose
-	glBegin(GL_TRIANGLE_STRIP);
-	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Blue
-	glTexCoord2f(0.0, 0.0);		glVertex3f(v5.x, v5.y, v5.z);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(v3.x, v3.y, v3.z);
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v6.x, v6.y, v6.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, 0.0);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(v6.x, v6.y, -v6.z);
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v3.x, v3.y, -v3.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v5.x, v5.y, -v5.z);
-	glEnd();
-
-	// Tail
-	glBegin(GL_TRIANGLE_STRIP);
-	// Left
-	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
-	// Bottom
-	glTexCoord2f(0.0, 0.0);		glVertex3f(v10.x, v10.y, -v10.z);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
-	// Right
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v9.x, v9.y, -v9.z);
-	// Top
-	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
-	// Back
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, v10.z);
-	glEnd();
 
 	// Rotate cockpit windscreen
 	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
@@ -676,12 +685,15 @@ void drawHeliRotor()
 
         glPopMatrix();
 
-		//Tail Rotor
+		/*//Tail Rotor
 
 		glPushMatrix();
-		glRotatef(90, 1.0, 0.0, 0.0);
+
+		
 		glTranslatef(-3.5, 0.6, 0.5);
-        glPushMatrix();     
+		glRotatef(90, 1.0, 0.0, 0.0);
+
+        glPushMatrix();
         // Make color blue
         glColor3f(0.0f,0.0f,1.0f);
         // Draw rotor axle
@@ -704,7 +716,7 @@ void drawHeliRotor()
         glutSolidCube(1.0);
         glPopMatrix();
 
-		glPopMatrix();
+		glPopMatrix();*/
 }
 
 // Make a yellow ground square with 2 x groundSize width and length
