@@ -61,6 +61,7 @@ void moveHeliUp(float speed, bool checkCol);
 void checkBounds(void);
 bool checkBoxCollision(objectBox object1, objectBox object2);
 void checkHeliCollisions(void);
+void checkHeliLanding(void);
 void drawBuilding(objectBox building, int textureNum);
 void updateFPS(void);
 void updateGameTime(void);
@@ -73,6 +74,7 @@ float cosDeg(float degRot);
 float sinDeg(float degRot);
 GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
 void displayDashboard(void);
+void drawFinishScreen(void);
 
 float cameraDistance = 5.0;
 float cameraZoom = 1.5;
@@ -81,6 +83,8 @@ float windscreenRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
 objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 4, 4};
+objectBox landingPadA = {0, 0.1, 0, 0, 0, 0, 3, 0.1, 3};
+objectBox landingPadB = {-10, 0.1, -10, 0, 0, 0, 3, 0.1, 3};
 
 bool movingForward = false;
 bool movingBack = false;
@@ -88,6 +92,8 @@ bool movingUp = false;
 bool movingDown = false;
 bool turningLeft = false;
 bool turningRight = false;
+
+bool gameFinished = false;
 
 int font = (int)GLUT_BITMAP_HELVETICA_18;
 int textX = 20;
@@ -123,7 +129,7 @@ int timeBase = 0;
 float fps = 50.0;
 char* strFps = new char[4];     // FPS string for display on-screen
 char* strGameTime = new char[8];	// Game time string
-int bestTime = 0;
+int bestTime = 100000;
 char* strBestTime = new char[8];
 int gameTime = 0;
 int gameTimeBase = 0;
@@ -149,7 +155,7 @@ float pi = 3.1415926535897932384626433832795;
 const int MAX_TEXTURES = 10;
 GLuint textures[MAX_TEXTURES];
 
-const int MAX_CHECKPOINTS = 5;		// Cannot exceed 100. Only set as high as is required.
+const int MAX_CHECKPOINTS = 3;		// Cannot exceed 100. Only set as high as is required.
 checkPoint points[MAX_CHECKPOINTS];
 int checkpointNum = 0;
 
@@ -201,6 +207,8 @@ void init(void)
 	textures[0] = loadTextureBMP( "Textures/ground.bmp", true, 256, 256 );
 	textures[1] = loadTextureBMP( "Textures/building.bmp", true, 256, 256 );
 	textures[2] = loadTextureBMP( "Textures/heliTex.bmp", true, 256, 256 );
+	textures[3] = loadTextureBMP( "Textures/heliPadA.bmp", true, 256, 256 );
+	textures[4] = loadTextureBMP( "Textures/heliPadB.bmp", true, 256, 256 );
 
 	// Define the ground display list
     groundList = glGenLists(1);
@@ -684,39 +692,6 @@ void drawHeliRotor()
         glPopMatrix();
 
         glPopMatrix();
-
-		/*//Tail Rotor
-
-		glPushMatrix();
-
-		
-		glTranslatef(-3.5, 0.6, 0.5);
-		glRotatef(90, 1.0, 0.0, 0.0);
-
-        glPushMatrix();
-        // Make color blue
-        glColor3f(0.0f,0.0f,1.0f);
-        // Draw rotor axle
-        glRotatef(90, 1.0, 0.0, 0.0);
-        glutSolidCylinder(0.2, 0.2, 15, 15);
-        glPopMatrix();
-
-        glPushMatrix();
-        // Make color grey
-        glColor3f(0.8, 0.8, 0.8);
-        // Draw blades
-        glTranslatef(0.0, 0.05, 0.0);
-        glScalef(1.5, 0.05, 0.1);
-        glutSolidCube(1.0);
-        glPopMatrix();
-
-        glPushMatrix();
-        glRotatef(90, 0.0, 1.0, 0.0);
-        glScalef(1.5, 0.05, 0.1);
-        glutSolidCube(1.0);
-        glPopMatrix();
-
-		glPopMatrix();*/
 }
 
 // Make a yellow ground square with 2 x groundSize width and length
@@ -742,7 +717,7 @@ void drawGround(void)
 
 void drawCheckpoint(int checkpoint)
 {
-	// TODO draw checkpoint number
+	// draw checkpoint number
 	const int POINT_NUM_STR = 2;
 	char* pointStr = new char[POINT_NUM_STR];
 	sprintf(pointStr, "%.2i", checkpoint);
@@ -766,10 +741,33 @@ void drawCheckpoint(int checkpoint)
 		glColor4f(1.0, 0.0, 0.0, 0.5);
 	}
 
+	// Draw the checkpoint
 	glTranslatef(points[checkpoint].xPos, points[checkpoint].yPos, points[checkpoint].zPos);
 	glRotatef(points[checkpoint].rotY, 0.0, 1.0, 0.0);
 	glScalef(points[checkpoint].xSize, points[checkpoint].ySize, points[checkpoint].zSize);
 	glutSolidCube(1.0);
+	glPopMatrix();
+}
+
+void drawLandingPad(objectBox pad, int textureNum)
+{
+	glPushMatrix();
+	// Draw a landing pad
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[textureNum]);
+	glTexGenf(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glTranslatef(pad.xPos, pad.yPos, pad.zPos);
+	glRotatef(-90, 1.0, 0.0, 0.0);
+	glutSolidCylinder(pad.xSize, pad.ySize, 10, 10);
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
 	glPopMatrix();
 }
 
@@ -915,6 +913,20 @@ void checkHeliThruCollisions(void)
 	}
 }
 
+void checkHeliLanding(void)
+{
+	// If landed on landing pad B
+	if ( checkBoxCollision(heli, landingPadB) )
+	{
+		// If engine is off and all checkpoints have been activated
+		if ( helicopterOn == false && checkpointNum == MAX_CHECKPOINTS )
+		{
+				gameFinished = true;
+				cout << "Finito!! Your time is " << gameTime + penaltyTime << ".\n";
+		}
+	}
+}
+
 void checkHeliCollisions(void)
 {
     bool collision = false;
@@ -989,9 +1001,28 @@ void heliStop(int i)
 	if (rotorSpeed < MAX_ROTOR_SPEED) 
 	{
 		helicopterOn = false;
+		checkHeliLanding();
 	}
 }
 
+void restartGame()
+{
+	gameFinished = false;
+	// Reset checkpoints
+	for (int num = 0; num < MAX_CHECKPOINTS; num++)
+	{
+		points[num].activated = false;
+	}
+	// Reset time
+	gameTime = 0;
+
+	// Reset heli position
+	heli.xPos = 0;
+	heli.yPos = groundSize + heli.ySize;
+	heli.zPos = 0;
+
+	// TODO Reset eye position
+}
 
 // Catches keyboard key presses
 void keyboard(unsigned char key, int mouseX, int mouseY)
@@ -999,6 +1030,12 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 	if(pause)
 	{
 		pause = false;
+	}
+	
+	// If game is finished and enter key is pressed
+	if (gameFinished && key == 13)
+	{
+		restartGame();
 	}
 
     switch (key)
@@ -1399,6 +1436,59 @@ void displayDashboard()
 	glEnd();
 }
 
+char* getTimeString(int time)
+{
+	char* strTime = new char[10];
+	int timeMSec = (time % 1000) / 10;
+	int timeSec = (time % 60000) / 1000;
+	int timeMin = (time % 3600000) / 60000;
+	sprintf( strTime, "%.2i:%.2i:%.2i", timeMin, timeSec, timeMSec);
+	return strTime;
+}
+
+void drawFinishScreen()
+{
+	glColor4f(0.5, 1.0, 0.5, 1.0);	// Light Green
+	char* strFinishTime = new char[30];
+	int totalTime = gameTime + penaltyTime;
+	char* strTotalTime = getTimeString(totalTime);
+	char* strBestTime = getTimeString(bestTime);
+
+	sprintf( strFinishTime, "Your time is: %s", strTotalTime);
+	renderBitmapString(20, 20, (void *)font, "Race Completed");
+	renderBitmapString(40, 40, (void *)font, strFinishTime);
+
+	// Do calculations vs best time and display appropriate message
+	if ( totalTime < bestTime )
+	{
+		char* strOldBest = new char[30];
+		renderBitmapString(20, 60, (void *)font, "Congratulations you have a new best time!");
+		sprintf(strOldBest, "The old best time was: %s", strBestTime);
+		renderBitmapString(20, 80, (void *)font, strOldBest);
+		// Output new time to saved file
+	}
+	else
+	{
+		renderBitmapString(20, 60, (void *)font, "You have not beaten the best time.");
+		renderBitmapString(20, 80, (void *)font, "Would you like to try again?");
+	}
+
+	// If you would like to play again, press Enter
+	renderBitmapString(20, 100, (void *)font, "If you would like to play again, press Enter.");
+	// Otherwise, press ESC to quit
+	renderBitmapString(20, 120, (void *)font, "Otherwise press ESC to quit.");
+
+	int MARGIN = 0;
+	// Display a backing screen so that the text is readable
+	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
+	glBegin(GL_QUADS);
+	glVertex2f(MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
+	glVertex2f(MARGIN, windowHeight - MARGIN);
+	glEnd();
+}
+
 // These next three functions are taken from Lighthouse 3D tutorials:
 // http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
 void setOrthographicProjection()
@@ -1446,7 +1536,7 @@ void renderBitmapString(float x, float y, void *font,char *string)
 // When there's nothing else to do, update animation
 void idle(void)
 {
-	if(!pause)
+	if(!pause && !gameFinished)
 	{
 		if (helicopterOn == true)
 		{
@@ -1544,42 +1634,54 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-	updateFPS();
-	updateGameTime();
-	displayText();
-	displayDashboard();
-
-    gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
-
-    // Rotate camera so that it is always behind the heli
-    glPushMatrix();
-    glTranslatef(heli.xPos, heli.yPos, heli.zPos);
-	glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
-	glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
-    glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
-
-    // Draw ground
-    glPushMatrix();
-    glTranslatef(0, groundHeight, 0);
-	glCallList(groundList);
-    glPopMatrix();
-
-    // Draw building
-    glPushMatrix();
-    drawBuilding(building0, 1);
-    glPopMatrix();
-
-	// Draw the helicopter
-	drawHeli();
-
-	// Draw the checkpoints
-	for (int checkPoint = 0; checkPoint < MAX_CHECKPOINTS; checkPoint++)
+	if ( !gameFinished )
 	{
-		drawCheckpoint( points[checkPoint].checkpoint);
+		updateFPS();
+		updateGameTime();
+		displayText();
+		displayDashboard();
+
+		gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
+
+		// Rotate camera so that it is always behind the heli
+		glPushMatrix();
+		glTranslatef(heli.xPos, heli.yPos, heli.zPos);
+		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
+		glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
+		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
+
+		// Draw ground
+		glPushMatrix();
+		glTranslatef(0, groundHeight, 0);
+		glCallList(groundList);
+		glPopMatrix();
+
+		// Draw building
+		glPushMatrix();
+		drawBuilding(building0, 1);
+		glPopMatrix();
+
+		// Draw the helicopter
+		drawHeli();
+
+		// Draw landing pads A and B
+		drawLandingPad(landingPadA, 3);
+		drawLandingPad(landingPadB, 4);
+
+		// Draw the checkpoints
+		for (int checkPoint = 0; checkPoint < MAX_CHECKPOINTS; checkPoint++)
+		{
+			drawCheckpoint( points[checkPoint].checkpoint);
+		}
+
+		glPopMatrix();
 	}
-
-    glPopMatrix();
-
+	else
+	{
+		setOrthographicProjection();
+		drawFinishScreen();
+		resetPerspectiveProjection();
+	}
     glutSwapBuffers();
 }
 
