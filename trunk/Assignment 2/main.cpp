@@ -82,7 +82,7 @@ objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
 float windscreenRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
-objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 4, 4};
+objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 8, 4};
 objectBox landingPadA = {0, 0.1, 0, 0, 0, 0, 3, 0.1, 3};
 objectBox landingPadB = {-10, 0.1, -10, 0, 0, 0, 3, 0.1, 3};
 
@@ -92,6 +92,9 @@ bool movingUp = false;
 bool movingDown = false;
 bool turningLeft = false;
 bool turningRight = false;
+
+bool stopHeli = false;
+bool startHeli = false;
 
 bool gameFinished = false;
 
@@ -922,7 +925,6 @@ void checkHeliLanding(void)
 		if ( helicopterOn == false && checkpointNum == MAX_CHECKPOINTS )
 		{
 				gameFinished = true;
-				cout << "Finito!! Your time is " << gameTime + penaltyTime << ".\n";
 		}
 	}
 }
@@ -972,39 +974,6 @@ float sinDeg(float degRot)
 	return (sin(radRot));
 }
 
-//start copter 
-void heliStart(int i) 
-{
-	if (rotorSpeed < MAX_ROTOR_SPEED)
-	{
-		rotorSpeed = rotorSpeed + 0.2; 
-		heli.yPos += 0.02; 
-		eye.yPos += 0.02; 
-		glutTimerFunc(40, heliStart, ++i); 
-	} 
-	else helicopterOn = true; 
-} 
-
-//stop copter 
-void heliStop(int i) 
-{ 
-	if (rotorSpeed > 0)
-	{ 
-		rotorSpeed = rotorSpeed - 0.2; 
-	} 
-	if (heli.yPos > groundHeight + heli.ySize)
-	{ 
-		heli.yPos -= 0.02; 
-		eye.yPos -= 0.02; 
-		glutTimerFunc(40, heliStop, ++i); 
-	}
-	if (rotorSpeed < MAX_ROTOR_SPEED) 
-	{
-		helicopterOn = false;
-		checkHeliLanding();
-	}
-}
-
 void restartGame()
 {
 	gameFinished = false;
@@ -1024,6 +993,7 @@ void restartGame()
 	heli.xPos = 0;
 	heli.yPos = groundHeight + heli.ySize;
 	heli.zPos = 0;
+	heli.rotY = 0;
 
 	// Reset eye position
 	eye.xPos = cameraDistance;
@@ -1050,30 +1020,32 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
     {
         // If ESC key is pressed, exit
         case 27:
-                glutLeaveMainLoop();
-                break;
+            glutLeaveMainLoop();
+            break;
 		case '1':
-				if( windscreenRot > 0 )
-					windscreenRot = 0.0;
-				else
-					windscreenRot = 35.0;
-				glutPostRedisplay();
-				break;
+			if( windscreenRot > 0 )
+				windscreenRot = 0.0;
+			else
+				windscreenRot = 35.0;
+			glutPostRedisplay();
+			break;
         case 'a':
-                // Start moving the heli up
-                movingUp = true;
-                break;
+            // Start moving the heli up
+            movingUp = true;
+            break;
         case 'z':
-                // Start moving the heli down
-                movingDown = true;
-                break;
+            // Start moving the heli down
+            movingDown = true;
+            break;
 		case 's':
 			// Start Blades
-			heliStart(0);
+			//heliStart(0);
+			startHeli = true;
 			break;
 		case 'x':
 			//Stop Blades
-			heliStop(rotorSpeed);	
+			stopHeli = true;
+			//heliStop(rotorSpeed);	
 			break;
     }
 }
@@ -1544,6 +1516,45 @@ void renderBitmapString(float x, float y, void *font,char *string)
 // When there's nothing else to do, update animation
 void idle(void)
 {
+	if (stopHeli)
+	{
+		if (rotorSpeed > 0)
+		{
+			rotorSpeed = rotorSpeed - 0.2; 
+		}
+		else
+			stopHeli = false;
+
+		if (heli.yPos > groundHeight + heli.ySize)
+		{
+			checkHeliLanding();
+			heli.yPos -= 0.02;
+			eye.yPos -= 0.02;
+
+			if (heli.yPos < groundHeight + heli.ySize)
+				heli.yPos = groundHeight + heli.ySize;
+		}
+
+		if (rotorSpeed < MAX_ROTOR_SPEED) 
+		{
+			helicopterOn = false;
+		}
+	}
+	else if (startHeli)
+	{
+		if (rotorSpeed < MAX_ROTOR_SPEED)
+		{
+			rotorSpeed = rotorSpeed + 0.2; 
+			heli.yPos += 0.02; 
+			eye.yPos += 0.02; 
+		} 
+		else
+		{
+			helicopterOn = true;
+			startHeli = false;
+		}
+	}
+
 	if(!pause && !gameFinished)
 	{
 		if (helicopterOn == true)
@@ -1608,9 +1619,14 @@ void idle(void)
 			}
 			else if (movingDown)
 			{
-				if(heli.yPos > groundHeight + heli.ySize/2.0)
+				if(heli.yPos > groundHeight + heli.ySize)
 				{
 					moveHeliDown(heliSpeed, true);
+				}
+
+				if(heli.yPos < groundHeight + heli.ySize)
+				{
+					heli.yPos = groundHeight + heli.ySize;
 				}
 			}
 		}
