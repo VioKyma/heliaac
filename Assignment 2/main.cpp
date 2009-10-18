@@ -754,12 +754,18 @@ void drawCheckpoint(int checkpoint)
 
 void drawLandingPad(objectBox pad, int textureNum)
 {
+	// Use planes to determine how far the texture is stretched/tiled
+	GLfloat texParamsX[4] = {0.4, 0.0, 0.2, 0.0};
+	GLfloat texParamsY[4] = {0.0, 0.4, 0.2, 0.0};
+
 	glPushMatrix();
 	// Draw a landing pad
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textures[textureNum]);
 	glTexGenf(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glTexGenfv(GL_S, GL_OBJECT_PLANE, texParamsX);
 	glTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glTexGenfv(GL_T, GL_OBJECT_PLANE, texParamsY);
 	glEnable(GL_TEXTURE_GEN_S);
 	glEnable(GL_TEXTURE_GEN_T);
 
