@@ -10,9 +10,8 @@
 
 =Chris:=
 
-  * Ground collision - half done. Waiting to adjust for new model.
-  * Textures for building
-  * Implementing ordering of the checkpoints and time penalties for skipping
+  * Researching whether it would be better to go for GLSL or another heli.
+  * 
 
 =Ashley:=
 
