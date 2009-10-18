@@ -1008,20 +1008,28 @@ void heliStop(int i)
 void restartGame()
 {
 	gameFinished = false;
+
 	// Reset checkpoints
+	checkpointNum = 0;
 	for (int num = 0; num < MAX_CHECKPOINTS; num++)
 	{
 		points[num].activated = false;
 	}
+
 	// Reset time
 	gameTime = 0;
+	penaltyTime = 0;
 
 	// Reset heli position
 	heli.xPos = 0;
-	heli.yPos = groundSize + heli.ySize;
+	heli.yPos = groundHeight + heli.ySize;
 	heli.zPos = 0;
 
-	// TODO Reset eye position
+	// Reset eye position
+	eye.xPos = cameraDistance;
+	eye.yPos = heli.yPos;
+	eye.zPos = cameraDistance;
+	eye.rotY = 135;
 }
 
 // Catches keyboard key presses
