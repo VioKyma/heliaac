@@ -8,3 +8,4 @@
   * Created checkpoints and their collision detection and can now be rotated
   * Loading a bitmap from a file
   * Applied a texture to the ground
+  * Tail Rotor
