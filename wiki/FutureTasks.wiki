@@ -3,7 +3,6 @@
 = Things To Do In Future =
 ==Part A==
 
-  * *Tail rotor*
   * Opening door on heli
   * Point A and point B
   * Moving checkpoint (?)
