@@ -75,6 +75,7 @@ float sinDeg(float degRot);
 GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
 void displayDashboard(void);
 void drawFinishScreen(void);
+void enableFog(void);
 
 float cameraDistance = 5.0;
 float cameraZoom = 1.5;
@@ -174,6 +175,8 @@ void init(void)
 	glEnable(GL_LIGHT0);
     glShadeModel(GL_FLAT);
 
+	enableFog();
+
     // Make object materials equal to glColor*() properties
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
@@ -246,6 +249,20 @@ void init(void)
 	points[2].yPos = points[2].ySize/2;		// Make yPos so that the bottom edge is on the ground
 	points[2].zPos = -5.0;
 	points[2].rotY = 45;
+}
+
+void enableFog(void)
+{
+	GLfloat fogColor[4] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat density = 0.05;
+
+	glEnable(GL_DEPTH_TEST); //enable the depth testing
+	glEnable(GL_FOG); //enable the fog
+	glFogi(GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
+
+	glFogfv(GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
+	glFogf(GL_FOG_DENSITY, density); //set the density to the value above
+	glHint(GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
 }
 
 GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
