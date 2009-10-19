@@ -212,6 +212,7 @@ void init(void)
 	textures[2] = loadTextureBMP( "Textures/heliTex.bmp", true, 256, 256 );
 	textures[3] = loadTextureBMP( "Textures/heliPadA.bmp", true, 256, 256 );
 	textures[4] = loadTextureBMP( "Textures/heliPadB.bmp", true, 256, 256 );
+	textures[5] = loadTextureBMP( "Textures/sky.bmp", true, 256, 256);
 
 	// Define the ground display list
     groundList = glGenLists(1);
@@ -301,6 +302,76 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 
     return texture;
 }
+
+
+//draw sky
+void drawSky()
+{
+	float roll = 0.0;
+	float skyz = 0.0;
+	float skyx = 0.0;
+
+	if (heli.zPos + 15 < groundSize)
+	{
+		skyz = heli.zPos + 15;
+	}
+	else skyz = groundSize;
+
+	if (heli.xPos + 15 < groundSize)
+	{
+		skyx = heli.xPos + 15;
+	}
+	else skyx = groundSize;
+	
+
+
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
+	glColor3f(0.33, 0.64, 1);
+	glBegin(GL_QUADS);							// Begin Drawing Quads
+	//top sky
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, 20, groundSize);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(groundSize, 20, groundSize);	// Top Left
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(groundSize, 20, -groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 20, -groundSize);	// Bottom Right
+	//right sky
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(groundSize, 20, skyz);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, 20, skyz);	// Top Left
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 0, skyz);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(groundSize, 0, skyz);	// Bottom Right
+	//front sky
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyx, 20, groundSize);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyx, 20, -groundSize);	// Top Left
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(skyx, 0, -groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(skyx, 0, groundSize);	// Bottom Right
+
+
+		//glTexCoord2f(1.5f,roll+1.0f); glVertex3f( 28.0f,+7.0f,-50.0f);		// Top Right
+		//glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Top Left
+		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,-3.0f,-50.0f);		// Bottom Left
+		//glTexCoord2f(1.5f,roll+0.0f); glVertex3f( 28.0f,-3.0f,-50.0f);		// Bottom Right
+
+		//// making sky roll toward viewer
+		//glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f( 28.0f,+7.0f,0.0f);	// Top Right
+		//glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-28.0f,+7.0f,0.0f);	// Top Left
+		//glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);	// Bottom Left
+		//glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f( 28.0f,+7.0f,-50.0f);	// Bottom Right
+
+		//glTexCoord2f(1.5f,roll+1.0f); glVertex3f( 28.0f,+7.0f,0.0f);		// Top Right
+		//glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-28.0f,+7.0f,0.0f);		// Top Left
+		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Bottom Left
+		//glTexCoord2f(1.5f,roll+0.0f); glVertex3f( 28.0f,+7.0f,-50.0f);		// Bottom Right
+	glEnd();	// Done Drawing Quads
+		glDisable(GL_TEXTURE_2D);
+
+}
+
+
+
+
+
+
+
 
 void drawBuilding(objectBox building, int textureNum)
 {
@@ -1452,6 +1523,7 @@ void drawFinishScreen()
 		sprintf(strOldBest, "The old best time was: %s", strBestTime);
 		renderBitmapString(20, 80, (void *)font, strOldBest);
 		// Output new time to saved file
+
 	}
 	else
 	{
@@ -1679,6 +1751,12 @@ void display(void)
 		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 		glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
+
+		//Draw Sky
+		glPushMatrix;
+		drawSky();
+		glPopMatrix;
+
 
 		// Draw ground
 		glPushMatrix();
