@@ -1509,7 +1509,7 @@ void displayDashboard()
 
 	// Display checkpoint number
 	char* strCheckpoint = new char[14];
-	sprintf(strCheckpoint, "Checkpoint: %.2i", checkpointNum);
+	sprintf(strCheckpoint, "Checkpoint: %.2i/%.2i", checkpointNum, MAX_CHECKPOINTS);
 	renderBitmapString(3 * (dashWidth / 5), dashHeight + 60, (void *)font, strCheckpoint);
 
 	// Display altitude
