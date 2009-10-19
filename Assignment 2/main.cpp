@@ -13,6 +13,7 @@
 #include<math.h>
 #include<string>
 #include<iostream>
+#include<fstream>
 #include"Bitmap.h"
 
 using namespace std;
@@ -77,6 +78,7 @@ void displayDashboard(void);
 void drawFinishScreen(void);
 void enableFog(void);
 char* getTimeString(int time);
+int readFile(char* fileName);
 
 float cameraDistance = 5.0;
 float cameraZoom = 1.5;
@@ -134,7 +136,7 @@ int timeBase = 0;
 float fps = 50.0;
 char* strFps = new char[4];     // FPS string for display on-screen
 char* strGameTime = new char[8];	// Game time string
-int bestTime = 100000;
+int bestTime = 0;
 char* strBestTime = new char[8];
 int gameTime = 0;
 int gameTimeBase = 0;
@@ -181,6 +183,9 @@ void init(void)
 	{
 		enableFog();
 	}
+
+	// Get best time from a file
+	bestTime = readFile("Save/bestTime.txt");
 
     // Make object materials equal to glColor*() properties
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -969,29 +974,6 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 	return collision;
 }
 
-/*bool checkSphereBoxCollision(object object1, objectBox object2)
-{
-	bool collision = false;
-
-	objectBox diff = {0, 0, 0, 0};
-
-    //compute the absolute (positive) distance from object1 to object2
-    diff.x = abs(object1.x - object2.x);
-    diff.y = abs(object1.y - object2.y);
-    diff.z = abs(object1.z - object2.z);
-    diff.radx = object1.rad + object2.radx;
-    diff.rady = object1.rad + object2.rady;
-    diff.radz = object1.rad + object2.radz;
-
-    // If the distance between each of the three dimensions is within the radii combined, there is a collision
-    if(diff.x < diff.radx && diff.y < diff.rady && diff.z < diff.radz)
-    {
-            collision = true;
-    }
-
-	return collision;
-}*/
-
 void checkHeliThruCollisions(void)
 {
 	// for each checkpoint, if it is not activated, check for collision with helicopter
@@ -1082,6 +1064,9 @@ float sinDeg(float degRot)
 void restartGame()
 {
 	gameFinished = false;
+
+	// Read best time from file in case it has changed
+	bestTime = readFile("Save/bestTime.txt");
 
 	// Reset checkpoints
 	checkpointNum = 0;
@@ -1543,6 +1528,26 @@ char* getTimeString(int time)
 	return strTime;
 }
 
+int readFile(char* fileName)
+{
+	int time;
+
+	ifstream fin;
+	fin.open(fileName);
+	fin >> time;
+	fin.close();
+
+	return time;
+}
+
+void writeFile(char* fileName, int time)
+{
+	ofstream fout;
+	fout.open(fileName);
+	fout << time;
+	fout.close();
+}
+
 void drawFinishScreen()
 {
 	glColor4f(0.5, 1.0, 0.5, 1.0);	// Light Green
@@ -1563,7 +1568,7 @@ void drawFinishScreen()
 		sprintf(strOldBest, "The old best time was: %s", strBestTime);
 		renderBitmapString(20, 80, (void *)font, strOldBest);
 		// Output new time to saved file
-
+		writeFile("Save/bestTime.txt", totalTime);
 	}
 	else
 	{
