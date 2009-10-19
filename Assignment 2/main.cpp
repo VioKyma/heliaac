@@ -313,34 +313,35 @@ void drawSky()
 	float skyx = 0.0;
 	float skyxb = 0.0;
 	float skyHeight = 20.0;
+	float skyDist = 20.0;
 
-	if (heli.zPos + 15 < groundSize)
+	if (heli.zPos + skyDist < groundSize)
 	{
-		skyz = heli.zPos + 15;
+		skyz = heli.zPos + skyDist;
 	}
 	else skyz = groundSize;
 
-	if (heli.zPos - 15 > -groundSize)
+	if (heli.zPos - skyDist > -groundSize)
 	{
-		skyzb = heli.zPos - 15;
+		skyzb = heli.zPos - skyDist;
 	}
 	else skyzb = -groundSize;
 
-	if (heli.xPos + 15 < groundSize)
+	if (heli.xPos + skyDist < groundSize)
 	{
-		skyx = heli.xPos + 15;
+		skyx = heli.xPos + skyDist;
 	}
 	else skyx = groundSize;
 
-	if (heli.xPos - 15 > -groundSize)
+	if (heli.xPos - skyDist > -groundSize)
 	{
-		skyxb = heli.xPos - 15;
+		skyxb = heli.xPos - skyDist;
 	}
 	else skyxb = -groundSize;
 
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
 	glColor3f(0.33, 0.64, 1);
 	glBegin(GL_QUADS);							// Begin Drawing Quads
 	//top sky
@@ -375,16 +376,8 @@ void drawSky()
 		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Bottom Left
 		//glTexCoord2f(1.5f,roll+0.0f); glVertex3f( 28.0f,+7.0f,-50.0f);		// Bottom Right
 	glEnd();	// Done Drawing Quads
-		glDisable(GL_TEXTURE_2D);
-
+	glDisable(GL_TEXTURE_2D);
 }
-
-
-
-
-
-
-
 
 void drawBuilding(objectBox building, int textureNum)
 {
@@ -1751,7 +1744,7 @@ void reshape(int w, int h)
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-1.0, 1.0, -1.0, 1.0, cameraZoom, 30.0);
+    glFrustum(-1.0, 1.0, -1.0, 1.0, cameraZoom, 60.0);
     glMatrixMode(GL_MODELVIEW);
 
 	windowWidth = w;
