@@ -19,3 +19,10 @@ Thanks :)
 ----
 
 Is anyone else getting the error message "Repository folder has been successfully checked out but no one solution file found"? or know how to fix it? I can manually grab the files as a work around.
+
+
+----
+
+I'm not getting that problem, but I am getting another that wasn't there when I was looking at this at uni the other day.
+
+When you go through the the first checkpoint, one of the others also lights up green? Anyone getting this too?
