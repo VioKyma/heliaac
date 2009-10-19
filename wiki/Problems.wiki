@@ -28,3 +28,4 @@ I'm not getting that problem, but I am getting another that wasn't there when I 
 When you go through the the first checkpoint, one of the others also lights up green? Anyone getting this too?
 
 -- Yes I am. I wrote it so that if you go through checkpoint 2 without going through checkpoint 1, it will light up checkpoint 1 and penalize the player for missing a point. There are currently three points: 00, 01, 02. Chris
+I will have to change the numbers so that they start at one otherwise it's too confusing.
