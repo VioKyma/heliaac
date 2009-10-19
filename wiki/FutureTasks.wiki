@@ -19,3 +19,8 @@
 
   * I regards to the random generation of stuff, I was thinking that we could randomly choose a position of the next checkpoint wrt the last one. So this would mean that we could have just about any combination of paths and it would be entirely random... sort of. What do you think?
   * Or do you think that we should load different maps from a file, each with their own best time?
+
+  *I'm not sure if you had seen Lindsay's reply:
+"Hmmm. I think something more random than that would be better, but your suggestion would cover at least half of that from a marking point of view."
+
+I think the first suggestion you said would get us more marks?
