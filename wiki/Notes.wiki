@@ -26,3 +26,7 @@ Just some notes on the checkpoints:
 ----
 
   * So I have a question for you guys, probably ask tomorrow during prac but thought I'd post it on here too. To do with the game logic, do we want the player to have to go through the check points in sequence eg you can't go through gate 2 til you go through gate 1 or just however they want to get through them? -- Chris
+
+----
+
+ * I've added a top, front and right sky (for testing) that move with the heli to stay in front of the clipping plane. There is a texture available (delete the comments around glEnable(..textures..) inside the drawSky fn to see). I don't think a texture will work with the current method of drawing the sky though.. unless there is a better way of doing this?
