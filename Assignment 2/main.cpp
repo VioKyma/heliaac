@@ -254,7 +254,7 @@ void init(void)
 void enableFog(void)
 {
 	GLfloat fogColor[4] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat density = 0.05;
+	GLfloat density = 0.04;
 
 	glEnable(GL_DEPTH_TEST); //enable the depth testing
 	glEnable(GL_FOG); //enable the fog
@@ -262,7 +262,7 @@ void enableFog(void)
 
 	glFogfv(GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
 	glFogf(GL_FOG_DENSITY, density); //set the density to the value above
-	glHint(GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
+	glHint(GL_FOG_HINT, GL_DONT_CARE); // set the fog to look the nicest, may slow down on older cards
 }
 
 GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
@@ -817,7 +817,7 @@ void drawCheckpoint(int checkpoint)
 	// draw checkpoint number
 	const int POINT_NUM_STR = 2;
 	char* pointStr = new char[POINT_NUM_STR];
-	sprintf(pointStr, "%.2i", checkpoint);
+	sprintf(pointStr, "%.2i", checkpoint + 1);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glRasterPos3f(points[checkpoint].xPos, points[checkpoint].yPos, points[checkpoint].zPos);
 	for(int i = 0; i < POINT_NUM_STR; i++)
