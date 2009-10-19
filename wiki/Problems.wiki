@@ -14,3 +14,8 @@ Ashley
 
 Thanks :)
 --Aleesha
+
+
+----
+
+Is anyone else getting the error message "Repository folder has been successfully checked out but no one solution file found"? or know how to fix it? I can manually grab the files as a work around.
