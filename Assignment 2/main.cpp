@@ -9,8 +9,10 @@
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
 // Bitmap.h and Bitmap.cpp found at: http://www.gamedev.net/reference/articles/article1966.asp
 
+#include<GL/glew.h>
 #include<GL/freeglut.h>
 #include<math.h>
+
 #include<string>
 #include<iostream>
 #include<fstream>
@@ -79,6 +81,8 @@ void drawFinishScreen(void);
 void enableFog(void);
 char* getTimeString(int time);
 int readFile(char* fileName);
+void setupShaders(void);
+char* readShaderFile(char* fileName);
 
 float cameraDistance = 5.0;
 float cameraZoom = 1.5;
@@ -168,6 +172,11 @@ checkPoint points[MAX_CHECKPOINTS];
 int checkpointNum = 0;
 
 bool heliTextures = true;
+bool shaderOn = false;
+
+GLuint vertexShader;
+GLuint fragmentShader;
+GLuint shaderProgram;
 
 // Initialise the OpenGL properties
 void init(void)
@@ -183,6 +192,8 @@ void init(void)
 	{
 		enableFog();
 	}
+
+	setupShaders();
 
 	// Get best time from a file
 	bestTime = readFile("Save/bestTime.txt");
@@ -260,6 +271,70 @@ void init(void)
 	points[2].zPos = -5.0;
 	points[2].rotY = 45;
 }
+
+// These functions have been adapted from Lighthouse 3D GLSL Examples
+// http://www.lighthouse3d.com/opengl/glsl/index.php?oglexample1 
+char* readShaderFile(char* fileName)
+{
+	FILE *fp;
+	char *content = NULL;
+
+	int count=0;
+
+	if (fileName != NULL) 
+	{
+		fp = fopen(fileName,"rt");
+
+		if (fp != NULL) 
+		{
+			fseek(fp, 0, SEEK_END);
+			count = ftell(fp);
+			rewind(fp);
+
+			if (count > 0) 
+			{
+				content = (char *)malloc(sizeof(char) * (count+1));
+				count = fread(content,sizeof(char),count,fp);
+				content[count] = '\0';
+			}
+			fclose(fp);
+		}
+	}
+	return content;
+}
+
+void setupShaders()
+{
+	char *vs;
+	char *fs;
+
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);	
+
+	vs = readShaderFile("Shaders/toon.vert");
+	fs = readShaderFile("Shaders/toon.frag");
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	glShaderSource(vertexShader, 1, &vv, NULL);
+	glShaderSource(fragmentShader, 1, &ff, NULL);
+
+	free(vs);
+	free(fs);
+
+	glCompileShader(vertexShader);
+	glCompileShader(fragmentShader);
+
+	shaderProgram = glCreateProgram();
+
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+
+	glLinkProgram(shaderProgram);
+	glUseProgram(shaderProgram);
+}
+// End GLSL adapted code
 
 void enableFog(void)
 {
@@ -1240,6 +1315,9 @@ void special(int key, int mouseX, int mouseY)
                     glDisable(GL_FOG);
                 }
 				break;
+		case GLUT_KEY_F5:
+				shaderOn = !shaderOn;
+				break;
 		case GLUT_KEY_F8:
                 // turn the light/s on or off
                 light0 = !light0;
@@ -1805,7 +1883,6 @@ void display(void)
 		drawSky();
 		glPopMatrix;
 
-
 		// Draw ground
 		glPushMatrix();
 		glTranslatef(0, groundHeight, 0);
@@ -1817,8 +1894,13 @@ void display(void)
 		drawBuilding(building0, 1);
 		glPopMatrix();
 
+		if (shaderOn)
+		{
+			glUseProgram(shaderProgram);
+		}
 		// Draw the helicopter
 		drawHeli();
+		glUseProgram(0);
 
 		// Draw landing pads A and B
 		drawLandingPad(landingPadA, 3);
@@ -1868,6 +1950,16 @@ void mymenu(int choice)
 	}
 }
 
+void cleanUpShaders()
+{
+	glDetachShader(shaderProgram, vertexShader);
+	glDetachShader(shaderProgram, fragmentShader);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	glDeleteProgram(shaderProgram);
+}
 
 int main(int argc, char** argv)
 {
@@ -1876,6 +1968,16 @@ int main(int argc, char** argv)
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(windowPosWidth, windowPosHeight);
     glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
+	glewInit();
+	if (glewIsSupported("GL_VERSION_2_0"))
+	{
+		printf("Ready for OpenGL 2.0\n");
+	}
+	else 
+	{
+		printf("OpenGL 2.0 not supported\n");
+		exit(1);
+	}
     init();
     glutDisplayFunc(display);
     glutSpecialFunc(special);
@@ -1909,8 +2011,10 @@ int main(int argc, char** argv)
 	glutAddMenuEntry("Help/Credits/Scores", 5);
 	glutAddSubMenu("Exit Program", subMenu3);
 	// set the menu to the right button
-	glutAttachMenu(GLUT_RIGHT_BUTTON);  
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
     glutMainLoop();
+
+	cleanUpShaders();
     return 0;
 }
