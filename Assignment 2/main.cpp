@@ -76,6 +76,7 @@ GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
 void displayDashboard(void);
 void drawFinishScreen(void);
 void enableFog(void);
+char* getTimeString(int time);
 
 float cameraDistance = 5.0;
 float cameraZoom = 1.5;
@@ -154,6 +155,7 @@ int last_mouse_x = 0;
 int last_mouse_y = 0;
 bool leftMouseDown = false;
 
+bool fogOn = true;
 float pi = 3.1415926535897932384626433832795;
 
 const int MAX_TEXTURES = 10;
@@ -175,7 +177,10 @@ void init(void)
 	glEnable(GL_LIGHT0);
     glShadeModel(GL_FLAT);
 
-	enableFog();
+	if (fogOn)
+	{
+		enableFog();
+	}
 
     // Make object materials equal to glColor*() properties
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -1238,6 +1243,18 @@ void special(int key, int mouseX, int mouseY)
 					heliTexturesOff();
 				}
 				break;
+		case GLUT_KEY_F4:
+				// turn fog on or off
+				fogOn = !fogOn;
+				if (fogOn)
+				{          
+					glEnable(GL_FOG);
+                }
+                else
+                {
+                    glDisable(GL_FOG);
+                }
+				break;
 		case GLUT_KEY_F8:
                 // turn the light/s on or off
                 light0 = !light0;
@@ -1460,11 +1477,7 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + 10*HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
 
 	// Display the best time
-	int bestTimeMinutes = (bestTime % 1000) / 10;
-	int bestTimeSeconds = (bestTime % 60000) / 1000;
-	int bestTimeMillisec = (bestTime % 3600000) / 60000;
-
-	sprintf(strBestTime, "Best Time: %.2i:%.2i:%.2i", bestTimeMinutes, bestTimeSeconds, bestTimeMillisec);
+	strBestTime = getTimeString(bestTime);
 	renderBitmapString(HELP_SPACE, 350, (void *)font, strBestTime);
 
 	// Display who wrote the project and it's purpose
@@ -1514,11 +1527,7 @@ void displayDashboard()
 
 	// Display altitude
 	char* strPenalty = new char[22];
-	int penaltyTimeMinutes = (penaltyTime % 1000) / 10;
-	int penaltyTimeSeconds = (penaltyTime % 60000) / 1000;
-	int penaltyTimeMillisec = (penaltyTime % 3600000) / 60000;
-
-	sprintf(strPenalty, "Penalty Time: %.2i:%.2i:%.2i", penaltyTimeMinutes, penaltyTimeSeconds, penaltyTimeMillisec);
+	strPenalty = getTimeString(penaltyTime);
 	renderBitmapString(30, dashHeight + 60, (void *)font, strPenalty);
 
 	glEnable(GL_DEPTH_TEST);
