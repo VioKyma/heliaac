@@ -83,8 +83,8 @@ float windscreenRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
 objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 8, 4};
-objectBox landingPadA = {0, 0.1, 0, 0, 0, 0, 3, 0.1, 3};
-objectBox landingPadB = {-10, 0.1, -10, 0, 0, 0, 3, 0.1, 3};
+objectBox landingPadA = {0, 0.002, 0, 0, 0, 0, 3, 0.1, 3};
+objectBox landingPadB = {-10, 0.002, -10, 0, 0, 0, 3, 0.1, 3};
 
 bool movingForward = false;
 bool movingBack = false;
@@ -309,7 +309,10 @@ void drawSky()
 {
 	float roll = 0.0;
 	float skyz = 0.0;
+	float skyzb = 0.0;
 	float skyx = 0.0;
+	float skyxb = 0.0;
+	float skyHeight = 20.0;
 
 	if (heli.zPos + 15 < groundSize)
 	{
@@ -317,46 +320,56 @@ void drawSky()
 	}
 	else skyz = groundSize;
 
+	if (heli.zPos - 15 > -groundSize)
+	{
+		skyzb = heli.zPos - 15;
+	}
+	else skyzb = -groundSize;
+
 	if (heli.xPos + 15 < groundSize)
 	{
 		skyx = heli.xPos + 15;
 	}
 	else skyx = groundSize;
-	
+
+	if (heli.xPos - 15 > -groundSize)
+	{
+		skyxb = heli.xPos - 15;
+	}
+	else skyxb = -groundSize;
 
 
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
 	glColor3f(0.33, 0.64, 1);
 	glBegin(GL_QUADS);							// Begin Drawing Quads
 	//top sky
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, 20, groundSize);	// Top Right
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(groundSize, 20, groundSize);	// Top Left
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(groundSize, 20, -groundSize);	// Bottom Left
-		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 20, -groundSize);	// Bottom Right
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, groundSize);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, groundSize);	// Top Left
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(groundSize, skyHeight, -groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, skyHeight, -groundSize);	// Bottom Right
 	//right sky
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(groundSize, 20, skyz);	// Top Right
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, 20, skyz);	// Top Left
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, skyz);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, skyz);	// Top Left
 		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 0, skyz);	// Bottom Left
 		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(groundSize, 0, skyz);	// Bottom Right
 	//front sky
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyx, 20, groundSize);	// Top Right
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyx, 20, -groundSize);	// Top Left
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyx, skyHeight, groundSize);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyx, skyHeight, -groundSize);	// Top Left
 		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(skyx, 0, -groundSize);	// Bottom Left
 		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(skyx, 0, groundSize);	// Bottom Right
-
-
-		//glTexCoord2f(1.5f,roll+1.0f); glVertex3f( 28.0f,+7.0f,-50.0f);		// Top Right
-		//glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Top Left
-		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,-3.0f,-50.0f);		// Bottom Left
-		//glTexCoord2f(1.5f,roll+0.0f); glVertex3f( 28.0f,-3.0f,-50.0f);		// Bottom Right
-
-		//// making sky roll toward viewer
-		//glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f( 28.0f,+7.0f,0.0f);	// Top Right
-		//glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-28.0f,+7.0f,0.0f);	// Top Left
-		//glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);	// Bottom Left
-		//glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f( 28.0f,+7.0f,-50.0f);	// Bottom Right
-
+	// left sky
+		glTexCoord2f(1.5f,roll+1.0f); glVertex3f(groundSize, skyHeight, skyzb);		// Top Right
+		glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-groundSize, skyHeight, skyzb);		// Top Left
+		glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-groundSize, 0.0, skyzb);		// Bottom Left
+		glTexCoord2f(1.5f,roll+0.0f); glVertex3f(groundSize, 0.0, skyzb);		// Bottom Right
+	// back sky
+		// making sky roll toward viewer
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyxb,skyHeight,-groundSize);	// Top Right
+		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyxb,skyHeight,groundSize);	// Top Left
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(skyxb,0.0,groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(skyxb,0.0,-groundSize);	// Bottom Right
+	// Bottom sky?
 		//glTexCoord2f(1.5f,roll+1.0f); glVertex3f( 28.0f,+7.0f,0.0f);		// Top Right
 		//glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-28.0f,+7.0f,0.0f);		// Top Left
 		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Bottom Left
@@ -999,7 +1012,7 @@ void checkHeliLanding(void)
 	if ( checkBoxCollision(heli, landingPadB) )
 	{
 		// If engine is off and all checkpoints have been activated
-		if ( helicopterOn == false && checkpointNum == MAX_CHECKPOINTS )
+		if ( !helicopterOn && !stopHeli && checkpointNum == MAX_CHECKPOINTS )
 		{
 				gameFinished = true;
 		}
@@ -1116,13 +1129,11 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
             break;
 		case 's':
 			// Start Blades
-			//heliStart(0);
 			startHeli = true;
 			break;
 		case 'x':
 			//Stop Blades
 			stopHeli = true;
-			//heliStop(rotorSpeed);	
 			break;
     }
 }
@@ -1395,13 +1406,14 @@ void displayText()
 	// Display FPS
     renderBitmapString(textX, textY, (void *)font, strFps);
 
+	displayDashboard();
+
 	// If paused, display help/controls/scores
 	if (pause)
 	{
 		displayHelp();
 	}
 
-	displayDashboard();
     resetPerspectiveProjection();
     glPopMatrix();
 }
@@ -1412,7 +1424,18 @@ void displayHelp()
 	const int HELP_YPOS = 100;
 	const float MARGIN = 5.0;
 
-	glColor4f(1.0, 0.7, 0.2, 1.0);
+	glDisable(GL_DEPTH_TEST);
+
+	// Display a backing screen so that the text is readable
+	glColor4f(0.5, 0.5, 0.5, 0.8);	// Grey
+	glBegin(GL_QUADS);
+	glVertex2f(MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
+	glVertex2f(MARGIN, windowHeight - MARGIN);
+	glEnd();
+
+	glColor4f(1.0, 0.7, 0.2, 1.0);	// Orange
 
 	renderBitmapString(HELP_SPACE, HELP_YPOS, (void *)font, "F1 - Pause and bring up this screen");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
@@ -1438,14 +1461,7 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, 400, (void *)font, "Written by Aleesha, Ashley and Chris");
 	renderBitmapString(HELP_SPACE, 425, (void *)font, " for Cp2060 Assignment 2");
 
-	// Display a backing screen so that the text is readable
-	glColor4f(0.5, 0.5, 0.5, 0.8);	// Grey
-	glBegin(GL_QUADS);
-	glVertex2f(MARGIN, MARGIN);
-	glVertex2f(windowWidth - MARGIN, MARGIN);
-	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
-	glVertex2f(MARGIN, windowHeight - MARGIN);
-	glEnd();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void displayDashboard()
@@ -1455,6 +1471,17 @@ void displayDashboard()
 
 	float dashHeight = windowHeight - (DASH_HEIGHT_PC * windowHeight);
 	float dashWidth = windowWidth - (DASH_WIDTH_PC * windowWidth);
+
+	glDisable(GL_DEPTH_TEST);
+
+	// Draw the dash board
+	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
+	glBegin(GL_QUADS);
+	glVertex2f(0.0, dashHeight);
+	glVertex2f(dashWidth, dashHeight);
+	glVertex2f(dashWidth, windowHeight);
+	glVertex2f(0.0, windowHeight);
+	glEnd();
 
 	glColor4f(0.0, 1.0, 0.5, 1.0);	// Green
 	// Display game time
@@ -1484,13 +1511,7 @@ void displayDashboard()
 	sprintf(strPenalty, "Penalty Time: %.2i:%.2i:%.2i", penaltyTimeMinutes, penaltyTimeSeconds, penaltyTimeMillisec);
 	renderBitmapString(30, dashHeight + 60, (void *)font, strPenalty);
 
-	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
-	glBegin(GL_QUADS);
-	glVertex2f(0.0, dashHeight);
-	glVertex2f(dashWidth, dashHeight);
-	glVertex2f(dashWidth, windowHeight);
-	glVertex2f(0.0, windowHeight);
-	glEnd();
+	glEnable(GL_DEPTH_TEST);
 }
 
 char* getTimeString(int time)
@@ -1594,23 +1615,31 @@ void renderBitmapString(float x, float y, void *font,char *string)
 // When there's nothing else to do, update animation
 void idle(void)
 {
+	if (!helicopterOn)
+	{
+		checkHeliLanding();
+	}
+
 	if (stopHeli)
 	{
 		if (rotorSpeed > 0)
 		{
 			rotorSpeed = rotorSpeed - 0.2; 
 		}
-		else
-			stopHeli = false;
 
 		if (heli.yPos > groundHeight + heli.ySize)
 		{
-			checkHeliLanding();
 			heli.yPos -= 0.02;
 			eye.yPos -= 0.02;
 
 			if (heli.yPos < groundHeight + heli.ySize)
+			{
 				heli.yPos = groundHeight + heli.ySize;
+			}
+		}
+		else if (rotorSpeed <= 0)
+		{
+			stopHeli = false;
 		}
 
 		if (rotorSpeed < MAX_ROTOR_SPEED) 
@@ -1738,11 +1767,6 @@ void display(void)
 
 	if ( !gameFinished )
 	{
-		updateFPS();
-		updateGameTime();
-		displayText();
-		displayDashboard();
-
 		gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
 
 		// Rotate camera so that it is always behind the heli
@@ -1781,6 +1805,11 @@ void display(void)
 		{
 			drawCheckpoint( points[checkPoint].checkpoint);
 		}
+		
+		updateFPS();
+		updateGameTime();
+		displayText();
+		displayDashboard();
 
 		glPopMatrix();
 	}
