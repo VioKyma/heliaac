@@ -3,7 +3,7 @@
 // Christopher Trott, Ashley Sexton, Aleesha Torkington
 // Created on 28/08/09
 // Last Modified on 13/10/09 @ 13:08
-// 
+//
 // Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 // Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
@@ -15,7 +15,7 @@
 #include<fstream>
 #include<GL/glew.h>
 #include<GL/freeglut.h>
-
+ 
 #include"Bitmap.h"
 
 using namespace std;
@@ -623,8 +623,9 @@ void drawHeliBody()
 	// Tail vertices
 	vertex v8 = { -2.5, 0.4, 0.4 };
 	vertex v9 = { -0.8, 0.4, 0.4 };
-	vertex v10 = { -2.5, -0.4, 0.4 };
-	vertex v11 = { 0.85, -0.4, 0.4 };
+	vertex v10 = { 0.0, -0.4, 0.4 };
+	vertex v11 = { -2.5, -0.4, 0.4 };
+	vertex v14 = { -0.8, -0.4, 0.4 };
 	// Tip of tail
 	vertex v12 = {-2.8, 1.0, 0.4};
 	vertex v13 = {-2.8, -0.4, 0.4};
@@ -737,21 +738,58 @@ void drawHeliBody()
 	// Left
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v14.x, v14.y, v14.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
-	// Bottom
-	glTexCoord2f(0.0, 0.0);		glVertex3f(v10.x, v10.y, -v10.z);
-	glTexCoord2f(0.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
-	// Right
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v9.x, v9.y, -v9.z);
-	// Top
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	// Top
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, -v8.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
-	// Back
-	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
-	glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	// Right
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v14.x, v14.y, -v14.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, -v8.z);
 	glEnd();
+
+	//Bottom
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v11.x, v11.y, v11.z);
+	glVertex3f(v11.x, v11.y, -v11.z);
+	glVertex3f(v14.x, v14.y, -v14.z);
+	glVertex3f(v14.x, v14.y, v14.z);
+	glEnd();
+
+	//Bottom 2
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v14.x, v14.y, v14.z);
+	glVertex3f(v14.x, v14.y, -v14.z);
+	glVertex3f(v10.x, v10.y, -v10.z);
+	glVertex3f(v10.x, v10.y, v10.z);
+	glVertex3f(v14.x, v14.y, v14.z);
+	glEnd();
+	//Close to body (left)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v9.x, v9.y, v9.z);
+	glVertex3f(v14.x, v14.y, v14.z);
+	glVertex3f(v10.x, v10.y, v10.z);
+	glEnd();
+
+	//Close to body (right)
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(v9.x, v9.y, -v9.z);
+	glVertex3f(v14.x, v14.y, -v14.z);
+	glVertex3f(v10.x, v10.y, -v10.z);
+	glEnd();
+
+
+	//glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	//glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
+	//// Back
+	//glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
+	//glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, v10.z);
+	//glEnd();
 
 	
 	glPushMatrix();
@@ -1898,7 +1936,7 @@ void display(void)
 		glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
-		glUseProgram(0);
+//		glUseProgram(0);
 
 		//Draw Sky
 		if (shaderOn)
@@ -1993,18 +2031,18 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(windowPosWidth, windowPosHeight);
-    glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
+    glutCreateWindow("CP2060 Assignment 2 - Heliaac");
 	glewInit();
 
-	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
-	{
-		printf("Ready for GLSL\n");
-	}
-	else 
-	{
-		printf("Not totally ready :( \n");
-		exit(1);
-	}
+	//if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+	//{
+	//	printf("Ready for GLSL\n");
+	//}
+	//else 
+	//{
+	//	printf("Not totally ready :( \n");
+	//	exit(1);
+	//}
 
     init();
     glutDisplayFunc(display);
@@ -2017,7 +2055,7 @@ int main(int argc, char** argv)
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotion);
 
-	setupShaders();
+	//setupShaders();
 
 	// create sub menu 1
 	int subMenu1 = glutCreateMenu(mymenu);
@@ -2045,6 +2083,6 @@ int main(int argc, char** argv)
 
     glutMainLoop();
 
-	cleanUpShaders();
+	//cleanUpShaders();
     return 0;
 }
