@@ -81,7 +81,7 @@ void drawFinishScreen(void);
 void enableFog(void);
 char* getTimeString(int time);
 int readFile(char* fileName);
-//void setupShaders(void);
+void setupShaders(void);
 char* readShaderFile(char* fileName);
 
 float cameraDistance = 5.0;
@@ -310,17 +310,17 @@ void setupShaders()
 	char *vs;
 	char *fs;
 
-	//vertexShader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	//fragmentShader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	vertexShader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	fragmentShader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 
-	vs = readShaderFile("toon.vert");
-	fs = readShaderFile("toon.frag");
+	vs = readShaderFile("Shaders/toon.vert");
+	fs = readShaderFile("Shaders/toon.frag");
 
 	const char * vv = vs;
 	const char * ff = fs;
 
-	glShaderSourceARB(vertexShader, 1, &vv,NULL);
-	glShaderSourceARB(fragmentShader, 1, &ff,NULL);
+	glShaderSourceARB(vertexShader, 1, &vv, NULL);
+	glShaderSourceARB(fragmentShader, 1, &ff, NULL);
 
 	free(vs);
 	free(fs);
@@ -2045,6 +2045,6 @@ int main(int argc, char** argv)
 
     glutMainLoop();
 
-//	cleanUpShaders();
+	cleanUpShaders();
     return 0;
 }
