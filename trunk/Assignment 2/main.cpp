@@ -83,6 +83,7 @@ char* getTimeString(int time);
 int readFile(char* fileName);
 void setupShaders(void);
 char* readShaderFile(char* fileName);
+void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY);
 
 float cameraDistance = 5.0;
 float cameraZoom = 1.5;
@@ -184,8 +185,8 @@ GLhandleARB shaderProgram;
 void init(void)
 {
     glEnable(GL_DEPTH_TEST);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
     glShadeModel(GL_SMOOTH);
@@ -194,8 +195,6 @@ void init(void)
 	{
 		enableFog();
 	}
-
-	//setupShaders();
 
 	// Get best time from a file
 	bestTime = readFile("Save/bestTime.txt");
@@ -206,7 +205,7 @@ void init(void)
 
 	heli.yPos = groundHeight + heli.ySize;
 
-    // Define the heliBody display 
+    // Define the heliBody display list
     heliBodyList = glGenLists(1);
     glNewList(heliBodyList, GL_COMPILE);
     drawHeliBody();
@@ -246,32 +245,22 @@ void init(void)
     drawGround();
     glEndList();
 
-	points[0].checkpoint = 0;
-	points[0].xSize = 5.0;
-	points[0].ySize = 5.0;
-	points[0].zSize = 0.5;
-	points[0].xPos = 5.0;
-	points[0].yPos = 2.5;
-	points[0].zPos = 5.0;
-	points[0].rotY = 0;
+	// Setup the checkpoint information
+	setPoint(0, 5.0, 5.0, 0.5, 5.0, 6.0, 5.0, 0.0);
+	setPoint(1, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, 5.0, 60);
+	setPoint(2, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, -5.0, 45);
+}
 
-	points[1].checkpoint = 1;
-	points[1].xSize = 5.0;
-	points[1].ySize = 5.0;
-	points[1].zSize = 0.5;
-	points[1].xPos = -5.0;
-	points[1].yPos = points[1].ySize / 2;	// Make yPos so that the bottom edge is on the ground
-	points[1].zPos = 5.0;
-	points[1].rotY = 60;
-
-	points[2].checkpoint = 2;
-	points[2].xSize = 5.0;
-	points[2].ySize = 5.0;
-	points[2].zSize = 0.5;
-	points[2].xPos = -5.0;
-	points[2].yPos = points[2].ySize/2;		// Make yPos so that the bottom edge is on the ground
-	points[2].zPos = -5.0;
-	points[2].rotY = 45;
+void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY)
+{
+	points[pointNum].checkpoint = pointNum;
+	points[pointNum].xSize = xWidth;
+	points[pointNum].ySize = yWidth;
+	points[pointNum].zSize = zWidth;
+	points[pointNum].xPos = xPosition;
+	points[pointNum].yPos = yPosition;
+	points[pointNum].zPos = zPosition;
+	points[pointNum].rotY = rotateY;
 }
 
 // These functions have been adapted from Lighthouse 3D GLSL Examples
@@ -551,7 +540,7 @@ void drawHeli()
     glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
     glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
 	
-	// Draw bounding box
+	/*// Draw bounding box for collision testing
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(-heli.xSize, -heli.ySize, -heli.zSize);
@@ -564,7 +553,7 @@ void drawHeli()
 	glVertex3f(heli.xSize, heli.ySize, heli.zSize);
 	glVertex3f(-heli.xSize, heli.ySize, heli.zSize);
 	glVertex3f(-heli.xSize, -heli.ySize, heli.zSize);
-	glEnd();
+	glEnd();*/
 
 	// Animate rotor
 	glPushMatrix();
@@ -1044,22 +1033,33 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
 	objectBox object1a = object1;
 	objectBox object2a = object2;
 
-	// Rotate size in x and z to correspond with rotation of the object
-	object1a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
-	object1a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
+	if (object1.rotY != 0)
+	{
+		// Rotate size in x and z to correspond with rotation of the object
+		object1a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
+		object1a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
+	}
 
-	object2a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
-	object2a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
+	if (object1.rotY != 0)
+	{
+		// Rotate size in x and z to correspond with rotation of the object
+		object2a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
+		object2a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
+	}
 
     // compute the absolute (positive) distance from object1 to object2
-    diff.xPos = abs(object1.xPos - object2.xPos);
-    diff.yPos = abs(object1.yPos - object2.yPos);
-    diff.zPos = abs(object1.zPos - object2.zPos);
+    diff.xPos = abs(object1a.xPos - object2a.xPos);
+    diff.yPos = abs(object1a.yPos - object2a.yPos);
+    diff.zPos = abs(object1a.zPos - object2a.zPos);
     diff.xSize = object1a.xSize + object2a.xSize;
     diff.ySize = object1a.ySize + object2a.ySize;
     diff.zSize = object1a.zSize + object2a.zSize;
 
-    // If the distance between each of the three dimensions is within the radii combined, there is a collision
+	diff.xSize -= (diff.xSize * 0.165);
+	diff.zSize -= (diff.zSize * 0.165);
+
+    // If the distance between each of the three dimensions is within the dimensions of the two objects combined, 
+	// there is a collision
     if(diff.xPos < diff.xSize && diff.yPos < diff.ySize && diff.zPos < diff.zSize)
     {
             collision = true;
@@ -1112,7 +1112,7 @@ void checkHeliThruCollisions(void)
 				// If the checkpoint entered is not the checkpoint that is next, penalize 10s per gate missed
 				if ( checkpointNum != pointNum )
 				{
-					penaltyTime += (pointNum - checkpointNum) * 10000;
+					penaltyTime += (pointNum - checkpointNum) * 5000;
 					// Activate all the points leading up to incorrectly activated point
 					for (checkpointNum; checkpointNum < pointNum; checkpointNum++)
 					{
@@ -1155,21 +1155,30 @@ void checkHeliCollisions(void)
     {
         if (movingForward)
         {
-                moveHeliBack(heliSpeed, false);
+            moveHeliBack(heliSpeed, false);
         }
         else if (movingBack)
         {
-                moveHeliForward(heliSpeed, false);
+            moveHeliForward(heliSpeed, false);
         }
 
         if (movingUp)
         {
-                moveHeliDown(heliSpeed, false);
+            moveHeliDown(heliSpeed, false);
         }
         else if (movingDown)
         {
-                moveHeliUp(heliSpeed, false);
+            moveHeliUp(heliSpeed, false);
         }
+
+		if (stopHeli)
+		{
+			heli.yPos += 0.02;
+			eye.yPos += 0.02;
+			stopHeli = false;
+			helicopterOn = false;
+			rotorSpeed = 0;
+		}
     }
 }
 
@@ -1588,18 +1597,22 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS, (void *)font, "F1 - Pause and bring up this screen");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + 2*HELP_SPACE, (void *)font, "F3 - Switch between textures and no textures");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 3*HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 4*HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 5*HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward");
-	renderBitmapString(2*HELP_SPACE, HELP_YPOS + 6*HELP_SPACE, (void *)font, " and Turn left/right");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 7*HELP_SPACE, (void *)font, "s/x - Start/stop engine");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 8*HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 9*HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 10*HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 3*HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 4*HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on or off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 5*HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 6*HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 7*HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward");
+	renderBitmapString(2*HELP_SPACE, HELP_YPOS + 8*HELP_SPACE, (void *)font, " and Turn left/right");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 9*HELP_SPACE, (void *)font, "s/x - Start/stop engine");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 10*HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 11*HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + 12*HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
 
 	// Display the best time
 	strBestTime = getTimeString(bestTime);
-	renderBitmapString(HELP_SPACE, 350, (void *)font, strBestTime);
+	char* strDrawBestTime = new char[30];
+	sprintf(strDrawBestTime, "Best Time: %s", strBestTime);
+	renderBitmapString(HELP_SPACE, 370, (void *)font, strDrawBestTime);
 
 	// Display who wrote the project and it's purpose
 	renderBitmapString(HELP_SPACE, 400, (void *)font, "Written by Aleesha, Ashley and Chris");
@@ -1646,10 +1659,12 @@ void displayDashboard()
 	sprintf(strCheckpoint, "Checkpoint: %.2i/%.2i", checkpointNum, MAX_CHECKPOINTS);
 	renderBitmapString(3 * (dashWidth / 5), dashHeight + 60, (void *)font, strCheckpoint);
 
-	// Display altitude
+	// Display penalty time
 	char* strPenalty = new char[22];
+	char* strDrawPenalty = new char[36];
 	strPenalty = getTimeString(penaltyTime);
-	renderBitmapString(30, dashHeight + 60, (void *)font, strPenalty);
+	sprintf(strDrawPenalty, "Penalty Time: %s", strPenalty);
+	renderBitmapString(30, dashHeight + 60, (void *)font, strDrawPenalty);
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -1789,8 +1804,10 @@ void idle(void)
 
 		if (heli.yPos > groundHeight + heli.ySize)
 		{
+
 			heli.yPos -= 0.02;
 			eye.yPos -= 0.02;
+			checkHeliCollisions();
 
 			if (heli.yPos < groundHeight + heli.ySize)
 			{
