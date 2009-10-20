@@ -81,7 +81,7 @@ void drawFinishScreen(void);
 void enableFog(void);
 char* getTimeString(int time);
 int readFile(char* fileName);
-void setupShaders(void);
+//void setupShaders(void);
 char* readShaderFile(char* fileName);
 
 float cameraDistance = 5.0;
@@ -194,7 +194,7 @@ void init(void)
 		enableFog();
 	}
 
-	setupShaders();
+	//setupShaders();
 
 	// Get best time from a file
 	bestTime = readFile("Save/bestTime.txt");
@@ -304,37 +304,37 @@ char* readShaderFile(char* fileName)
 	return content;
 }
 
-void setupShaders()
-{
-	char *vs;
-	char *fs;
-
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);	
-
-	vs = readShaderFile("Shaders/toon.vert");
-	fs = readShaderFile("Shaders/toon.frag");
-
-	const char * vv = vs;
-	const char * ff = fs;
-
-	glShaderSource(vertexShader, 1, &vv, NULL);
-	glShaderSource(fragmentShader, 1, &ff, NULL);
-
-	free(vs);
-	free(fs);
-
-	glCompileShader(vertexShader);
-	glCompileShader(fragmentShader);
-
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-
-	glLinkProgram(shaderProgram);
-	glUseProgram(shaderProgram);
-}
+//void setupShaders()
+//{
+//	char *vs;
+//	char *fs;
+//
+//	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+//	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);	
+//
+//	vs = readShaderFile("Shaders/toon.vert");
+//	fs = readShaderFile("Shaders/toon.frag");
+//
+//	const char * vv = vs;
+//	const char * ff = fs;
+//
+//	glShaderSource(vertexShader, 1, &vv, NULL);
+//	glShaderSource(fragmentShader, 1, &ff, NULL);
+//
+//	free(vs);
+//	free(fs);
+//
+//	glCompileShader(vertexShader);
+//	glCompileShader(fragmentShader);
+//
+//	shaderProgram = glCreateProgram();
+//
+//	glAttachShader(shaderProgram, vertexShader);
+//	glAttachShader(shaderProgram, fragmentShader);
+//
+//	glLinkProgram(shaderProgram);
+//	glUseProgram(shaderProgram);
+//}
 // End GLSL adapted code
 
 void enableFog(void)
@@ -1917,7 +1917,7 @@ void display(void)
 		}
 		// Draw the helicopter
 		drawHeli();
-		glUseProgram(0);
+		//glUseProgram(0);
 
 		// Draw landing pads A and B
 		drawLandingPad(landingPadA, 3);
@@ -1967,16 +1967,16 @@ void mymenu(int choice)
 	}
 }
 
-void cleanUpShaders()
-{
-	glDetachShader(shaderProgram, vertexShader);
-	glDetachShader(shaderProgram, fragmentShader);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	glDeleteProgram(shaderProgram);
-}
+//void cleanUpShaders()
+//{
+//	glDetachShader(shaderProgram, vertexShader);
+//	glDetachShader(shaderProgram, fragmentShader);
+//
+//	glDeleteShader(vertexShader);
+//	glDeleteShader(fragmentShader);
+//
+//	glDeleteProgram(shaderProgram);
+//}
 
 int main(int argc, char** argv)
 {
@@ -1986,7 +1986,7 @@ int main(int argc, char** argv)
     glutInitWindowPosition(windowPosWidth, windowPosHeight);
     glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
 	glewInit();
-	if (glewIsSupported("GL_VERSION_2_0"))
+	/*if (glewIsSupported("GL_VERSION_2_0"))
 	{
 		printf("Ready for OpenGL 2.0\n");
 	}
@@ -1994,7 +1994,7 @@ int main(int argc, char** argv)
 	{
 		printf("OpenGL 2.0 not supported\n");
 		exit(1);
-	}
+	}*/
     init();
     glutDisplayFunc(display);
     glutSpecialFunc(special);
@@ -2032,6 +2032,6 @@ int main(int argc, char** argv)
 
     glutMainLoop();
 
-	cleanUpShaders();
+//	cleanUpShaders();
     return 0;
 }
