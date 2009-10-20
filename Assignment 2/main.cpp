@@ -3,7 +3,7 @@
 // Christopher Trott, Ashley Sexton, Aleesha Torkington
 // Created on 28/08/09
 // Last Modified on 13/10/09 @ 13:08
-//
+// blah
 // Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 // Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
