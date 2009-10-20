@@ -11,7 +11,7 @@
 
 ==Part B==
 
-  * Key-framed animation - e.g. takeoff/landing auto-pilot
+  * Key-framed animation - e.g. takeoff/landing auto-pilot -- DONE
   * Random/dynamic creation of environment (terrain, object locations) [Check discussion board for answer to our question]
   * Another helicopter using the same struct/class (not controlled the same) OR...
   * GLSL programmable shaders
