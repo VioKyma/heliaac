@@ -3,19 +3,19 @@
 // Christopher Trott, Ashley Sexton, Aleesha Torkington
 // Created on 28/08/09
 // Last Modified on 13/10/09 @ 13:08
-// blah
+// 
 // Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 // Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 // Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
 // Bitmap.h and Bitmap.cpp found at: http://www.gamedev.net/reference/articles/article1966.asp
 
-#include<GL/glew.h>
-#include<GL/freeglut.h>
 #include<math.h>
-
 #include<string>
 #include<iostream>
 #include<fstream>
+#include<GL/glew.h>
+#include<GL/freeglut.h>
+
 #include"Bitmap.h"
 
 using namespace std;
@@ -174,10 +174,11 @@ int checkpointNum = 0;
 
 bool heliTextures = true;
 bool shaderOn = false;
+bool useOldOGL = true;
 
-GLuint vertexShader;
-GLuint fragmentShader;
-GLuint shaderProgram;
+GLhandleARB vertexShader;
+GLhandleARB fragmentShader;
+GLhandleARB shaderProgram;
 
 // Initialise the OpenGL properties
 void init(void)
@@ -187,7 +188,7 @@ void init(void)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-    glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH);
 
 	if (fogOn)
 	{
@@ -304,37 +305,38 @@ char* readShaderFile(char* fileName)
 	return content;
 }
 
-//void setupShaders()
-//{
-//	char *vs;
-//	char *fs;
-//
-//	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-//	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);	
-//
-//	vs = readShaderFile("Shaders/toon.vert");
-//	fs = readShaderFile("Shaders/toon.frag");
-//
-//	const char * vv = vs;
-//	const char * ff = fs;
-//
-//	glShaderSource(vertexShader, 1, &vv, NULL);
-//	glShaderSource(fragmentShader, 1, &ff, NULL);
-//
-//	free(vs);
-//	free(fs);
-//
-//	glCompileShader(vertexShader);
-//	glCompileShader(fragmentShader);
-//
-//	shaderProgram = glCreateProgram();
-//
-//	glAttachShader(shaderProgram, vertexShader);
-//	glAttachShader(shaderProgram, fragmentShader);
-//
-//	glLinkProgram(shaderProgram);
-//	glUseProgram(shaderProgram);
-//}
+void setupShaders()
+{
+	char *vs;
+	char *fs;
+
+	//vertexShader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	//fragmentShader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+
+	vs = readShaderFile("toon.vert");
+	fs = readShaderFile("toon.frag");
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	glShaderSourceARB(vertexShader, 1, &vv,NULL);
+	glShaderSourceARB(fragmentShader, 1, &ff,NULL);
+
+	free(vs);
+	free(fs);
+
+	glCompileShaderARB(vertexShader);
+	glCompileShaderARB(fragmentShader);
+
+	shaderProgram = glCreateProgramObjectARB();
+	cout << shaderProgram;
+	
+	glAttachObjectARB(shaderProgram,vertexShader);
+	glAttachObjectARB(shaderProgram,fragmentShader);
+
+	glLinkProgramARB(shaderProgram);
+	glUseProgramObjectARB(shaderProgram);
+}
 // End GLSL adapted code
 
 void enableFog(void)
@@ -1896,10 +1898,20 @@ void display(void)
 		glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
+		glUseProgram(0);
+
 		//Draw Sky
+		if (shaderOn)
+		{
+			glUseProgramObjectARB(shaderProgram);
+		}
 		glPushMatrix;
 		drawSky();
 		glPopMatrix;
+		if (shaderOn)
+		{
+			glUseProgramObjectARB(0);
+		}
 
 		// Draw ground
 		glPushMatrix();
@@ -1912,13 +1924,9 @@ void display(void)
 		drawBuilding(building0, 1);
 		glPopMatrix();
 
-		if (shaderOn)
-		{
-			glUseProgram(shaderProgram);
-		}
+
 		// Draw the helicopter
 		drawHeli();
-		//glUseProgram(0);
 
 		// Draw landing pads A and B
 		drawLandingPad(landingPadA, 3);
@@ -1968,16 +1976,16 @@ void mymenu(int choice)
 	}
 }
 
-//void cleanUpShaders()
-//{
-//	glDetachShader(shaderProgram, vertexShader);
-//	glDetachShader(shaderProgram, fragmentShader);
-//
-//	glDeleteShader(vertexShader);
-//	glDeleteShader(fragmentShader);
-//
-//	glDeleteProgram(shaderProgram);
-//}
+void cleanUpShaders()
+{
+	glDetachObjectARB(shaderProgram, vertexShader);
+	glDetachObjectARB(shaderProgram, fragmentShader);
+
+	glDeleteObjectARB(vertexShader);
+	glDeleteObjectARB(fragmentShader);
+
+	glDeleteObjectARB(shaderProgram);
+}
 
 int main(int argc, char** argv)
 {
@@ -1987,15 +1995,17 @@ int main(int argc, char** argv)
     glutInitWindowPosition(windowPosWidth, windowPosHeight);
     glutCreateWindow("Cp2060 Assignment 2 - Heliaac");
 	glewInit();
-	/*if (glewIsSupported("GL_VERSION_2_0"))
+
+	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
 	{
-		printf("Ready for OpenGL 2.0\n");
+		printf("Ready for GLSL\n");
 	}
 	else 
 	{
-		printf("OpenGL 2.0 not supported\n");
+		printf("Not totally ready :( \n");
 		exit(1);
-	}*/
+	}
+
     init();
     glutDisplayFunc(display);
     glutSpecialFunc(special);
@@ -2006,6 +2016,8 @@ int main(int argc, char** argv)
     glutKeyboardUpFunc(keyboardUp);
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotion);
+
+	setupShaders();
 
 	// create sub menu 1
 	int subMenu1 = glutCreateMenu(mymenu);
