@@ -566,7 +566,7 @@ void drawHeli()
 
 	// Animate rotor
 	glPushMatrix();
-    glTranslatef(1.0, 0.6, 0.0);
+    glTranslatef(0.0, 0.6, 0.0);
     glRotatef(rotor, 0.0, 1.0, 0.0);
     // Draw rotor
     glCallList(heliRotorList);
@@ -878,6 +878,7 @@ void drawHeliRotor()
         glPopMatrix();
 
         glPushMatrix();
+		glTranslatef(0.0, 0.05, 0.0);
         glRotatef(90, 0.0, 1.0, 0.0);
         glScalef(3.0, 0.1, 0.2);
         glutSolidCube(1.0);
