@@ -85,8 +85,8 @@ void setupShaders(void);
 char* readShaderFile(char* fileName);
 void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY);
 
-float cameraDistance = 5.0;
-float cameraZoom = 1.5;
+float cameraDistance = 6.0;
+float cameraZoom = 2.0;
 objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
 float windscreenRot = 0.0;
 float doorRot = 0.0;
@@ -109,6 +109,7 @@ bool startHeli = false;
 bool gameFinished = false;
 
 int font = (int)GLUT_BITMAP_HELVETICA_18;
+int fontTitle = (int)GLUT_BITMAP_TIMES_ROMAN_24;
 int textX = 20;
 int textY = 20;
 
@@ -130,11 +131,11 @@ double rotorSpeed = 0.0;
 int groundSize = 20;
 int groundHeight = 0;
 
-int windowWidth = 500;
-int windowHeight = 500;
+int windowWidth = 600;
+int windowHeight = 600;
 
-int windowPosWidth = 100;
-int windowPosHeight = 100;
+int windowPosWidth = 40;
+int windowPosHeight = 40;
 
 int frames = 0;
 int time = 0;
@@ -1087,9 +1088,9 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 	diff.xPos = abs(object1.xPos - object2.xPos);
 	diff.yPos = abs(object1.yPos - object2.yPos);
 	diff.zPos = abs(object1.zPos - object2.zPos);
-	diff.xSize = object2a.xSize;
-	diff.ySize = object2a.ySize;
-	diff.zSize = object2a.zSize;
+	diff.xSize = object2a.xSize / 2.0;
+	diff.ySize = object2a.ySize / 2.0;
+	diff.zSize = object2a.zSize / 2.0;
 
     // If the distance between each of the three dimensions is within the radii combined, there is a collision
     if(diff.xPos < diff.xSize && diff.yPos < diff.ySize && diff.zPos < diff.zSize)
@@ -1578,8 +1579,9 @@ void displayText()
 void displayHelp()
 {
 	const int HELP_SPACE = 20;
-	const int HELP_YPOS = 100;
+	const int HELP_YPOS = 30;
 	const float MARGIN = 5.0;
+	int row = 0;
 
 	glDisable(GL_DEPTH_TEST);
 
@@ -1593,30 +1595,41 @@ void displayHelp()
 	glEnd();
 
 	glColor4f(1.0, 0.7, 0.2, 1.0);	// Orange
+	
+	renderBitmapString(windowWidth / 2.0 - 3 * HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)fontTitle, "Heli Rally");
+	row++;
+	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "How To Play - Take off and pass through each of the ");
+	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "checkpoints in sequence and land at point B. The helicopter must pass");
+	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " more than halfway into the checkpoint for it to be activated.");
+	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "If you miss a checkpoint, you will be penalised 5 seconds per miss.");
+	row++;
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F1 - Pause and bring up this screen");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F3 - Switch between textures and no textures");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on or off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward and Turn left/right");
+	//renderBitmapString(2*HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " and Turn left/right");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "s/x - Start/stop engine");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
 
-	renderBitmapString(HELP_SPACE, HELP_YPOS, (void *)font, "F1 - Pause and bring up this screen");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 2*HELP_SPACE, (void *)font, "F3 - Switch between textures and no textures");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 3*HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 4*HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on or off");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 5*HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 6*HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 7*HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward");
-	renderBitmapString(2*HELP_SPACE, HELP_YPOS + 8*HELP_SPACE, (void *)font, " and Turn left/right");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 9*HELP_SPACE, (void *)font, "s/x - Start/stop engine");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 10*HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 11*HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + 12*HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
+	row++;
 
 	// Display the best time
 	strBestTime = getTimeString(bestTime);
 	char* strDrawBestTime = new char[30];
 	sprintf(strDrawBestTime, "Best Time: %s", strBestTime);
-	renderBitmapString(HELP_SPACE, 370, (void *)font, strDrawBestTime);
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, strDrawBestTime);
+
+	row++;
 
 	// Display who wrote the project and it's purpose
-	renderBitmapString(HELP_SPACE, 400, (void *)font, "Written by Aleesha, Ashley and Chris");
-	renderBitmapString(HELP_SPACE, 425, (void *)font, " for Cp2060 Assignment 2");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Written by Aleesha Torkington, Ashley Sexton and Christopher Trott");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " for Cp2060 Assignment 2 - Semester 2 2009");
 
 	glEnable(GL_DEPTH_TEST);
 }
