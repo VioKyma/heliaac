@@ -29,15 +29,15 @@ struct vertex
 
 struct objectBox
 {
-    float xPos;        // x position
-    float yPos;        // y position
-    float zPos;        // z position
-	float rotX;     // rotation angle in x axis
-    float rotY;     // rotation angle of direction (y axis)
-	float rotZ;		// rotation angle in z axis
-    float xSize;     // x radius (half-length) of bounding box
-    float ySize;     // y radius of bounding box
-    float zSize;     // z radius of bounding box
+    float xPos;			// x position
+    float yPos;			// y position
+    float zPos;			// z position
+	float rotX;			// rotation angle in x axis
+    float rotY;			// rotation angle of direction (y axis)
+	float rotZ;			// rotation angle in z axis
+    float xSize;		// x radius (half-length) of bounding box
+    float ySize;		// y radius of bounding box
+    float zSize;		// z radius of bounding box
 };
 
 struct checkPoint
@@ -88,6 +88,7 @@ float cameraDistance = 5.0;
 float cameraZoom = 1.5;
 objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
 float windscreenRot = 0.0;
+float doorRot = 0.0;
 
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
 objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 8, 4};
@@ -138,7 +139,7 @@ int frames = 0;
 int time = 0;
 int timeBase = 0;
 float fps = 50.0;
-char* strFps = new char[4];     // FPS string for display on-screen
+char* strFps = new char[4];			// FPS string for display on-screen
 char* strGameTime = new char[8];	// Game time string
 int bestTime = 0;
 char* strBestTime = new char[8];
@@ -628,6 +629,13 @@ void drawHeliBody()
 
 	// Draw main body
 	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Red
+
+	glPushMatrix();
+	// Rotate right door
+	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
+	glRotatef(-doorRot, 1.0, 0.0, 0.0);		// Rotate
+	glTranslatef(-v1.x, -v1.y, -v1.z);	// Translate -v1
+
 	// Right Side Panel
 	glBegin(GL_TRIANGLE_STRIP);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
@@ -635,6 +643,8 @@ void drawHeliBody()
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, v2.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, v3.z);
 	glEnd();
+
+	glPopMatrix();
 
 	// Top Panel
 	glBegin(GL_TRIANGLE_STRIP);
@@ -1192,6 +1202,13 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 				windscreenRot = 0.0;
 			else
 				windscreenRot = 35.0;
+			glutPostRedisplay();
+			break;
+		case '2':
+			if( doorRot > 0 )
+				doorRot = 0.0;
+			else
+				doorRot = 95.0;
 			glutPostRedisplay();
 			break;
         case 'a':
