@@ -592,13 +592,13 @@ void drawHeliBody()
 
 	glPushMatrix();
 	//
-	//     v12               v0---------------v1 \
-	//     | \               |                 |  \
-    //     |  v8-------------v9                |   v4
-    //     |   |             |                 v5  |
-    //    v13-v11------------v10               |   v6
-    //                       |                 |  /
-	//                       v2---------------v3 /
+	//     v12           v0-------------------v1 \
+	//     | \             \                  |   \
+    //     |  v8------------v9                |    v4
+    //     |   |            |  \             v5    |
+    //    v13-v11-----------v14-v10           |    v6
+    //                             \          |   /
+	//                              \v2-------v3 /
 	//
 
 	// Body vertices
@@ -613,7 +613,7 @@ void drawHeliBody()
 	// Tail vertices
 	vertex v8 = { -2.5, 0.4, 0.4 };
 	vertex v9 = { -0.8, 0.4, 0.4 };
-	vertex v10 = { 0.0, -0.4, 0.4 };
+	vertex v10 = { -0.185, -0.4, 0.4 };
 	vertex v11 = { -2.5, -0.4, 0.4 };
 	vertex v14 = { -0.8, -0.4, 0.4 };
 	// Tip of tail
@@ -745,42 +745,32 @@ void drawHeliBody()
 
 	//Bottom
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v11.x, v11.y, v11.z);
-	glVertex3f(v11.x, v11.y, -v11.z);
-	glVertex3f(v14.x, v14.y, -v14.z);
-	glVertex3f(v14.x, v14.y, v14.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v14.x, v14.y, -v14.z);
 	glEnd();
 
 	//Bottom 2
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v14.x, v14.y, v14.z);
-	glVertex3f(v14.x, v14.y, -v14.z);
-	glVertex3f(v10.x, v10.y, -v10.z);
-	glVertex3f(v10.x, v10.y, v10.z);
-	glVertex3f(v14.x, v14.y, v14.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v14.x, v14.y, -v14.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, -v10.z);
 	glEnd();
+
 	//Close to body (left)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v9.x, v9.y, v9.z);
-	glVertex3f(v14.x, v14.y, v14.z);
-	glVertex3f(v10.x, v10.y, v10.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v9.x, v9.y, v9.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
 	glEnd();
-
 	//Close to body (right)
 	glBegin(GL_TRIANGLE_STRIP);
-	glVertex3f(v9.x, v9.y, -v9.z);
-	glVertex3f(v14.x, v14.y, -v14.z);
-	glVertex3f(v10.x, v10.y, -v10.z);
+	glTexCoord2f(0.0, 0.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	glTexCoord2f(0.0, 1.0);		glVertex3f(v14.x, v14.y, -v14.z);
+	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
 	glEnd();
-
-
-	//glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
-	//glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
-	//// Back
-	//glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
-	//glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, v10.z);
-	//glEnd();
-
 	
 	glPushMatrix();
 	glTranslatef(v2.x, v2.y, v2.z);
