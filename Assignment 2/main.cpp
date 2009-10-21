@@ -80,7 +80,7 @@ void displayDashboard(void);
 void drawFinishScreen(void);
 void enableFog(void);
 char* getTimeString(int time);
-int readFile(char* fileName);
+bool readMapFile(char* fileName);
 void setupShaders(void);
 char* readShaderFile(char* fileName);
 void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY);
@@ -91,10 +91,11 @@ objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
 float windscreenRot = 0.0;
 float doorRot = 0.0;
 
+const int MAX_BUILDINGS = 2;
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
-objectBox building0 = {10, 0, 10, 0, 0, 0, 4, 8, 4};
-objectBox landingPadA = {0, 0.002, 0, 0, 0, 0, 3, 0.1, 3};
-objectBox landingPadB = {-10, 0.002, -10, 0, 0, 0, 3, 0.1, 3};
+objectBox *buildings;
+objectBox landingPadA;
+objectBox landingPadB;
 
 bool movingForward = false;
 bool movingBack = false;
@@ -208,7 +209,7 @@ void init(void)
 	}
 
 	// Get best time from a file
-	bestTime = readFile("Save/bestTime.txt");
+	readMapFile("Maps/small.map");
 
     // Make object materials equal to glColor*() properties
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -257,9 +258,9 @@ void init(void)
     glEndList();
 
 	// Setup the checkpoint information
-	setPoint(0, 5.0, 5.0, 0.5, 5.0, 6.0, 5.0, 0.0);
-	setPoint(1, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, 5.0, 60);
-	setPoint(2, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, -5.0, 45);
+	//setPoint(0, 5.0, 5.0, 0.5, 5.0, 6.0, 5.0, 0.0);
+	//setPoint(1, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, 5.0, 60);
+	//setPoint(2, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, -5.0, 45);
 }
 
 void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY)
@@ -502,8 +503,8 @@ void drawBuilding(objectBox building, int textureNum)
 	vertex v2 = {-building.xSize, building.ySize, building.zSize};
 	vertex v3 = {building.xSize, building.ySize, building.zSize};
 
-	glTranslatef(building0.xPos, building0.yPos, building0.zPos);
-	glRotatef(building0.rotY, 0.0, 1.0, 0.0);
+	glTranslatef(building.xPos, building.yPos, building.zPos);
+	glRotatef(building.rotY, 0.0, 1.0, 0.0);
 
 	glBegin(GL_QUADS);
 	// Draw wall
@@ -1006,7 +1007,7 @@ void checkBounds(void)
     {      
         heli.xPos = -groundSize;
         eye.xPos = -groundSize + cameraDistance;
-	}
+        }
     else if (heli.xPos > groundSize)
     {
         heli.xPos = groundSize;
@@ -1024,6 +1025,7 @@ void checkBounds(void)
         heli.zPos = groundSize;
         eye.zPos = groundSize + cameraDistance;
     }
+
 }
 
 bool checkBoxCollision(objectBox object1, objectBox object2)
@@ -1146,10 +1148,13 @@ void checkHeliCollisions(void)
 {
     bool collision = false;
 
-    if ( checkBoxCollision(heli, building0) )
-    {
-            collision = true;
-    }
+	for ( int buildNum = 0; buildNum < MAX_BUILDINGS; buildNum++ )
+	{
+		if ( checkBoxCollision(heli, buildings[buildNum]) )
+		{
+				collision = true;
+		}
+	}
 
     if (collision)
     {
@@ -1201,7 +1206,7 @@ void restartGame()
 	gameFinished = false;
 
 	// Read best time from file in case it has changed
-	bestTime = readFile("Save/bestTime.txt");
+	readMapFile("Maps/small.map");
 
 	// Reset checkpoints
 	checkpointNum = 0;
@@ -1275,6 +1280,7 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 			break;
 		case 'x':
 			//Stop Blades
+			heliLeanFront = 0;
 			stopHeli = true;
 			break;
 		case 32:
@@ -1424,7 +1430,7 @@ void special(int key, int mouseX, int mouseY)
 				if (cameraZoom < 3.0)
 				{
 					cameraZoom += 0.1;
-					//reshape(windowWidth, windowHeight);
+					gluPerspective(45, windowWidth/windowHeight, cameraDistance, 60.0);
 				}
                 break;
     }
@@ -1625,7 +1631,6 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward and Turn left/right");
-	//renderBitmapString(2*HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " and Turn left/right");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "s/x - Start/stop engine");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
@@ -1706,24 +1711,172 @@ char* getTimeString(int time)
 	return strTime;
 }
 
-int readFile(char* fileName)
+bool readMapFile(char* fileName)
 {
-	int time;
-
+	bool success = true;
+	string strInput = "";
+	
+	// Open file for reading
 	ifstream fin;
 	fin.open(fileName);
-	fin >> time;
+
+	if ( fin.bad() )
+	{
+		cout << "Error reading file " << fileName << ".\n";
+		success = false;
+	}
+	
+	// Read values while not end of file and set their values in the program
+	while ( !fin.eof() )
+	{
+		float fInput = 0.0;
+		getline(fin, strInput, '\n');
+
+		if ( strInput.compare("bestTime{") == 0 )
+		{
+			fin >> fInput;
+			bestTime = fInput;
+			cout << "bestTime Loaded: " << bestTime << endl;
+			fin.ignore(100, '\n');
+		}
+		else if ( strInput.compare("pointA{") == 0 )
+		{
+			fin >> fInput;
+			landingPadA.xPos = fInput;
+			fin >> fInput;
+			landingPadA.yPos = fInput;
+			fin >> fInput;
+			landingPadA.zPos = fInput;
+			fin >> fInput;
+			landingPadA.rotX = fInput;
+			fin >> fInput;
+			landingPadA.rotY = fInput;
+			fin >> fInput;
+			landingPadA.rotZ = fInput;
+			fin >> fInput;
+			landingPadA.xSize = fInput;
+			fin >> fInput;
+			landingPadA.ySize = fInput;
+			fin >> fInput;
+			landingPadA.zSize = fInput;
+			fin.ignore(100, '\n');
+		}
+		else if ( strInput.compare("pointB{") == 0 )
+		{
+			fin >> fInput;
+			landingPadB.xPos = fInput;
+			fin >> fInput;
+			landingPadB.yPos = fInput;
+			fin >> fInput;
+			landingPadB.zPos = fInput;
+			fin >> fInput;
+			landingPadB.rotX = fInput;
+			fin >> fInput;
+			landingPadB.rotY = fInput;
+			fin >> fInput;
+			landingPadB.rotZ = fInput;
+			fin >> fInput;
+			landingPadB.xSize = fInput;
+			fin >> fInput;
+			landingPadB.ySize = fInput;
+			fin >> fInput;
+			landingPadB.zSize = fInput;
+			fin.ignore(100, '\n');
+		}
+		else if ( strInput.compare("checkpoint{") == 0 )
+		{
+			int pointNum;
+			fin >> pointNum;
+			points[pointNum].checkpoint = pointNum;
+			fin >> fInput;
+			points[pointNum].xSize = fInput;
+			fin >> fInput;
+			points[pointNum].ySize = fInput;
+			fin >> fInput;
+			points[pointNum].zSize = fInput;
+			fin >> fInput;
+			points[pointNum].xPos = fInput;
+			fin >> fInput;
+			points[pointNum].yPos = fInput;
+			fin >> fInput;
+			points[pointNum].zPos = fInput;
+			fin >> fInput;
+			points[pointNum].rotY = fInput;
+			fin.ignore(100, '\n');
+		}
+		else if ( strInput.compare("building{") == 0 )
+		{
+			fin >> fInput;
+			int buildNum = fInput;
+			if (buildings == NULL)
+			{
+				buildings = new objectBox[buildNum + 1];
+			}
+			fin >> fInput;
+			buildings[buildNum].xPos = fInput;
+			fin >> fInput;
+			buildings[buildNum].yPos = fInput;
+			fin >> fInput;
+			buildings[buildNum].zPos = fInput;
+			fin >> fInput;
+			buildings[buildNum].rotX = fInput;
+			fin >> fInput;
+			buildings[buildNum].rotY = fInput;
+			fin >> fInput;
+			buildings[buildNum].rotZ = fInput;
+			fin >> fInput;
+			buildings[buildNum].xSize = fInput;
+			fin >> fInput;
+			buildings[buildNum].ySize = fInput;
+			fin >> fInput;
+			buildings[buildNum].zSize = fInput;
+			fin.ignore(100, '\n');
+		}
+	}
+
 	fin.close();
 
-	return time;
+	return success;
 }
 
-void writeFile(char* fileName, int time)
+// This function replaces the old time with the new time in the map file
+void writeTime(char* fileName, int time)
 {
-	ofstream fout;
-	fout.open(fileName);
-	fout << time;
+	string line;
+	ifstream fin(fileName);
+
+	if( !fin.is_open())
+	{
+		cout << "Input file failed to open\n";
+	}
+
+	// now open temp output file
+	ofstream fout("temp.txt");
+
+	// loop to read then write the file.
+	while( getline(fin,line) )
+	{
+		if(line == "bestTime{")
+		{
+			fout << line << "\n";
+			// Output new line
+			fout << time << "\n";
+			// Get old line so it skips
+			getline(fin,line);
+		}
+		else
+		{
+			fout << line << "\n";
+		}
+	}
+
+	fin.close();
 	fout.close();
+
+	// delete the original file
+	remove(fileName);
+	// rename old to new
+	rename("temp.txt",fileName);
 }
 
 void drawFinishScreen()
@@ -1746,7 +1899,7 @@ void drawFinishScreen()
 		sprintf(strOldBest, "The old best time was: %s", strBestTime);
 		renderBitmapString(20, 80, (void *)font, strOldBest);
 		// Output new time to saved file
-		writeFile("Save/bestTime.txt", totalTime);
+		writeTime("Maps/small.map", totalTime);
 	}
 	else
 	{
@@ -1955,7 +2108,15 @@ void reshape(int w, int h)
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-1.0, 1.0, -1.0, 1.0, cameraZoom, 60.0);
+
+	if( w > h)
+	{
+		gluPerspective(45, w/h, cameraZoom, 60.0);
+	}
+	else
+	{
+		gluPerspective(45, h/w, cameraZoom, 60.0);
+	}
     glMatrixMode(GL_MODELVIEW);
 
 	windowWidth = w;
@@ -2002,9 +2163,12 @@ void display(void)
 		glPopMatrix();
 
 		// Draw building
-		glPushMatrix();
-		drawBuilding(building0, 1);
-		glPopMatrix();
+		for(int i = 0; i < MAX_BUILDINGS; i++)
+		{
+			glPushMatrix();
+			drawBuilding(buildings[i], 1);
+			glPopMatrix();
+		}
 
 
 		// Draw the helicopter
