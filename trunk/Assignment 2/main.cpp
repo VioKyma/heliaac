@@ -151,11 +151,17 @@ int penaltyTime = 0;
 
 const int ROTATE_SPEED = 180;
 const int HELI_SPEED = 12;
+const int MAX_SPEED = 50;
+const int MIN_SPEED = 2;
 const float LEAN_FACTOR = 15.0;
 float heliLeanFront = 0.0;
 float heliLeanSide = 0.0;
 int rotSpeed = ROTATE_SPEED / fps;
-float heliSpeed = HELI_SPEED / fps;
+//float heliSpeed = HELI_SPEED / fps;
+int currentSpeed = HELI_SPEED;
+float heliSpeed = currentSpeed / fps;
+
+
 
 bool pause = false;
 bool wire = false;
@@ -794,7 +800,7 @@ void drawHeliBody()
 
 	// Draw the Skids
 	glPushMatrix();
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3f(0.5, 0.5, 0.8);
 	glRotatef(90, 1.0, 0.0, 0.0);
 	glTranslatef(0.5, -0.5, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
@@ -809,7 +815,7 @@ void drawHeliBody()
 	glPopMatrix();
 
 	glPushMatrix();
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3f(0.5, 0.5, 0.8);
 	glRotatef(90, 1.0, 0.0, 0.0);
 	glTranslatef(0.5, -1.5, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
@@ -1268,6 +1274,21 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 			//Stop Blades
 			stopHeli = true;
 			break;
+		case 32:
+			if (currentSpeed >= MAX_SPEED)
+				break;
+			else
+				currentSpeed += 2;
+				heliSpeed = currentSpeed / fps;
+				//acceleration
+				break;
+		case 'b':
+			if (currentSpeed <= MIN_SPEED)
+				break;
+			else
+				currentSpeed -=2;
+				heliSpeed = currentSpeed / fps;
+				break;
     }
 }
 
@@ -1847,7 +1868,7 @@ void idle(void)
 		if (helicopterOn == true)
 		{
 			// Update speed
-			heliSpeed = HELI_SPEED / fps;
+			heliSpeed = currentSpeed / fps;
 			if (movingForward)
 			{
 				// move forward
