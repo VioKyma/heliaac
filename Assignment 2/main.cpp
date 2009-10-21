@@ -119,6 +119,10 @@ bool light1 = false;
 //trying to implement start/stop without changing functions too much
 bool helicopterOn = false;
 
+//skyHeight global to stop heli from breaching sky top
+float skyHeight = 20.0;
+
+
 GLfloat light0_position[] = { 1, 20, 1, 0 };
 
 GLuint heliBodyList;
@@ -413,7 +417,6 @@ void drawSky()
 	float skyzb = 0.0;
 	float skyx = 0.0;
 	float skyxb = 0.0;
-	float skyHeight = 20.0;
 	float skyDist = 20.0;
 
 	if (heli.zPos + skyDist < groundSize)
@@ -1921,7 +1924,7 @@ void idle(void)
 
 		if (helicopterOn == true)
 		{
-			if (movingUp)
+			if (movingUp && heli.yPos - heli.ySize < skyHeight - 5 )
 			{
 				moveHeliUp(heliSpeed, true);
 			}
