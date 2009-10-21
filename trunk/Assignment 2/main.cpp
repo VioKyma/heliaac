@@ -1952,8 +1952,8 @@ void display(void)
 		// Rotate camera so that it is always behind the heli
 		glPushMatrix();
 		glTranslatef(heli.xPos, heli.yPos, heli.zPos);
-		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 		glRotatef(-heli.rotY + eye.rotY, 0.0, 1.0, 0.0);
+		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
 //		glUseProgram(0);
