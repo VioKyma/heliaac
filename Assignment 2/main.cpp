@@ -774,9 +774,9 @@ void drawHeliBody()
 	
 	glPushMatrix();
 	glTranslatef(v2.x, v2.y, v2.z);
+
 	// Change texture for chair
 	glBindTexture(GL_TEXTURE_2D, textures[4]);
-
 	//Chair
 	glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
@@ -787,7 +787,7 @@ void drawHeliBody()
 
 	glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
-	glTranslatef(1.0, 0.25, -1.0);
+	glTranslatef(0.8, 0.25, -1.0);
 	glScalef(0.75, 0.2, 1.5);
 	glutSolidCube(1.0);
 	glPopMatrix();
