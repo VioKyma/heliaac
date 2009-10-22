@@ -53,6 +53,7 @@ struct checkPoint
 	bool activated;
 };
 
+void heliLight(void);
 void drawHeli(void);
 void drawHeliBody(void);
 void drawHeliRotor(void);
@@ -89,7 +90,7 @@ bool readMapFile(const char* fileName);
 
 float cameraDistance = 6.0;
 float cameraZoom = 2.0;
-objectBox heli = {0, 2, 0, 0, 0, 0, 2.5, 1.5, 1};
+objectBox heli = {0, 2, 0, 0, 0, 0, 1.25, 0.75, 0.5};
 float windscreenRot = 0.0;
 float doorRot = 0.0;
 
@@ -205,6 +206,7 @@ void init(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
     glShadeModel(GL_SMOOTH);
 
 	if (fogOn)
@@ -237,14 +239,18 @@ void init(void)
     glEndList();
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
+
+	heliLight();
    
-    // Set light position
+    // Set light0 position
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-    // Create light components
+
+    // Create light0 components
     GLfloat ambientLight[] = { 0.6f, 0.6f, 0.6f, 1.0f };
     GLfloat diffuseLight[] = { 0.9f, 0.9f, 0.9f, 1.0f };
     GLfloat specularLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
-    // Assign light components
+
+    // Assign light0 components
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
@@ -504,6 +510,25 @@ void drawSky()
 	glEnd();	// Done Drawing Quads
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
+
+}
+
+void heliLight()
+{
+	// Set light1 position
+
+	GLfloat light1_position[] = { heli.xPos, heli.yPos, heli.zPos, 1.0 };
+	glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+
+	// Create light1 components
+	GLfloat ambientLight1[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	GLfloat diffuseLight1[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+	GLfloat specularLight1[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+
+	// Assign light1 components
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight1);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight1);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight1);
 
 }
 
@@ -833,7 +858,7 @@ void drawHeliBody()
 
 	// Draw the Skids
 	glPushMatrix();
-	glColor3f(0.5, 0.5, 0.8);
+	glColor3f(0.1, 0.1, 0.3);
 	glRotatef(90, 1.0, 0.0, 0.0);
 	glTranslatef(0.5, -0.5, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
@@ -848,7 +873,7 @@ void drawHeliBody()
 	glPopMatrix();
 
 	glPushMatrix();
-	glColor3f(0.5, 0.5, 0.8);
+	glColor3f(0.1, 0.1, 0.3);
 	glRotatef(90, 1.0, 0.0, 0.0);
 	glTranslatef(0.5, -1.5, 0.0);
 	glutSolidCylinder(0.125, 0.25, 15.0, 15.0);
