@@ -1,6 +1,16 @@
 #summary Things to be done in the future.
 
 = Things To Do In Future =
+
+== LEFT TO DO: ==
+ * Another light, switchable (2)
+ * F9 - switch light1 off
+ * F1 - switch all lighting off
+ * No lighting in orthographic projection
+
+
+
+
 ==Part A==
 
   * Opening door on heli  -- DONE
