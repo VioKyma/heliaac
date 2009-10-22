@@ -444,21 +444,23 @@ void drawSky()
 	}
 	else skyxb = -groundSize;
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	//glEnable(GL_TEXTURE_2D);
 	//glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
 	glColor3f(0.33, 0.64, 1);
 	glBegin(GL_QUADS);							// Begin Drawing Quads
 	//top sky
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, groundSize);	// Top Right
 		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, groundSize);	// Top Left
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(groundSize, skyHeight, -groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, groundSize);	// Top Right
 		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, skyHeight, -groundSize);	// Bottom Right
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(groundSize, skyHeight, -groundSize);	// Bottom Left
 	//right sky
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, skyz);	// Top Right
 		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, skyz);	// Top Left
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 0, skyz);	// Bottom Left
+		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, skyz);	// Top Right
 		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(groundSize, 0, skyz);	// Bottom Right
+		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 0, skyz);	// Bottom Left
 	//front sky
 		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyx, skyHeight, groundSize);	// Top Right
 		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyx, skyHeight, -groundSize);	// Top Left
@@ -482,6 +484,8 @@ void drawSky()
 		//glTexCoord2f(1.5f,roll+0.0f); glVertex3f( 28.0f,+7.0f,-50.0f);		// Bottom Right
 	glEnd();	// Done Drawing Quads
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
+
 }
 
 void drawBuilding(objectBox building, int textureNum)
@@ -882,6 +886,7 @@ void drawHeliBody()
 	{
 		glDisable(GL_TEXTURE_2D);
 	}
+
 }
 
 // Draw the rotor blades
