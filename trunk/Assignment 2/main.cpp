@@ -520,7 +520,6 @@ void drawSky()
 void heliLight()
 {
 	// Set light1 position
-
 	GLfloat light1_position[] = { heli.xSize, heli.ySize, heli.zSize, 1.0 };
 	glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
 
@@ -1677,23 +1676,23 @@ void moveHeliDown(float speed, bool checkCol)
 void drawMovingObstacle()
 {
 	
-	if (strCurrentMap == "medium")
-	{
-		glColor3f(1.0, 1.0, 0.0);
-		glScalef(3, 4, 0.2);
-		glutSolidCube(1.0);//do this translation
-	}
-	else
-	{
-		glColor3f(0.0, 1.0, 0.0);
-		glScalef(3, 4, 0.2);
-		glutSolidCube(1.0);//do this translation
-	}
-	
-	// if moving left = true
-	//glTranslate
-	// else
-	//glTranslatef();
+	//if (strCurrentMap == "medium")
+	//{
+	//	glColor3f(1.0, 1.0, 0.0);
+	//	glScalef(3, 4, 0.2);
+	//	glutSolidCube(1.0);//do this translation
+	//}
+	//else
+	//{
+	//	glColor3f(0.0, 1.0, 0.0);
+	//	glScalef(3, 4, 0.2);
+	//	glutSolidCube(1.0);//do this translation
+	//}
+	//
+	//// if moving left = true
+	////glTranslate
+	//// else
+	////glTranslatef();
 
 }
 
@@ -1732,6 +1731,10 @@ void displayText()
     glPushMatrix();
     glColor3f(0.0, 1.0, 1.0);
     setOrthographicProjection();
+	if (light1)
+		glDisable(GL_LIGHT1);
+	if (!light0)
+		glEnable(GL_LIGHT0);
     glLoadIdentity();
 	// Display FPS
     renderBitmapString(textX, textY, (void *)font, strFps);
@@ -1746,6 +1749,10 @@ void displayText()
 		displayHelp();
 	}
 
+	if (light1)
+		glEnable(GL_LIGHT1);
+	if (!light0)
+		glDisable(GL_LIGHT0);
     resetPerspectiveProjection();
     glPopMatrix();
 }
@@ -2096,6 +2103,10 @@ void setOrthographicProjection()
 {
     // switch to projection mode
     glMatrixMode(GL_PROJECTION);
+	if (light1)
+		glDisable(GL_LIGHT1);
+	if (!light0)
+		glEnable(GL_LIGHT0);
     // save previous matrix which contains the
     //settings for the perspective projection
     glPushMatrix();
@@ -2108,6 +2119,10 @@ void setOrthographicProjection()
     // move the origin from the bottom left corner
     // to the upper left corner
     glTranslatef(0, -windowHeight, 0);
+	if (light1)
+		glEnable(GL_LIGHT1);
+	if(!light0)
+		glDisable(GL_LIGHT0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -2364,7 +2379,15 @@ void display(void)
 	else
 	{
 		setOrthographicProjection();
+		if (light1)
+			glDisable(GL_LIGHT1);
+		if (!light0)
+			glEnable(GL_LIGHT0);
 		drawFinishScreen();
+		if (light1)
+			glEnable(GL_LIGHT1);
+		if (!light0)
+			glDisable(GL_LIGHT0);
 		resetPerspectiveProjection();
 	}
     glutSwapBuffers();
