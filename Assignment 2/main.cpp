@@ -1200,6 +1200,39 @@ void checkHeliLanding(void)
 	}
 }
 
+int cameraView = 1;
+
+// implementing different camera views
+void cameraView1()
+{
+	cameraView = 1;
+	cameraDistance = 6;
+	eye.zPos = eye.zPos - 5;
+	eye.yPos = eye.yPos - 5;
+	eye.xPos = eye.xPos - 5;
+}
+
+void cameraView2()
+{
+	cameraView = 2;
+	cameraDistance = 11;
+
+	eye.zPos = eye.zPos + 5;
+	eye.yPos = eye.yPos + 5;
+	eye.xPos = eye.xPos + 5;
+}
+
+void cameraView3()
+{
+	cameraView = 3;
+	eye.zPos = heli.zPos + 3;
+	eye.yPos = heli.yPos + 5;
+	eye.xPos = heli.xPos + 5;
+}	
+
+
+
+
 void checkHeliCollisions(void)
 {
     bool collision = false;
@@ -1355,6 +1388,15 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 				currentSpeed -=2;
 				heliSpeed = currentSpeed / fps;
 				break;
+		case 'v':
+			if (cameraView == 1)
+				cameraView2();
+			else if (cameraView == 2)
+				cameraView1();
+			//else if (cameraView == 3)
+			//	cameraView1();
+
+			break;
     }
 }
 
