@@ -1,13 +1,17 @@
-// Assignment 2.cpp
-// Heliaac
-// Christopher Trott, Ashley Sexton, Aleesha Torkington
-// Created on 28/08/09
-// Last Modified on 13/10/09 @ 13:08
-//
-// Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
-// Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
-// Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
-// Bitmap.h and Bitmap.cpp found at: http://www.gamedev.net/reference/articles/article1966.asp
+/*
+Subject: CP2060
+Lecturer: Lindsay Ward
+Group Members: Christopher Trott, Ashley Sexton and Aleesha Torkington
+Assignment 2.cpp
+Heliaac
+Created: 28/08/09
+Last Modified: 22/10/09 @ 20:00
+
+Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
+Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
+Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
+Bitmap.h and Bitmap.cpp found at: http://www.gamedev.net/reference/articles/article1966.asp
+*/
 
 #include<math.h>
 #include<string>
@@ -54,6 +58,7 @@ struct checkPoint
 };
 
 void heliLight(void);
+void drawMovingObstacle(void);
 void drawHeli(void);
 void drawHeliBody(void);
 void drawHeliRotor(void);
@@ -118,14 +123,14 @@ int textX = 20;
 int textY = 20;
 
 bool light0 = true;
-bool light1 = false;
+bool light1 = true;
+bool lighting = true;
 
 //trying to implement start/stop without changing functions too much
 bool helicopterOn = false;
 
 //skyHeight global to stop heli from breaching sky top
 float skyHeight = 20.0;
-
 
 GLfloat light0_position[] = { 1, 20, 1, 0 };
 
@@ -165,7 +170,6 @@ const float LEAN_FACTOR = 15.0;
 float heliLeanFront = 0.0;
 float heliLeanSide = 0.0;
 int rotSpeed = ROTATE_SPEED / fps;
-//float heliSpeed = HELI_SPEED / fps;
 int currentSpeed = HELI_SPEED;
 float heliSpeed = currentSpeed / fps;
 
@@ -435,7 +439,7 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 }
 
 
-//draw sky
+// Draw sky
 void drawSky()
 {
 	float roll = 0.0;
@@ -517,7 +521,7 @@ void heliLight()
 {
 	// Set light1 position
 
-	GLfloat light1_position[] = { heli.xPos, heli.yPos, heli.zPos, 1.0 };
+	GLfloat light1_position[] = { heli.xSize, heli.ySize, heli.zSize, 1.0 };
 	glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
 
 	// Create light1 components
@@ -689,9 +693,9 @@ void drawHeliBody()
 
 	glPushMatrix();
 	// Rotate right door
-	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
+	glTranslatef(v1.x, v1.y, v1.z);			// Translate v1
 	glRotatef(-doorRot, 1.0, 0.0, 0.0);		// Rotate
-	glTranslatef(-v1.x, -v1.y, -v1.z);	// Translate -v1
+	glTranslatef(-v1.x, -v1.y, -v1.z);		// Translate -v1
 
 	// Right Side Panel
 	glBegin(GL_TRIANGLE_STRIP);
@@ -837,6 +841,7 @@ void drawHeliBody()
 	glEnd();
 	
 	glPushMatrix();
+
 	glTranslatef(v2.x, v2.y, v2.z);
 
 	// Change texture for chair
@@ -888,7 +893,6 @@ void drawHeliBody()
 	glPopMatrix();
 	// End Skids
 	glPopMatrix();
-
 
 	// Rotate cockpit windscreen
 	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
@@ -996,7 +1000,7 @@ void drawGround(void)
 
 void drawCheckpoint(int checkpoint)
 {
-	// draw checkpoint number
+	// Draw checkpoint number
 	const int POINT_NUM_STR = 2;
 	char* pointStr = new char[POINT_NUM_STR];
 	sprintf(pointStr, "%.2i", checkpoint + 1);
@@ -1506,7 +1510,7 @@ void special(int key, int mouseX, int mouseY)
 				shaderOn = !shaderOn;
 				break;
 		case GLUT_KEY_F8:
-                // turn the light/s on or off
+                // Turn light0 on or off
                 light0 = !light0;
 				if (light0)
 				{                        
@@ -1517,6 +1521,30 @@ void special(int key, int mouseX, int mouseY)
                     glDisable(GL_LIGHT0);
                 }
                 break;
+		case GLUT_KEY_F9:
+			// Turn light1 on or off
+			light1 = !light1;
+			if (light1)
+			{
+				glEnable(GL_LIGHT1);
+			}
+			else
+			{
+				glDisable(GL_LIGHT1);
+			}
+			break;
+		case GLUT_KEY_F10:
+			// Turn lighting on or off
+			//lighting = !lighting;
+			//if (lighting)
+			//{
+			//	glEnable(GL_LIGHTING);
+			//}
+			//else
+			//{
+			//	glDisable(GL_LIGHTING);
+			//}
+			//break;
 		case GLUT_KEY_PAGE_DOWN:
                 // Zoom out
 				if (cameraZoom > 1.0)
@@ -1642,6 +1670,29 @@ void moveHeliDown(float speed, bool checkCol)
 
     checkHeliCollisions();
 	checkHeliThruCollisions();
+}
+
+void drawMovingObstacle()
+{
+	
+	if (strCurrentMap == "medium")
+	{
+		glColor3f(1.0, 1.0, 0.0);
+		glScalef(3, 4, 0.2);
+		glutSolidCube(1.0);//do this translation
+	}
+	else
+	{
+		glColor3f(0.0, 1.0, 0.0);
+		glScalef(3, 4, 0.2);
+		glutSolidCube(1.0);//do this translation
+	}
+	
+	// if moving left = true
+	//glTranslate
+	// else
+	//glTranslatef();
+
 }
 
 void updateGameTime()
@@ -2297,6 +2348,9 @@ void display(void)
 		{
 			drawCheckpoint( points[checkPoint].checkpoint);
 		}
+
+		// Draw moving obstavles
+		drawMovingObstacle();
 		
 		updateFPS();
 		updateGameTime();
