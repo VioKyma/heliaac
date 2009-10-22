@@ -4,8 +4,8 @@
 
 == LEFT TO DO: ==
  * Another light, switchable (2)
- * F9 - switch light1 off
- * F1 - switch all lighting off
+ * F9 - switch light1 off -- DONE
+ * F10 - switch all lighting off -- DONE
  * No lighting in orthographic projection
 
 
