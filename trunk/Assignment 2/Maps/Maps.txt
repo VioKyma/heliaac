@@ -1,0 +1,2 @@
+Maps\small.map
+Maps\medium.map
