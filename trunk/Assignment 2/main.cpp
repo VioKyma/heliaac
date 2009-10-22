@@ -604,7 +604,7 @@ void drawHeli()
 
 	glPushMatrix();
 	glRotatef(90, 1.0, 0.0, 0.0);
-	glTranslatef(-2.7, 0.2, -0.5);
+	glTranslatef(-1.35, 0.24, -0.25);
     glRotatef(rotor, 0.0, 1.0, 0.0);
 	glScalef(0.4, 0.4, 0.4);
 
@@ -629,6 +629,7 @@ void drawHeliBody()
 	}
 
 	glPushMatrix();
+	glScalef(0.5, 0.5, 0.5);
 	//
 	//     v12           v0-------------------v1 \
 	//     | \             \                  |   \
@@ -917,7 +918,8 @@ void drawHeliBody()
 void drawHeliRotor()
 {
         glPushMatrix();
-        glTranslatef(0.0, 0.8, 0.0);
+		glScalef(0.5, 0.5, 0.5);
+        glTranslatef(0.0, 0.2, 0.0);
 
         glPushMatrix();     
         // Make color blue
