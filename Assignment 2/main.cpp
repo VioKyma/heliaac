@@ -490,6 +490,9 @@ void drawSky()
 
 void drawBuilding(objectBox building, int textureNum)
 {
+		glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textures[textureNum]);
 //	   -------
@@ -518,19 +521,20 @@ void drawBuilding(objectBox building, int textureNum)
 	glTexCoord2f(0.0, building.ySize);				glVertex3f(v2.x, v2.y, v2.z);
 	// Draw wall
 	glTexCoord2f(0.0,0.0);							glVertex3f(v0.x, v0.y, -v0.z);
-	glTexCoord2f(building.xSize,0.0);				glVertex3f(v1.x, v1.y, -v1.z);
-	glTexCoord2f(building.xSize,building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
 	glTexCoord2f(0.0,building.ySize);				glVertex3f(v2.x, v2.y, -v2.z);
+	glTexCoord2f(building.xSize,building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(building.xSize,0.0);				glVertex3f(v1.x, v1.y, -v1.z);
+
 	// Draw wall
 	glTexCoord2f(0.0, building.ySize);				glVertex3f(v2.x, v2.y, -v2.z);
 	glTexCoord2f(0.0, 0.0);							glVertex3f(v0.x, v0.y, -v0.z);
 	glTexCoord2f(building.xSize, 0.0);				glVertex3f(v0.x, v0.y, v0.z);
 	glTexCoord2f(building.xSize, building.ySize);	glVertex3f(v2.x, v2.y, v2.z);
 	// Draw wall
-	glTexCoord2f(0.0, 0.0);							glVertex3f(v1.x, v1.y, v1.z);
 	glTexCoord2f(0.0, building.ySize);				glVertex3f(v3.x, v3.y, v3.z);
-	glTexCoord2f(building.xSize, building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
+	glTexCoord2f(0.0, 0.0);							glVertex3f(v1.x, v1.y, v1.z);
 	glTexCoord2f(building.xSize, 0.0);				glVertex3f(v1.x, v1.y, -v1.z);
+	glTexCoord2f(building.xSize, building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
 	// Draw floor
 	glVertex3f(v0.x, v0.y, v0.z);
 	glVertex3f(v1.x, v1.y, v1.z);
@@ -544,6 +548,7 @@ void drawBuilding(objectBox building, int textureNum)
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
 }
 
 void drawHeli()
