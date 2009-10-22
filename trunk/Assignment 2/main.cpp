@@ -1532,19 +1532,19 @@ void special(int key, int mouseX, int mouseY)
 				glDisable(GL_LIGHT1);
 			}
 			break;
-		case GLUT_KEY_F10:
-			// Turn lighting on or off
-			lighting = !lighting;
-			if (lighting)
-			{
-				glEnable(GL_LIGHT0);
-				glEnable(GL_LIGHT1);
-			}
-			else
-			{
-				glDisable(GL_LIGHT0);
-				glDisable(GL_LIGHT1);
-			}
+		//case GLUT_KEY_F10:
+		//	// Turn lighting on or off
+		//	lighting = !lighting;
+		//	if (lighting)
+		//	{
+		//		glEnable(GL_LIGHT0);
+		//		glEnable(GL_LIGHT1);
+		//	}
+		//	else
+		//	{
+		//		glDisable(GL_LIGHT0);
+		//		glDisable(GL_LIGHT1);
+		//	}
 			break;
 		case GLUT_KEY_PAGE_DOWN:
                 // Zoom out
