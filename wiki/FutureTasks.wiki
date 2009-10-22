@@ -6,7 +6,7 @@
  * Move light1 to correct position (nose of heli, with cylinder?)
  * F9 - switch light1 off -- DONE
  * F10 - switch all lighting off -- DONE
- * No lighting in orthographic projection
+ * No lighting in orthographic projection -- DONE
 
 
 
