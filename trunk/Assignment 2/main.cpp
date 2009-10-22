@@ -1535,16 +1535,18 @@ void special(int key, int mouseX, int mouseY)
 			break;
 		case GLUT_KEY_F10:
 			// Turn lighting on or off
-			//lighting = !lighting;
-			//if (lighting)
-			//{
-			//	glEnable(GL_LIGHTING);
-			//}
-			//else
-			//{
-			//	glDisable(GL_LIGHTING);
-			//}
-			//break;
+			lighting = !lighting;
+			if (lighting)
+			{
+				glEnable(GL_LIGHT0);
+				glEnable(GL_LIGHT1);
+			}
+			else
+			{
+				glDisable(GL_LIGHT0);
+				glDisable(GL_LIGHT1);
+			}
+			break;
 		case GLUT_KEY_PAGE_DOWN:
                 // Zoom out
 				if (cameraZoom > 1.0)
