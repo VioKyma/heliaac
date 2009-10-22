@@ -15,7 +15,7 @@
 #include<fstream>
 #include<GL/glew.h>
 #include<GL/freeglut.h>
- 
+#include<time.h>
 #include"Bitmap.h"
 
 using namespace std;
@@ -80,10 +80,12 @@ void displayDashboard(void);
 void drawFinishScreen(void);
 void enableFog(void);
 char* getTimeString(int time);
-bool readMapFile(char* fileName);
 void setupShaders(void);
 char* readShaderFile(char* fileName);
 void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY);
+void loadMaps(void);
+void selectMap(void);
+bool readMapFile(const char* fileName);
 
 float cameraDistance = 6.0;
 float cameraZoom = 2.0;
@@ -133,7 +135,7 @@ GLuint groundList;
 double rotor = 0;
 const double MAX_ROTOR_SPEED = 10;
 double rotorSpeed = 0.0;
-int groundSize = 20;
+float groundSize = 20.0;
 int groundHeight = 0;
 
 int windowWidth = 600;
@@ -143,7 +145,7 @@ int windowPosWidth = 40;
 int windowPosHeight = 40;
 
 int frames = 0;
-int time = 0;
+int timePassed = 0;
 int timeBase = 0;
 float fps = 50.0;
 char* strFps = new char[4];			// FPS string for display on-screen
@@ -166,8 +168,6 @@ int rotSpeed = ROTATE_SPEED / fps;
 int currentSpeed = HELI_SPEED;
 float heliSpeed = currentSpeed / fps;
 
-
-
 bool pause = false;
 bool wire = false;
 
@@ -189,6 +189,10 @@ bool heliTextures = true;
 bool shaderOn = false;
 bool useOldOGL = true;
 
+int numMaps = 0;
+string* maps;
+const char* strCurrentMap;
+
 GLhandleARB vertexShader;
 GLhandleARB fragmentShader;
 GLhandleARB shaderProgram;
@@ -208,8 +212,11 @@ void init(void)
 		enableFog();
 	}
 
-	// Get best time from a file
-	readMapFile("Maps/small.map");
+	// Load maps and choose a map for this run
+	srand(time(NULL));
+	loadMaps();
+	selectMap();
+	readMapFile(strCurrentMap);
 
     // Make object materials equal to glColor*() properties
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -256,23 +263,35 @@ void init(void)
     glNewList(groundList, GL_COMPILE);
     drawGround();
     glEndList();
-
-	// Setup the checkpoint information
-	//setPoint(0, 5.0, 5.0, 0.5, 5.0, 6.0, 5.0, 0.0);
-	//setPoint(1, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, 5.0, 60);
-	//setPoint(2, 5.0, 5.0, 0.5, -5.0, 5.0 / 2.0, -5.0, 45);
 }
 
-void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPosition, float yPosition, float zPosition, float rotateY)
+void loadMaps()
 {
-	points[pointNum].checkpoint = pointNum;
-	points[pointNum].xSize = xWidth;
-	points[pointNum].ySize = yWidth;
-	points[pointNum].zSize = zWidth;
-	points[pointNum].xPos = xPosition;
-	points[pointNum].yPos = yPosition;
-	points[pointNum].zPos = zPosition;
-	points[pointNum].rotY = rotateY;
+	ifstream fin;
+	fin.open("Maps/maps.txt");
+
+	while ( !fin.eof() )
+	{
+		fin.ignore(1000, '\n');
+		numMaps++;
+	}
+
+	fin.seekg(0, ios::beg);
+	cout << "There are " << numMaps << " maps available.\n";
+	maps = new string[numMaps];
+
+	for (int line = 0; line < numMaps; line++)
+	{
+		getline(fin, maps[line], '\n');
+	}
+
+	fin.close();
+}
+
+void selectMap()
+{
+	int randomNumber = rand() % numMaps;
+	strCurrentMap = maps[randomNumber].c_str();
 }
 
 // These functions have been adapted from Lighthouse 3D GLSL Examples
@@ -1215,8 +1234,9 @@ void restartGame()
 {
 	gameFinished = false;
 
-	// Read best time from file in case it has changed
-	readMapFile("Maps/small.map");
+	// Get and read a new map file
+	selectMap();
+	readMapFile(strCurrentMap);
 
 	// Reset checkpoints
 	checkpointNum = 0;
@@ -1559,27 +1579,27 @@ void updateGameTime()
 {
 	if (!pause)
 	{
-		gameTime += time - gameTimeBase;	// Increment the time spent playing
+		gameTime += timePassed - gameTimeBase;	// Increment the time spent playing
 		int gameTimeMillisec = (gameTime % 1000) / 10;		// Get milliseconds from game time
 		int gameTimeSeconds = (gameTime % 60000) / 1000;	// Get seconds from game time
 		int gameTimeMinutes = (gameTime % 3600000) / 60000;	// Get minutes from game time
 		sprintf(strGameTime, "Time: %.2i:%.2i:%.2i", gameTimeMinutes, gameTimeSeconds, gameTimeMillisec);	
 	}
 
-	gameTimeBase = time;
+	gameTimeBase = timePassed;
 }
 
 void updateFPS()
 {
     // Update the FPS every second
     frames++;
-    time = glutGet(GLUT_ELAPSED_TIME);
+    timePassed = glutGet(GLUT_ELAPSED_TIME);
 
-    if (time - timeBase > 1000) // If a second has passed
+    if (timePassed - timeBase > 1000) // If a second has passed
     {
-        fps = frames * 1000.0 / (time - timeBase);              // calculate FPS
+        fps = frames * 1000.0 / (timePassed - timeBase);              // calculate FPS
         sprintf(strFps, "FPS: %4.2f", fps);		// get the string value of integer FPS
-        timeBase = time;        // Set the base time to current time
+        timeBase = timePassed;        // Set the base time to current time
         frames = 0;     // Reset the frame count
     }
 }
@@ -1593,6 +1613,8 @@ void displayText()
     glLoadIdentity();
 	// Display FPS
     renderBitmapString(textX, textY, (void *)font, strFps);
+	// Display map name
+	renderBitmapString(windowWidth - windowWidth / 4, textY, (void *)font, (char*)strCurrentMap);
 
 	displayDashboard();
 
@@ -1717,22 +1739,29 @@ char* getTimeString(int time)
 	int timeMSec = (time % 1000) / 10;
 	int timeSec = (time % 60000) / 1000;
 	int timeMin = (time % 3600000) / 60000;
-	sprintf( strTime, "%.2i:%.2i:%.2i", timeMin, timeSec, timeMSec);
+	sprintf( strTime, "%.2i:%.2i:%.2i", timeMin, timeSec, timeMSec );
 	return strTime;
 }
 
-bool readMapFile(char* fileName)
+bool readMapFile(const char* fileName)
 {
 	bool success = true;
 	string strInput = "";
 	
+	cout << "Loading map" << fileName << " for use.\n";
 	// Open file for reading
 	ifstream fin;
-	fin.open(fileName);
+	fin.open( fileName );
+
+	if (fin.fail())
+	{
+		cout << "Error reading file " << fileName << ".\n";
+		success = false;
+	}
 
 	if ( fin.bad() )
 	{
-		cout << "Error reading file " << fileName << ".\n";
+		cout << "Fatal error reading file " << fileName << ".\n";
 		success = false;
 	}
 	
@@ -1747,6 +1776,12 @@ bool readMapFile(char* fileName)
 			fin >> fInput;
 			bestTime = fInput;
 			cout << "bestTime Loaded: " << bestTime << endl;
+			fin.ignore(100, '\n');
+		}
+		else if ( strInput.compare("groundSize{") == 0 )
+		{
+			fin >> fInput;
+			groundSize = fInput;
 			fin.ignore(100, '\n');
 		}
 		else if ( strInput.compare("pointA{") == 0 )
@@ -1909,7 +1944,7 @@ void drawFinishScreen()
 		sprintf(strOldBest, "The old best time was: %s", strBestTime);
 		renderBitmapString(20, 80, (void *)font, strOldBest);
 		// Output new time to saved file
-		writeTime("Maps/small.map", totalTime);
+		//writeTime(strCurrentMap, totalTime);
 	}
 	else
 	{
