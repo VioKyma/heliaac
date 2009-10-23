@@ -1277,6 +1277,7 @@ void checkHeliCollisions(void)
 			rotorSpeed = 0;
 		}
     }
+
 }
 
 // Converts degrees (in) to radians and returns the cosine (out)
@@ -1318,9 +1319,15 @@ void restartGame()
 	heli.zPos = 0;
 	heli.rotY = 0;
 
+	// Reset cameraDistance
+	cameraDistance = 6;
+
+	// Reset cameraView
+	cameraView = 1;
+
 	// Reset eye position
 	eye.xPos = cameraDistance;
-	eye.yPos = heli.yPos;
+	eye.yPos = 2;
 	eye.zPos = cameraDistance;
 	eye.rotY = 135;
 }
