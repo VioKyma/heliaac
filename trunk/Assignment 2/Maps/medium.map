@@ -1,8 +1,8 @@
 bestTime{
-10034
+11586
 }
 groundSize{
-40.0
+30.0
 }
 pointA{
 0
@@ -16,9 +16,9 @@ pointA{
 3
 }
 pointB{
--10
+-20
 0.002
--10
+-20
 0
 0
 0

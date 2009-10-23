@@ -92,6 +92,7 @@ void setPoint(int pointNum, float xWidth, float yWidth, float zWidth, float xPos
 void loadMaps(void);
 void selectMap(void);
 bool readMapFile(const char* fileName);
+void writeTime(const char* fileName, int time);
 
 float cameraDistance = 6.0;
 float cameraZoom = 2.0;
@@ -250,8 +251,8 @@ void init(void)
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
 
     // Create light0 components
-    GLfloat ambientLight[] = { 0.6f, 0.6f, 0.6f, 1.0f };
-    GLfloat diffuseLight[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+    GLfloat ambientLight[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+    GLfloat diffuseLight[] = { 0.6f, 0.6f, 0.6f, 1.0f };
     GLfloat specularLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
 
     // Assign light0 components
@@ -268,11 +269,6 @@ void init(void)
 	textures[4] = loadTextureBMP( "Textures/heliPadB.bmp", true, 256, 256 );
 	textures[5] = loadTextureBMP( "Textures/sky.bmp", true, 256, 256);
 
-	// Define the ground display list
-    groundList = glGenLists(1);
-    glNewList(groundList, GL_COMPILE);
-    drawGround();
-    glEndList();
 }
 
 void loadMaps()
@@ -426,7 +422,7 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 
 	/*if ( gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, image->data ) )
     {
-		cout << "Error creating texture mipmaps for texture: " << filename << ".\n";
+		cout << "Error creating mipmaps for texture: " << filename << ".\n";
     }*/
 
 
@@ -520,24 +516,23 @@ void drawSky()
 void heliLight()
 {
 	// Set light1 position
-	GLfloat light1_position[] = { heli.xSize, heli.ySize, heli.zSize, 1.0 };
+	GLfloat light1_position[] = { heli.xSize + heli.xSize, heli.ySize - heli.ySize, heli.zSize, 1.0 };
 	glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
 
 	// Create light1 components
-	GLfloat ambientLight1[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	//GLfloat ambientLight1[] = { 0.6f, 0.6f, 0.6f, 1.0f };
 	GLfloat diffuseLight1[] = { 0.9f, 0.9f, 0.9f, 1.0f };
 	GLfloat specularLight1[] = { 0.7f, 0.7f, 0.7f, 1.0f };
 
 	// Assign light1 components
-	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight1);
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight1);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight1);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight1);
-
 }
 
 void drawBuilding(objectBox building, int textureNum)
 {
-		glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
 	glEnable(GL_TEXTURE_2D);
@@ -641,7 +636,6 @@ void drawHeli()
 	glPopMatrix();
 
     // Draw body
-    //glCallList(heliBodyList);
 	drawHeliBody();
 
     glPopMatrix();
@@ -676,16 +670,32 @@ void drawHeliBody()
 	vertex v4 = { 2.1, 0.8, 0.5 };
 	vertex v5 = { 1.7, 0.0, 1.0 };
 	vertex v6 = { 2.7, 0.0, 0.5 };
-	vertex v7 = { 2.5, 1.0, 1.0 };
+	// Body normals
+	vertex n0 = { 0.0, 1.0, 1.0 };
+	vertex n1 = { 0.0, 1.0, 1.0 };
+	vertex n2 = { -1.0, -1.0, 1.0 };
+	vertex n3 = { 0.0, -1.0, 1.0 };
+	vertex n4 = { 1.0, 1.0, 1.0 };
+	vertex n5 = { 1.0, 0.0, 1.0 };
+	vertex n6 = { 1.0, -1.0, 1.0 };
 	// Tail vertices
 	vertex v8 = { -2.5, 0.4, 0.4 };
 	vertex v9 = { -0.8, 0.4, 0.4 };
 	vertex v10 = { -0.185, -0.4, 0.4 };
 	vertex v11 = { -2.5, -0.4, 0.4 };
 	vertex v14 = { -0.8, -0.4, 0.4 };
+	// Tail Normals
+	vertex n8 = { 1.0, 1.0, 1.0 };
+	vertex n9 = { -1.0, 1.0, 1.0 };
+	vertex n10 = { -1.0, -1.0, 1.0 };
+	vertex n11 = { 0.0, -1.0, 1.0 };
+	vertex n14 = { 0.0, -1.0, 1.0 };
 	// Tip of tail
 	vertex v12 = {-2.8, 1.0, 0.4};
 	vertex v13 = {-2.8, -0.4, 0.4};
+	// Tip normals
+	vertex n12 = { 0.0, 1.0, 1.0 };
+	vertex n13 = {-1.0, -1.0, 1.0};
 
 	// Draw main body
 	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Red
@@ -698,9 +708,13 @@ void drawHeliBody()
 
 	// Right Side Panel
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n0.x, n0.y, n0.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
+	glNormal3f(n1.x, n1.y, n1.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v1.x, v1.y, v1.z);
+	glNormal3f(n2.x, n2.y, n2.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, v2.z);
+	glNormal3f(n3.x, n3.y, n3.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, v3.z);
 	glEnd();
 
@@ -708,134 +722,204 @@ void drawHeliBody()
 
 	// Top Panel
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n0.x, n0.y, n0.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
+	glNormal3f(n1.x, n1.y, n1.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v1.x, v1.y, v1.z);
+	glNormal3f(n0.x, n0.y, -n0.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v0.x, v0.y, -v0.z);
+	glNormal3f(n1.x, n1.y, -n1.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v1.x, v1.y, -v1.z);
 	glEnd();
 
 	// Bottom Panel
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n2.x, n2.y, n2.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v2.x, v2.y, v2.z);
+	glNormal3f(n3.x, n3.y, n3.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v3.x, v3.y, v3.z);
+	glNormal3f(n2.x, n2.y, -n2.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, -v2.z);
+	glNormal3f(n3.x, n3.y, -n3.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, -v3.z);
 	glEnd();
 
 	// Left Panel
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n0.x, n0.y, -n0.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, -v0.z);
+	glNormal3f(n1.x, n1.y, -n1.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v1.x, v1.y, -v1.z);
+	glNormal3f(n2.x, n2.y, -n2.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v2.x, v2.y, -v2.z);
+	glNormal3f(n3.x, n3.y, -n3.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, -v3.z);
 	glEnd();
 
 	// Rear Panel
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n0.x, n0.y, n0.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v0.x, v0.y, v0.z);
+	glNormal3f(n2.x, n2.y, n2.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v2.x, v2.y, v2.z);
+	glNormal3f(n0.x, n0.y, -n0.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v0.x, v0.y, -v0.z);
+	glNormal3f(n2.x, n2.y, -n2.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v2.x, v2.y, -v2.z);
 	glEnd();
 
 	// Tip of tail (top)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n8.x, n8.y, n8.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glNormal3f(n12.x, n12.y, n12.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v12.x, v12.y, v12.z);
+	glNormal3f(n8.x, n8.y, -n8.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glNormal3f(n12.x, n12.y, -n12.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v12.x, v12.y, -v12.z);
 	glEnd();
 
 	// Tip of tail (back)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n12.x, n12.y, n12.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v12.x, v12.y, v12.z);
+	glNormal3f(n13.x, n13.y, n13.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v13.x, v13.y, v13.z);
+	glNormal3f(n12.x, n12.y, -n12.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v12.x, v12.y, -v12.z);
+	glNormal3f(n13.x, n13.y, -n13.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v13.x, v13.y, -v13.z);
 	glEnd();
 
 	// Tip of tail (side1)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n12.x, n12.y, n12.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v12.x, v12.y, v12.z);
+	glNormal3f(n8.x, n8.y, n8.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glNormal3f(n13.x, n13.y, n13.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v13.x, v13.y, v13.z);
+	glNormal3f(n11.x, n11.y, n11.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
 	glEnd();
 
 	// Tip of tail (side2)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n12.x, n12.y, -n12.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v12.x, v12.y, -v12.z);
+	glNormal3f(n8.x, n8.y, -n8.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glNormal3f(n13.x, n13.y, -n13.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v13.x, v13.y, -v13.z);
+	glNormal3f(n11.x, n11.y, -n11.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, -v11.z);
 	glEnd();
 
 	// Tip of tail (bottom)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n11.x, n11.y, n11.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
+	glNormal3f(n13.x, n13.y, n13.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v13.x, v13.y, v13.z);
+	glNormal3f(n11.x, n11.y, -n11.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	glNormal3f(n13.x, n13.y, -n13.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v13.x, v13.y, -v13.z);
 	glEnd();
 	
 	// Front Heli Nose
 	glBegin(GL_TRIANGLE_STRIP);
 	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Red
+	glNormal3f(n5.x, n5.y, n5.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v5.x, v5.y, v5.z);
+	glNormal3f(n3.x, n3.y, n3.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v3.x, v3.y, v3.z);
+	glNormal3f(n6.x, n6.y, n6.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v6.x, v6.y, v6.z);
+	glNormal3f(n3.x, n3.y, 0.0);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v3.x, v3.y, 0.0);
+	glNormal3f(n6.x, n6.y, -n6.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v6.x, v6.y, -v6.z);
+	glNormal3f(n3.x, n3.y, -n3.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v3.x, v3.y, -v3.z);
+	glNormal3f(n5.x, n5.y, -n5.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v5.x, v5.y, -v5.z);
 	glEnd();
 
 	// Main Heli Tail
 	glBegin(GL_TRIANGLE_STRIP);
 	// Left
+	glNormal3f(n8.x, n8.y, n8.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
+	glNormal3f(n9.x, n9.y, n9.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
+	glNormal3f(n14.x, n14.y, n14.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glNormal3f(n11.x, n11.y, n11.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
+	glNormal3f(n8.x, n8.y, n8.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, v8.z);
 	// Top
+	glNormal3f(n8.x, n8.y, -n8.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, -v8.z);
+	glNormal3f(n9.x, n9.y, n9.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, v9.z);
+	glNormal3f(n9.x, n9.y, -n9.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	glNormal3f(n8.x, n8.y, -n8.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, -v8.z);
 	// Right
+	glNormal3f(n9.x, n9.y, -n9.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	glNormal3f(n14.x, n14.y, -n14.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v14.x, v14.y, -v14.z);
+	glNormal3f(n11.x, n11.y, -n11.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	glNormal3f(n8.x, n8.y, -n8.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v8.x, v8.y, -v8.z);
 	glEnd();
 
 	//Bottom
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n11.x, n11.y, n11.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v11.x, v11.y, v11.z);
+	glNormal3f(n11.x, n11.y, -n11.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v11.x, v11.y, -v11.z);
+	glNormal3f(n14.x, n14.y, n14.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glNormal3f(n14.x, n14.y, -n14.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v14.x, v14.y, -v14.z);
 	glEnd();
 
 	//Bottom 2
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n14.x, n14.y, n14.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glNormal3f(n14.x, n14.y, -n14.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v14.x, v14.y, -v14.z);
+	glNormal3f(n10.x, n10.y, n10.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
+	glNormal3f(n10.x, n10.y, -n10.z);
 	glTexCoord2f(1.0, 0.0);		glVertex3f(v10.x, v10.y, -v10.z);
 	glEnd();
 
 	//Close to body (left)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n9.x, n9.y, n9.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v9.x, v9.y, v9.z);
+	glNormal3f(n14.x, n14.y, n14.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v14.x, v14.y, v14.z);
+	glNormal3f(n10.x, n10.y, n10.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, v10.z);
 	glEnd();
 	//Close to body (right)
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n9.x, n9.y, -n9.z);
 	glTexCoord2f(0.0, 0.0);		glVertex3f(v9.x, v9.y, -v9.z);
+	glNormal3f(n14.x, n14.y, -n14.z);
 	glTexCoord2f(0.0, 1.0);		glVertex3f(v14.x, v14.y, -v14.z);
+	glNormal3f(n10.x, n10.y, -n10.z);
 	glTexCoord2f(1.0, 1.0);		glVertex3f(v10.x, v10.y, -v10.z);
 	glEnd();
 	
@@ -902,34 +986,51 @@ void drawHeliBody()
 	glColor4f(0.0, 0.0, 0.6, 0.5);	// Blue
 	// Right Screen
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n1.x, n1.y, n1.z);
 	glVertex3f(v1.x, v1.y, v1.z);
+	glNormal3f(n4.x, n4.y, n4.z);
 	glVertex3f(v4.x, v4.y, v4.z);
+	glNormal3f(n5.x, n5.y, n5.z);
 	glVertex3f(v5.x, v5.y, v5.z);
+	glNormal3f(n6.x, n6.y, n6.z);
 	glVertex3f(v6.x, v6.y, v6.z);
 	glEnd();
 
 	// Front top screen
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n1.x, n1.y, n1.z);
 	glVertex3f(v1.x, v1.y, v1.z);
+	glNormal3f(n4.x, n4.y, n4.z);
 	glVertex3f(v4.x, v4.y, v4.z);
+	glNormal3f(n1.x, n1.y, 0.0);
 	glVertex3f(v1.x, v1.y, 0.0);
+	glNormal3f(n4.x, n4.y, -n4.z);
 	glVertex3f(v4.x, v4.y, -v4.z);
+	glNormal3f(n1.x, n1.y, -n1.z);
 	glVertex3f(v1.x, v1.y, -v1.z);
 	glEnd();
 
 	// Front mid screen
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n4.x, n4.y, n4.z);
 	glVertex3f(v4.x, v4.y, v4.z);
+	glNormal3f(n4.x, n4.y, -n4.z);
 	glVertex3f(v4.x, v4.y, -v4.z);
+	glNormal3f(n6.x, n6.y, n6.z);
 	glVertex3f(v6.x, v6.y, v6.z);
+	glNormal3f(n6.x, n6.y, -n6.z);
 	glVertex3f(v6.x, v6.y, -v6.z);
 	glEnd();
 
 	// Left Screen
 	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(n1.x, n1.y, -n1.z);
 	glVertex3f(v1.x, v1.y, -v1.z);
+	glNormal3f(n4.x, n4.y, -n4.z);
 	glVertex3f(v4.x, v4.y, -v4.z);
+	glNormal3f(n5.x, n5.y, -n5.z);
 	glVertex3f(v5.x, v5.y, -v5.z);
+	glNormal3f(n6.x, n6.y, -n6.z);
 	glVertex3f(v6.x, v6.y, -v6.z);
 	glEnd();
 
@@ -1007,7 +1108,7 @@ void drawCheckpoint(int checkpoint)
 	glRasterPos3f(points[checkpoint].xPos, points[checkpoint].yPos, points[checkpoint].zPos);
 	for(int i = 0; i < POINT_NUM_STR; i++)
 	{
-		glutBitmapCharacter((void *)font, pointStr[i]);
+		glutBitmapCharacter((void *)fontTitle, pointStr[i]);
 	}
 
 	glPushMatrix();
@@ -1683,24 +1784,23 @@ void moveHeliDown(float speed, bool checkCol)
 
 void drawMovingObstacle()
 {
+	if (strCurrentMap == "Maps\medium.map")
+	{
+		glColor3f(1.0, 1.0, 0.0);
+		glScalef(3, 4, 0.2);
+		glutSolidCube(1.0);//do this translation
+	}
+	else
+	{
+		glColor3f(0.0, 1.0, 0.0);
+		glScalef(3, 4, 0.2);
+		glutSolidCube(1.0);//do this translation
+	}
 	
-	//if (strCurrentMap == "medium")
-	//{
-	//	glColor3f(1.0, 1.0, 0.0);
-	//	glScalef(3, 4, 0.2);
-	//	glutSolidCube(1.0);//do this translation
-	//}
-	//else
-	//{
-	//	glColor3f(0.0, 1.0, 0.0);
-	//	glScalef(3, 4, 0.2);
-	//	glutSolidCube(1.0);//do this translation
-	//}
-	//
-	//// if moving left = true
-	////glTranslate
-	//// else
-	////glTranslatef();
+	// if moving left = true
+	//glTranslate
+	// else
+	//glTranslatef();
 
 }
 
@@ -1735,9 +1835,11 @@ void updateFPS()
 
 void displayText()
 {
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
     // Write text to screen
     glPushMatrix();
-    glColor3f(0.0, 1.0, 1.0);
+    glColor3f(0.2, 0.5, 0.2);
     setOrthographicProjection();
 	if (light1)
 		glDisable(GL_LIGHT1);
@@ -1763,6 +1865,9 @@ void displayText()
 		glDisable(GL_LIGHT0);
     resetPerspectiveProjection();
     glPopMatrix();
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void displayHelp()
@@ -1798,6 +1903,7 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on or off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F9 - Switch Light 1 on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward and Turn left/right");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "s/x - Start/stop engine");
@@ -1829,8 +1935,6 @@ void displayDashboard()
 
 	float dashHeight = windowHeight - (DASH_HEIGHT_PC * windowHeight);
 	float dashWidth = windowWidth - (DASH_WIDTH_PC * windowWidth);
-
-	glDisable(GL_DEPTH_TEST);
 
 	// Draw the dash board
 	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
@@ -1867,7 +1971,6 @@ void displayDashboard()
 	sprintf(strDrawPenalty, "Penalty Time: %s", strPenalty);
 	renderBitmapString(30, dashHeight + 60, (void *)font, strDrawPenalty);
 
-	glEnable(GL_DEPTH_TEST);
 }
 
 char* getTimeString(int time)
@@ -2022,7 +2125,7 @@ bool readMapFile(const char* fileName)
 }
 
 // This function replaces the old time with the new time in the map file
-void writeTime(char* fileName, int time)
+void writeTime(const char* fileName, int time)
 {
 	string line;
 	ifstream fin(fileName);
@@ -2081,7 +2184,7 @@ void drawFinishScreen()
 		sprintf(strOldBest, "The old best time was: %s", strBestTime);
 		renderBitmapString(20, 80, (void *)font, strOldBest);
 		// Output new time to saved file
-		//writeTime(strCurrentMap, totalTime);
+		writeTime(strCurrentMap, totalTime);
 	}
 	else
 	{
@@ -2096,7 +2199,7 @@ void drawFinishScreen()
 
 	int MARGIN = 0;
 	// Display a backing screen so that the text is readable
-	glColor4f(0.5, 0.5, 0.5, 1.0);	// Grey
+	glColor4f(0.4, 0.4, 0.4, 1.0);	// Grey
 	glBegin(GL_QUADS);
 	glVertex2f(MARGIN, MARGIN);
 	glVertex2f(windowWidth - MARGIN, MARGIN);
@@ -2321,6 +2424,9 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
+	// Update the heliLight position
+	heliLight();
+
 	if ( !gameFinished )
 	{
 		gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
@@ -2332,7 +2438,7 @@ void display(void)
 		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
-//		glUseProgram(0);
+		glUseProgram(0);
 
 		//Draw Sky
 		if (shaderOn)
@@ -2350,7 +2456,7 @@ void display(void)
 		// Draw ground
 		glPushMatrix();
 		glTranslatef(0, groundHeight, 0);
-		glCallList(groundList);
+		drawGround();
 		glPopMatrix();
 
 		// Draw building
@@ -2361,7 +2467,6 @@ void display(void)
 			glPopMatrix();
 		}
 
-
 		// Draw the helicopter
 		drawHeli();
 
@@ -2369,14 +2474,14 @@ void display(void)
 		drawLandingPad(landingPadA, 3);
 		drawLandingPad(landingPadB, 4);
 
-		// Draw the checkpoints
-		for (int checkPoint = 0; checkPoint < MAX_CHECKPOINTS; checkPoint++)
-		{
-			drawCheckpoint( points[checkPoint].checkpoint);
-		}
+		// Draw moving obstacles
+		//drawMovingObstacle();
 
-		// Draw moving obstavles
-		drawMovingObstacle();
+		// Draw the checkpoints
+		for (int checkPoint = MAX_CHECKPOINTS - 1; checkPoint > -1; checkPoint--)
+		{
+			drawCheckpoint( points[checkPoint].checkpoint );
+		}
 		
 		updateFPS();
 		updateGameTime();
@@ -2465,7 +2570,7 @@ int main(int argc, char** argv)
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotion);
 
-	//setupShaders();
+	setupShaders();
 
 	// create sub menu 1
 	int subMenu1 = glutCreateMenu(mymenu);
@@ -2493,6 +2598,6 @@ int main(int argc, char** argv)
 
     glutMainLoop();
 
-	//cleanUpShaders();
+	cleanUpShaders();
     return 0;
 }
