@@ -1210,27 +1210,27 @@ void cameraView1()
 {
 	cameraView = 1;
 	cameraDistance = 6;
-	eye.xPos = eye.xPos + 5;
-	eye.yPos = eye.yPos + 0.8;
-	eye.zPos = eye.zPos + 5;
+	eye.xPos = eye.xPos - 5;
+	eye.yPos = eye.yPos - 5;
+	eye.zPos = eye.zPos - 5;
 }
 
 void cameraView2()
 {
 	cameraView = 2;
 	cameraDistance = 11;
-	eye.xPos = eye.xPos + 5;
-	eye.yPos = eye.yPos + 5;
-	eye.zPos = eye.zPos + 5;
+	eye.xPos = eye.xPos + 2;
+	eye.yPos = eye.yPos + 2;
+	eye.zPos = eye.zPos + 2;
 }
 
 void cameraView3()
 {
 	cameraView = 3;
 	cameraDistance = 3;
-	eye.xPos = eye.xPos - 10;
-	eye.yPos = eye.yPos - 5.8;
-	eye.zPos = eye.zPos - 10;
+	eye.xPos = eye.xPos + 3;
+	eye.yPos = eye.yPos + 3;
+	eye.zPos = eye.zPos + 3;
 	
 }	
 
@@ -2161,9 +2161,6 @@ void renderBitmapString(float x, float y, void *font,char *string)
 void idle(void)
 
 {
-			cout << "eye.xPos: " << eye.xPos << endl;
-		cout << "eye.yPos: " << eye.yPos << endl;
-		cout << "eye.zPos: " << eye.zPos << endl;
 	if (!helicopterOn)
 	{
 		checkHeliLanding();
