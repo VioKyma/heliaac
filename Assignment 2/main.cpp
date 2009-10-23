@@ -1319,7 +1319,7 @@ void cameraView1()
 void cameraView2()
 {
 	cameraView = 2;
-	cameraDistance = 11;
+	cameraDistance = 8;
 	eye.xPos = eye.xPos + 2;
 	eye.yPos = eye.yPos + 2;
 	eye.zPos = eye.zPos + 2;
@@ -1328,7 +1328,7 @@ void cameraView2()
 void cameraView3()
 {
 	cameraView = 3;
-	cameraDistance = 3;
+	cameraDistance = 11;
 	eye.xPos = eye.xPos + 3;
 	eye.yPos = eye.yPos + 3;
 	eye.zPos = eye.zPos + 3;
