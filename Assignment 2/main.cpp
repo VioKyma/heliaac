@@ -99,6 +99,7 @@ float cameraZoom = 2.0;
 objectBox heli = {0, 2, 0, 0, 0, 0, 1.25, 0.75, 0.5};
 float windscreenRot = 0.0;
 float doorRot = 0.0;
+const float MARGIN = 5.0;
 
 int maxBuildings = 0;
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
@@ -303,7 +304,6 @@ void selectMap()
 {
 	int randomNumber = rand() % numMaps;
 	strCurrentMap = maps[randomNumber].c_str();
-	strCurrentMap = "Maps/rooftops.map";
 }
 
 // These functions have been adapted from Lighthouse 3D GLSL Examples
@@ -1880,7 +1880,6 @@ void displayHelp()
 {
 	const int HELP_SPACE = 20;
 	const int HELP_YPOS = 30;
-	const float MARGIN = 5.0;
 	int row = 0;
 
 	glDisable(GL_DEPTH_TEST);
@@ -2179,6 +2178,9 @@ void writeTime(const char* fileName, int time)
 
 void drawFinishScreen()
 {
+	const int X_SPACE = 50;
+	const int Y_SPACE = 50;
+	int row = 0;
 	glColor4f(0.5, 1.0, 0.5, 1.0);	// Light Green
 	char* strFinishTime = new char[30];
 	int totalTime = gameTime + penaltyTime;
@@ -2186,8 +2188,8 @@ void drawFinishScreen()
 	char* strBestTime = getTimeString(bestTime);
 
 	sprintf( strFinishTime, "Your time is: %s", strTotalTime);
-	renderBitmapString(20, 20, (void *)font, "Race Completed");
-	renderBitmapString(40, 40, (void *)font, strFinishTime);
+	renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "Race Completed");
+	renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, strFinishTime);
 
 	// Do calculations vs best time and display appropriate message
 	if ( totalTime < bestTime )
@@ -2201,16 +2203,18 @@ void drawFinishScreen()
 	}
 	else
 	{
-		renderBitmapString(20, 60, (void *)font, "You have not beaten the best time.");
-		renderBitmapString(20, 80, (void *)font, "Would you like to try again?");
+		renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "You have not beaten the best time.");
+		renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "Would you like to try again?");
 	}
 
-	// If you would like to play again, press Enter
-	renderBitmapString(20, 100, (void *)font, "If you would like to play again, press Enter.");
-	// Otherwise, press ESC to quit
-	renderBitmapString(20, 120, (void *)font, "Otherwise press ESC to quit.");
+	row++;
 
-	int MARGIN = 0;
+	// If you would like to play again, press Enter
+	renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "If you would like to play again, press Enter.");
+
+	// Otherwise, press ESC to quit
+	renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "Otherwise press ESC to quit.");
+
 	// Display a backing screen so that the text is readable
 	glColor4f(0.4, 0.4, 0.4, 1.0);	// Grey
 	glBegin(GL_QUADS);
