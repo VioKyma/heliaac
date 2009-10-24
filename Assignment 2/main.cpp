@@ -304,6 +304,7 @@ void selectMap()
 {
 	int randomNumber = rand() % numMaps;
 	strCurrentMap = maps[randomNumber].c_str();
+	strCurrentMap = "Maps/maze.map";
 }
 
 // These functions have been adapted from Lighthouse 3D GLSL Examples
@@ -1220,12 +1221,12 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
     diff.xPos = abs(object1a.xPos - object2a.xPos);
     diff.yPos = abs(object1a.yPos - object2a.yPos);
     diff.zPos = abs(object1a.zPos - object2a.zPos);
-    diff.xSize = object1a.xSize + object2a.xSize;
-    diff.ySize = object1a.ySize + object2a.ySize;
-    diff.zSize = object1a.zSize + object2a.zSize;
+    diff.xSize = object2a.xSize + (object2a.xSize / 2);
+    diff.ySize = object2a.ySize + (object2a.ySize / 2);
+    diff.zSize = object2a.zSize + (object2a.zSize / 2);
 
-	diff.xSize -= (diff.xSize * 0.165);
-	diff.zSize -= (diff.zSize * 0.165);
+	diff.xSize -= diff.xSize * 0.15;
+	diff.zSize -= diff.zSize * 0.15;
 
     // If the distance between each of the three dimensions is within the dimensions of the two objects combined, 
 	// there is a collision
@@ -1407,13 +1408,15 @@ void restartGame()
 {
 	gameFinished = false;
 
-	// Get and read a new map file
+	// Remove old map data
 	maxCheckpoints = 0;
 	maxBuildings = 0;
 	delete points;
 	points = NULL;
 	delete buildings;
 	buildings = NULL;
+
+	// Get and read a new map file
 	selectMap();
 	readMapFile(strCurrentMap);
 

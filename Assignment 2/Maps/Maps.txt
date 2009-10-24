@@ -1,3 +1,4 @@
 Maps\rooftops.map
+Maps\maze.map
 Maps\medium.map
 Maps\large.map
