@@ -100,7 +100,7 @@ objectBox heli = {0, 2, 0, 0, 0, 0, 1.25, 0.75, 0.5};
 float windscreenRot = 0.0;
 float doorRot = 0.0;
 
-const int MAX_BUILDINGS = 2;
+int maxBuildings = 0;
 objectBox eye = {cameraDistance, heli.yPos, cameraDistance, 0, 135, 0, 0, 0, 0};
 objectBox *buildings;
 objectBox landingPadA;
@@ -187,8 +187,8 @@ float pi = 3.1415926535897932384626433832795;
 const int MAX_TEXTURES = 10;
 GLuint textures[MAX_TEXTURES];
 
-const int MAX_CHECKPOINTS = 3;		// Cannot exceed 100. Only set as high as is required.
-checkPoint points[MAX_CHECKPOINTS];
+int maxCheckpoints = 0;		// Cannot exceed 100. Only set as high as is required.
+checkPoint *points;
 int checkpointNum = 0;
 
 bool heliTextures = true;
@@ -198,6 +198,9 @@ bool useOldOGL = true;
 int numMaps = 0;
 string* maps;
 const char* strCurrentMap;
+
+const GLfloat heliShininess = 50.0;
+const GLfloat genShininess = 10.0;
 
 GLhandleARB vertexShader;
 GLhandleARB fragmentShader;
@@ -260,6 +263,8 @@ void init(void)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
 
+	glMaterialf(GL_FRONT, GL_SHININESS, genShininess);
+
     timeBase = glutGet(GLUT_ELAPSED_TIME);
 
 	textures[0] = loadTextureBMP( "Textures/ground.bmp", true, 256, 256 );
@@ -298,6 +303,7 @@ void selectMap()
 {
 	int randomNumber = rand() % numMaps;
 	strCurrentMap = maps[randomNumber].c_str();
+	strCurrentMap = "Maps/rooftops.map";
 }
 
 // These functions have been adapted from Lighthouse 3D GLSL Examples
@@ -339,8 +345,8 @@ void setupShaders()
 	vertexShader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
 	fragmentShader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 
-	vs = readShaderFile("Shaders/toon.vert");
-	fs = readShaderFile("Shaders/toon.frag");
+	vs = readShaderFile("Shaders/dirLightAmbDiffSpecPix.vert");
+	fs = readShaderFile("Shaders/dirLightAmbDiffSpecPix.frag");
 
 	const char * vv = vs;
 	const char * ff = fs;
@@ -355,7 +361,6 @@ void setupShaders()
 	glCompileShaderARB(fragmentShader);
 
 	shaderProgram = glCreateProgramObjectARB();
-	cout << shaderProgram;
 	
 	glAttachObjectARB(shaderProgram,vertexShader);
 	glAttachObjectARB(shaderProgram,fragmentShader);
@@ -595,6 +600,7 @@ void drawBuilding(objectBox building, int textureNum)
 
 void drawHeli()
 {
+	glMaterialf(GL_FRONT, GL_SHININESS, heliShininess);
     glPushMatrix();
     // Go to the heli position before drawing the heli
     glTranslatef(heli.xPos, heli.yPos, heli.zPos);
@@ -639,6 +645,7 @@ void drawHeli()
 	drawHeliBody();
 
     glPopMatrix();
+	glMaterialf(GL_FRONT, GL_SHININESS, genShininess);
 }
 
 // Draw the body
@@ -1242,16 +1249,16 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 	object1a.xSize = abs( cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize );
 	object1a.zSize = abs( sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize );
 
-	object2a.xSize = cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize;
-	object2a.zSize = sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
+	object2a.xSize = abs( cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize );
+	object2a.zSize = abs( sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize );
 
 	// Compute the absolute (positive) distance from object1 to object2
 	diff.xPos = abs(object1.xPos - object2.xPos);
 	diff.yPos = abs(object1.yPos - object2.yPos);
 	diff.zPos = abs(object1.zPos - object2.zPos);
-	diff.xSize = object2a.xSize / 2.0;
-	diff.ySize = object2a.ySize / 2.0;
-	diff.zSize = object2a.zSize / 2.0;
+	diff.xSize = object2a.xSize;
+	diff.ySize = object2a.ySize + object1a.ySize;
+	diff.zSize = object2a.zSize;
 
     // If the distance between each of the three dimensions is within the radii combined, there is a collision
     if(diff.xPos < diff.xSize && diff.yPos < diff.ySize && diff.zPos < diff.zSize)
@@ -1265,7 +1272,7 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 void checkHeliThruCollisions(void)
 {
 	// for each checkpoint, if it is not activated, check for collision with helicopter
-	for (int pointNum = 0; pointNum < MAX_CHECKPOINTS; pointNum++)
+	for (int pointNum = 0; pointNum < maxCheckpoints; pointNum++)
 	{
 		if ( !points[pointNum].activated )
 		{
@@ -1297,7 +1304,7 @@ void checkHeliLanding(void)
 	if ( checkBoxCollision(heli, landingPadB) )
 	{
 		// If engine is off and all checkpoints have been activated
-		if ( !helicopterOn && !stopHeli && checkpointNum == MAX_CHECKPOINTS )
+		if ( !helicopterOn && !stopHeli && checkpointNum == maxCheckpoints )
 		{
 				gameFinished = true;
 		}
@@ -1342,7 +1349,7 @@ void checkHeliCollisions(void)
 {
     bool collision = false;
 
-	for ( int buildNum = 0; buildNum < MAX_BUILDINGS; buildNum++ )
+	for ( int buildNum = 0; buildNum < maxBuildings; buildNum++ )
 	{
 		if ( checkBoxCollision(heli, buildings[buildNum]) )
 		{
@@ -1401,12 +1408,18 @@ void restartGame()
 	gameFinished = false;
 
 	// Get and read a new map file
+	maxCheckpoints = 0;
+	maxBuildings = 0;
+	delete points;
+	points = NULL;
+	delete buildings;
+	buildings = NULL;
 	selectMap();
 	readMapFile(strCurrentMap);
 
 	// Reset checkpoints
 	checkpointNum = 0;
-	for (int num = 0; num < MAX_CHECKPOINTS; num++)
+	for (int num = 0; num < maxCheckpoints; num++)
 	{
 		points[num].activated = false;
 	}
@@ -1657,18 +1670,11 @@ void special(int key, int mouseX, int mouseY)
 			break;
 		case GLUT_KEY_PAGE_DOWN:
                 // Zoom out
-				if (cameraZoom > 1.0)
-				{
-					cameraZoom -= 0.1;
-				}
+				
                 break;
         case GLUT_KEY_PAGE_UP:
                 // Zoom in
-				if (cameraZoom < 3.0)
-				{
-					cameraZoom += 0.1;
-					gluPerspective(45, windowWidth/windowHeight, cameraDistance, 60.0);
-				}
+				
                 break;
     }
 }
@@ -1899,9 +1905,9 @@ void displayHelp()
 	row++;
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F1 - Pause and bring up this screen");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F3 - Switch between textures and no textures");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F3 - Switch textures on helicopter on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on or off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on helicopter on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F9 - Switch Light 1 on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
@@ -1910,7 +1916,7 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Right Mouse - Brings up game menu");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Drag Left Mouse - Rotate camera around helicopter");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Middle Mouse - Reset camera to chase position");
-
+	// Leave a line gap
 	row++;
 
 	// Display the best time
@@ -1918,7 +1924,7 @@ void displayHelp()
 	char* strDrawBestTime = new char[30];
 	sprintf(strDrawBestTime, "Best Time: %s", strBestTime);
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, strDrawBestTime);
-
+	// Leave a gap
 	row++;
 
 	// Display who wrote the project and it's purpose
@@ -1961,7 +1967,7 @@ void displayDashboard()
 
 	// Display checkpoint number
 	char* strCheckpoint = new char[14];
-	sprintf(strCheckpoint, "Checkpoint: %.2i/%.2i", checkpointNum, MAX_CHECKPOINTS);
+	sprintf(strCheckpoint, "Checkpoint: %.2i/%.2i", checkpointNum, maxCheckpoints);
 	renderBitmapString(3 * (dashWidth / 5), dashHeight + 60, (void *)font, strCheckpoint);
 
 	// Display penalty time
@@ -1988,7 +1994,7 @@ bool readMapFile(const char* fileName)
 	bool success = true;
 	string strInput = "";
 	
-	cout << "Loading map" << fileName << " for use.\n";
+	cout << "Loading map " << fileName << " for use.\n";
 	// Open file for reading
 	ifstream fin;
 	fin.open( fileName );
@@ -2070,9 +2076,15 @@ bool readMapFile(const char* fileName)
 		}
 		else if ( strInput.compare("checkpoint{") == 0 )
 		{
-			int pointNum;
-			fin >> pointNum;
+			fin >> fInput;
+			int pointNum = fInput;
+			if (points == NULL)
+			{
+				points = new checkPoint[pointNum + 1];
+				maxCheckpoints = pointNum + 1;
+			}
 			points[pointNum].checkpoint = pointNum;
+			points[pointNum].activated = false;
 			fin >> fInput;
 			points[pointNum].xSize = fInput;
 			fin >> fInput;
@@ -2096,6 +2108,7 @@ bool readMapFile(const char* fileName)
 			if (buildings == NULL)
 			{
 				buildings = new objectBox[buildNum + 1];
+				maxBuildings = buildNum + 1;
 			}
 			fin >> fInput;
 			buildings[buildNum].xPos = fInput;
@@ -2438,20 +2451,12 @@ void display(void)
 		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
-		glUseProgram(0);
+		glUseProgramObjectARB(0);
 
 		//Draw Sky
-		if (shaderOn)
-		{
-			glUseProgramObjectARB(shaderProgram);
-		}
 		glPushMatrix;
 		drawSky();
 		glPopMatrix;
-		if (shaderOn)
-		{
-			glUseProgramObjectARB(0);
-		}
 
 		// Draw ground
 		glPushMatrix();
@@ -2460,15 +2465,23 @@ void display(void)
 		glPopMatrix();
 
 		// Draw building
-		for(int i = 0; i < MAX_BUILDINGS; i++)
+		for(int i = 0; i < maxBuildings; i++)
 		{
 			glPushMatrix();
 			drawBuilding(buildings[i], 1);
 			glPopMatrix();
 		}
 
+		/*if (shaderOn)
+		{
+			glUseProgramObjectARB(shaderProgram);
+		}*/
 		// Draw the helicopter
 		drawHeli();
+		/*if (shaderOn)
+		{
+			glUseProgramObjectARB(0);
+		}*/
 
 		// Draw landing pads A and B
 		drawLandingPad(landingPadA, 3);
@@ -2478,9 +2491,11 @@ void display(void)
 		//drawMovingObstacle();
 
 		// Draw the checkpoints
-		for (int checkPoint = MAX_CHECKPOINTS - 1; checkPoint > -1; checkPoint--)
+		for (int checkPoint = maxCheckpoints - 1; checkPoint > -1; checkPoint--)
 		{
+			glPushMatrix();
 			drawCheckpoint( points[checkPoint].checkpoint );
+			glPopMatrix();
 		}
 		
 		updateFPS();
@@ -2549,15 +2564,15 @@ int main(int argc, char** argv)
     glutCreateWindow("CP2060 Assignment 2 - Heliaac");
 	glewInit();
 
-	//if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
-	//{
-	//	printf("Ready for GLSL\n");
-	//}
-	//else 
-	//{
-	//	printf("Not totally ready :( \n");
-	//	exit(1);
-	//}
+	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+	{
+		printf("Ready for GLSL\n");
+	}
+	else 
+	{
+		printf("Not totally ready :( \n");
+		exit(1);
+	}
 
     init();
     glutDisplayFunc(display);
