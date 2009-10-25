@@ -118,6 +118,7 @@ bool stopHeli = false;
 bool startHeli = false;
 
 bool gameFinished = false;
+bool timeUpdated = false;
 
 int font = (int)GLUT_BITMAP_HELVETICA_18;
 int fontTitle = (int)GLUT_BITMAP_TIMES_ROMAN_24;
@@ -1243,8 +1244,8 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 	checkPoint object2a = object2;
 
 	// Rotate size in x and z to correspond with rotation of the object
-	object1a.xSize = abs( cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize );
-	object1a.zSize = abs( sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize );
+	object1a.xSize = abs( cosDeg(object1a.rotY) * object1a.xSize + -sinDeg(object1a.rotY) * object1a.zSize );
+	object1a.zSize = abs( sinDeg(object1a.rotY) * object1a.xSize + cosDeg(object1a.rotY) * object1a.zSize );
 
 	object2a.xSize = abs( cosDeg(object2a.rotY) * object2a.xSize + -sinDeg(object2a.rotY) * object2a.zSize );
 	object2a.zSize = abs( sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize );
@@ -1405,6 +1406,7 @@ float sinDeg(float degRot)
 void restartGame()
 {
 	gameFinished = false;
+	timeUpdated = false;
 
 	// Remove old map data
 	maxCheckpoints = 0;
@@ -2146,6 +2148,7 @@ void writeTime(const char* fileName, int time)
 	if( !fin.is_open())
 	{
 		cout << "Input file failed to open\n";
+		return;
 	}
 
 	// now open temp output file
@@ -2202,7 +2205,11 @@ void drawFinishScreen()
 		renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, strOldBest);
 		
 		// Output new time to saved file
-		writeTime(strCurrentMap, totalTime);
+		if (!timeUpdated)
+		{
+			writeTime(strCurrentMap, totalTime);
+			timeUpdated = true;
+		}
 	}
 	else
 	{
