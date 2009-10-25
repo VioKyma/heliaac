@@ -304,7 +304,6 @@ void selectMap()
 {
 	int randomNumber = rand() % numMaps;
 	strCurrentMap = maps[randomNumber].c_str();
-	strCurrentMap = "Maps/maze.map";
 }
 
 // These functions have been adapted from Lighthouse 3D GLSL Examples
@@ -1210,7 +1209,7 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
 		object1a.zSize = -sinDeg(object2a.rotY) * object2a.xSize + cosDeg(object2a.rotY) * object2a.zSize;
 	}
 
-	if (object1.rotY != 0)
+	if (object2.rotY != 0)
 	{
 		// Rotate size in x and z to correspond with rotation of the object
 		object2a.xSize = cosDeg(object2a.rotY) * object2a.xSize + sinDeg(object2a.rotY) * object2a.zSize;
@@ -1221,12 +1220,9 @@ bool checkBoxCollision(objectBox object1, objectBox object2)
     diff.xPos = abs(object1a.xPos - object2a.xPos);
     diff.yPos = abs(object1a.yPos - object2a.yPos);
     diff.zPos = abs(object1a.zPos - object2a.zPos);
-    diff.xSize = object2a.xSize + (object2a.xSize / 2);
-    diff.ySize = object2a.ySize + (object2a.ySize / 2);
-    diff.zSize = object2a.zSize + (object2a.zSize / 2);
-
-	diff.xSize -= diff.xSize * 0.15;
-	diff.zSize -= diff.zSize * 0.15;
+    diff.xSize = (object1a.xSize / 2.0) + object2a.xSize;
+    diff.ySize = (object1a.ySize) + object2a.ySize;
+    diff.zSize = (object1a.zSize / 2.0) + object2a.zSize;
 
     // If the distance between each of the three dimensions is within the dimensions of the two objects combined, 
 	// there is a collision
@@ -1257,9 +1253,9 @@ bool checkPointCollision(objectBox object1, checkPoint object2)
 	diff.xPos = abs(object1.xPos - object2.xPos);
 	diff.yPos = abs(object1.yPos - object2.yPos);
 	diff.zPos = abs(object1.zPos - object2.zPos);
-	diff.xSize = object2a.xSize;
-	diff.ySize = object2a.ySize + object1a.ySize;
-	diff.zSize = object2a.zSize;
+	diff.xSize = object2a.xSize + (object1a.xSize / 2);
+	diff.ySize = object2a.ySize + (object1a.ySize / 2);
+	diff.zSize = object2a.zSize + (object1a.zSize / 2);
 
     // If the distance between each of the three dimensions is within the radii combined, there is a collision
     if(diff.xPos < diff.xSize && diff.yPos < diff.ySize && diff.zPos < diff.zSize)
@@ -1360,16 +1356,7 @@ void checkHeliCollisions(void)
 
     if (collision)
     {
-        if (movingForward)
-        {
-            moveHeliBack(heliSpeed, false);
-        }
-        else if (movingBack)
-        {
-            moveHeliForward(heliSpeed, false);
-        }
-
-        if (movingUp)
+		if (movingUp)
         {
             moveHeliDown(heliSpeed, false);
         }
@@ -1377,6 +1364,17 @@ void checkHeliCollisions(void)
         {
             moveHeliUp(heliSpeed, false);
         }
+		else
+		{
+			if (movingForward)
+			{
+				moveHeliBack(heliSpeed, false);
+			}
+			else if (movingBack)
+			{
+				moveHeliForward(heliSpeed, false);
+			}
+		}
 
 		if (stopHeli)
 		{
@@ -2197,10 +2195,12 @@ void drawFinishScreen()
 	// Do calculations vs best time and display appropriate message
 	if ( totalTime < bestTime )
 	{
+		row++;
 		char* strOldBest = new char[30];
-		renderBitmapString(20, 60, (void *)font, "Congratulations you have a new best time!");
+		renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "Congratulations you have a new best time!");
 		sprintf(strOldBest, "The old best time was: %s", strBestTime);
-		renderBitmapString(20, 80, (void *)font, strOldBest);
+		renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, strOldBest);
+		
 		// Output new time to saved file
 		writeTime(strCurrentMap, totalTime);
 	}
