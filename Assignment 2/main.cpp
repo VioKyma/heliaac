@@ -245,7 +245,7 @@ void init(void)
     drawHeliRotor();
     glEndList();
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClearColor(0.95, 0.95, 1.0, 0.0);
 
 	heliLight();
    
@@ -1495,6 +1495,7 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 				eye.xPos -= 0.1;
 				eye.yPos -= 0.1;
 				eye.zPos -= 0.1;
+				cameraDistance -= 0.1;
 			}
 			break;
 		case '4':
@@ -1506,6 +1507,7 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 				eye.xPos += 0.1;
 				eye.yPos += 0.1;
 				eye.zPos += 0.1;
+				cameraDistance += 0.1;
 			}
 			break;
         case 'a':
