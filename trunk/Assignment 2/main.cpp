@@ -1108,7 +1108,7 @@ void drawGround(void)
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
-	//glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 }
 
 void drawCheckpoint(int checkpoint)
