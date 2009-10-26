@@ -58,7 +58,6 @@ struct checkPoint
 };
 
 void heliLight(void);
-void drawMovingObstacle(void);
 void drawHeli(void);
 void drawHeliBody(void);
 void drawHeliRotor(void);
@@ -128,8 +127,6 @@ int textY = 20;
 bool light0 = true;
 bool light1 = true;
 bool lighting = true;
-
-//trying to implement start/stop without changing functions too much
 bool helicopterOn = false;
 
 //skyHeight global to stop heli from breaching sky top
@@ -201,8 +198,8 @@ int numMaps = 0;
 string* maps;
 const char* strCurrentMap;
 
-const GLfloat heliShininess = 50.0;
-const GLfloat genShininess = 10.0;
+const GLfloat heliShininess = 50.0;			// Shininess of helicopeter
+const GLfloat genShininess = 10.0;			// Genereal shininess
 
 GLhandleARB vertexShader;
 GLhandleARB fragmentShader;
@@ -275,7 +272,6 @@ void init(void)
 	textures[3] = loadTextureBMP( "Textures/heliPadA.bmp", true, 256, 256 );
 	textures[4] = loadTextureBMP( "Textures/heliPadB.bmp", true, 256, 256 );
 	textures[5] = loadTextureBMP( "Textures/sky.bmp", true, 256, 256);
-
 }
 
 void loadMaps()
@@ -431,7 +427,6 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 		cout << "Error creating mipmaps for texture: " << filename << ".\n";
     }*/
 
-
 	if (image)
 	{
 		delete image;
@@ -572,7 +567,6 @@ void drawBuilding(objectBox building, int textureNum)
 	glTexCoord2f(0.0,building.ySize);				glVertex3f(v2.x, v2.y, -v2.z);
 	glTexCoord2f(building.xSize,building.ySize);	glVertex3f(v3.x, v3.y, -v3.z);
 	glTexCoord2f(building.xSize,0.0);				glVertex3f(v1.x, v1.y, -v1.z);
-
 	// Draw wall
 	glTexCoord2f(0.0, building.ySize);				glVertex3f(v2.x, v2.y, -v2.z);
 	glTexCoord2f(0.0, 0.0);							glVertex3f(v0.x, v0.y, -v0.z);
@@ -628,6 +622,7 @@ void drawHeli()
 	glPushMatrix();
     glTranslatef(0.0, 0.6, 0.0);
     glRotatef(rotor, 0.0, 1.0, 0.0);
+
     // Draw rotor
     glCallList(heliRotorList);
 	glPopMatrix();
@@ -710,6 +705,7 @@ void drawHeliBody()
 	glColor4f(1.0, 0.4, 0.4, 1.0);	// Light Red
 
 	glPushMatrix();
+
 	// Rotate right door
 	glTranslatef(v1.x, v1.y, v1.z);			// Translate v1
 	glRotatef(-doorRot, 1.0, 0.0, 0.0);		// Rotate
@@ -938,6 +934,7 @@ void drawHeliBody()
 
 	// Change texture for chair
 	glBindTexture(GL_TEXTURE_2D, textures[4]);
+
 	//Chair
 	glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
@@ -987,9 +984,9 @@ void drawHeliBody()
 	glPopMatrix();
 
 	// Rotate cockpit windscreen
-	glTranslatef(v1.x, v1.y, v1.z);		// Translate v1
+	glTranslatef(v1.x, v1.y, v1.z);					// Translate v1
 	glRotatef(windscreenRot, 0.0, 0.0, 1.0);		// Rotate
-	glTranslatef(-v1.x, -v1.y, -v1.z);	// Translate -v1
+	glTranslatef(-v1.x, -v1.y, -v1.z);				// Translate -v1
 
 	// Draw cockpit window
 	glColor4f(0.0, 0.0, 0.6, 0.5);	// Blue
@@ -1488,6 +1485,28 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 				doorRot = 95.0;
 			glutPostRedisplay();
 			break;
+		case '3':
+			if (eye.xPos < heli.xPos + 5)
+				break;
+			else
+				//Zoom In
+			{
+				eye.xPos -= 0.1;
+				eye.yPos -= 0.1;
+				eye.zPos -= 0.1;
+			}
+			break;
+		case '4':
+			if (eye.yPos > skyHeight - 1)
+				break;
+			else
+				//Zoom Out
+			{
+				eye.xPos += 0.1;
+				eye.yPos += 0.1;
+				eye.zPos += 0.1;
+			}
+			break;
         case 'a':
             // Start moving the heli up
             movingUp = true;
@@ -1799,27 +1818,6 @@ void moveHeliDown(float speed, bool checkCol)
 	checkHeliThruCollisions();
 }
 
-void drawMovingObstacle()
-{
-	if (strCurrentMap == "Maps\medium.map")
-	{
-		glColor3f(1.0, 1.0, 0.0);
-		glScalef(3, 4, 0.2);
-		glutSolidCube(1.0);//do this translation
-	}
-	else
-	{
-		glColor3f(0.0, 1.0, 0.0);
-		glScalef(3, 4, 0.2);
-		glutSolidCube(1.0);//do this translation
-	}
-	
-	// if moving left = true
-	//glTranslate
-	// else
-	//glTranslatef();
-
-}
 
 void updateGameTime()
 {
@@ -1908,9 +1906,9 @@ void displayHelp()
 	
 	renderBitmapString(windowWidth / 2.0 - 3 * HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)fontTitle, "Heli Rally");
 	row++;
-	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "How To Play - Take off and pass through each of the ");
-	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "checkpoints in sequence and land at point B. The helicopter must pass");
-	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " more than halfway into the checkpoint for it to be activated.");
+	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "How To Play - Take off and pass through each of the checkpoints in");
+	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "sequence and land at point B. The helicopter must pass");
+	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " more than halfway into the checkpoint for it to be activated.");
 	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "If you miss a checkpoint, you will be penalised 5 seconds per miss.");
 	row++;
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F1 - Pause and bring up this screen");
@@ -1919,6 +1917,10 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on helicopter on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "1 - Open windscreen");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "2 - Open door");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "3 - Zoom in");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "4 - Zoom out");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F9 - Switch Light 1 on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward and Turn left/right");
@@ -1942,10 +1944,9 @@ void displayHelp()
 	//Leave a gap
 	row++;
 
-
 	// Display who wrote the project and it's purpose
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Written by Aleesha Torkington, Ashley Sexton and Christopher Trott");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " for Cp2060 Assignment 2 - Semester 2 2009");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " for CP2060 Assignment 2 - Semester 2 2009");
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -2515,9 +2516,6 @@ void display(void)
 		// Draw landing pads A and B
 		drawLandingPad(landingPadA, 3);
 		drawLandingPad(landingPadB, 4);
-
-		// Draw moving obstacles
-		//drawMovingObstacle();
 
 		// Draw the checkpoints
 		for (int checkPoint = maxCheckpoints - 1; checkPoint > -1; checkPoint--)
