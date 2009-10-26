@@ -644,7 +644,6 @@ void drawHeli()
 	glMaterialf(GL_FRONT, GL_SHININESS, genShininess);
 }
 
-
 // Draw the body
 void drawHeliBody()
 {
@@ -1046,7 +1045,6 @@ void drawHeliBody()
 	{
 		glDisable(GL_TEXTURE_2D);
 	}
-
 }
 
 // Draw the rotor blades
@@ -1388,7 +1386,6 @@ void checkHeliCollisions(void)
 			rotorSpeed = 0;
 		}
     }
-
 }
 
 // Converts degrees (in) to radians and returns the cosine (out)
@@ -2535,7 +2532,6 @@ void display(void)
 	}
     glutSwapBuffers();
 }
-
 
 // Creating menu
 void mymenu(int choice)
