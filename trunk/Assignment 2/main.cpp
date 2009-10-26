@@ -2425,6 +2425,15 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
+	/*if (shaderOn)
+	{
+		glUseProgramObjectARB(shaderProgram);
+	}
+	else
+	{
+		glUseProgramObjectARB(0);
+	}*/
+
 	// Update the heliLight position
 	heliLight();
 
@@ -2460,18 +2469,8 @@ void display(void)
 			glPopMatrix();
 		}
 
-		/*if (shaderOn)
-		{
-			glUseProgramObjectARB(shaderProgram);
-		}*/
-
 		// Draw the helicopter
 		drawHeli();
-
-		/*if (shaderOn)
-		{
-			glUseProgramObjectARB(0);
-		}*/
 
 		// Draw landing pads A and B
 		drawLandingPad(landingPadA, 3);
@@ -2531,16 +2530,16 @@ void mymenu(int choice)
 	}
 }
 
-//void cleanUpShaders()
-//{
-//	glDetachObjectARB(shaderProgram, vertexShader);
-//	glDetachObjectARB(shaderProgram, fragmentShader);
-//
-//	glDeleteObjectARB(vertexShader);
-//	glDeleteObjectARB(fragmentShader);
-//
-//	glDeleteObjectARB(shaderProgram);
-//}
+/*void cleanUpShaders()
+{
+	glDetachObjectARB(shaderProgram, vertexShader);
+	glDetachObjectARB(shaderProgram, fragmentShader);
+
+	glDeleteObjectARB(vertexShader);
+	glDeleteObjectARB(fragmentShader);
+
+	glDeleteObjectARB(shaderProgram);
+}*/
 
 int main(int argc, char** argv)
 {
@@ -2551,15 +2550,15 @@ int main(int argc, char** argv)
     glutCreateWindow("CP2060 Assignment 2 - Heliaac");
 	glewInit();
 
-	//if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
-	//{
-	//	printf("Ready for GLSL\n");
-	//}
-	//else 
-	//{
-	//	printf("Not totally ready :( \n");
-	//	exit(1);
-	//}
+	/*if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+	{
+		printf("Ready for GLSL\n");
+	}
+	else 
+	{
+		printf("Not totally ready :( \n");
+		exit(1);
+	}*/
 
     init();
     glutDisplayFunc(display);
