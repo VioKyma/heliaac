@@ -1317,32 +1317,38 @@ void cameraView1()
 {
 	cameraView = 1;
 	cameraDistance = 6;
-	eye.xPos = eye.xPos - 5;
-	eye.yPos = eye.yPos - 5;
-	eye.zPos = eye.zPos - 5;
+	if (eye.yPos < skyHeight - 1)
+	{
+		eye.xPos = eye.xPos - 5;
+		eye.yPos = eye.yPos - 5;
+		eye.zPos = eye.zPos - 5;
+	}
 }
 
 void cameraView2()
 {
 	cameraView = 2;
 	cameraDistance = 8;
-	eye.xPos = eye.xPos + 2;
-	eye.yPos = eye.yPos + 2;
-	eye.zPos = eye.zPos + 2;
+	if (eye.yPos < skyHeight - 1)
+	{
+		eye.xPos = eye.xPos + 2;
+		eye.yPos = eye.yPos + 2;
+		eye.zPos = eye.zPos + 2;
+	}
 }
 
 void cameraView3()
 {
 	cameraView = 3;
 	cameraDistance = 11;
-	eye.xPos = eye.xPos + 3;
-	eye.yPos = eye.yPos + 3;
-	eye.zPos = eye.zPos + 3;
+	if (eye.yPos < skyHeight - 1)
+	{
+		eye.xPos = eye.xPos + 3;
+		eye.yPos = eye.yPos + 3;
+		eye.zPos = eye.zPos + 3;
+	}
 	
 }	
-
-
-
 
 void checkHeliCollisions(void)
 {
