@@ -1680,28 +1680,6 @@ void special(int key, int mouseX, int mouseY)
 				glDisable(GL_LIGHT1);
 			}
 			break;
-		//case GLUT_KEY_F10:
-		//	// Turn lighting on or off
-		//	lighting = !lighting;
-		//	if (lighting)
-		//	{
-		//		glEnable(GL_LIGHT0);
-		//		glEnable(GL_LIGHT1);
-		//	}
-		//	else
-		//	{
-		//		glDisable(GL_LIGHT0);
-		//		glDisable(GL_LIGHT1);
-		//	}
-			break;
-		case GLUT_KEY_PAGE_DOWN:
-                // Zoom out
-				
-                break;
-        case GLUT_KEY_PAGE_UP:
-                // Zoom in
-				
-                break;
     }
 }
 
@@ -1744,11 +1722,6 @@ void mouseMotion(int x, int y)
 		cout << "eye.rotY: " << eye.rotY << endl;
 		cout << "eye.rotZ: " << eye.rotZ << endl;
     }
-
-	//if(eye.rotZ > 15 && heli.yPos < heli.ySize)
-	//{
-	//	eye.rotZ = 15;
-	//}
 }
 
 void mouse(int button, int state, int x, int y)
@@ -1874,6 +1847,7 @@ void displayText()
 		displayHelp();
 	}
 
+	// Return lighitng to former state
 	if (light1)
 		glEnable(GL_LIGHT1);
 	if (!light0)
@@ -1887,7 +1861,7 @@ void displayText()
 
 void displayHelp()
 {
-	const int HELP_SPACE = 20;
+	const int HELP_SPACE = 18;
 	const int HELP_YPOS = 30;
 	int row = 0;
 
@@ -1909,7 +1883,7 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "How To Play - Take off and pass through each of the checkpoints in");
 	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "sequence and land at point B. The helicopter must pass");
 	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, " more than halfway into the checkpoint for it to be activated.");
-	renderBitmapString(HELP_SPACE - 10, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "If you miss a checkpoint, you will be penalised 5 seconds per miss.");
+	renderBitmapString(HELP_SPACE - 8, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "If you miss a checkpoint, you will be penalised 5 seconds per miss.");
 	row++;
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F1 - Pause and bring up this screen");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F2 - Switch between wireframe and solid shapes");
@@ -2166,10 +2140,10 @@ void writeTime(const char* fileName, int time)
 		return;
 	}
 
-	// now open temp output file
+	// Now open temp output file
 	ofstream fout("temp.txt");
 
-	// loop to read then write the file.
+	// Loop to read then write the file.
 	while( getline(fin,line) )
 	{
 		if(line == "bestTime{")
@@ -2189,9 +2163,9 @@ void writeTime(const char* fileName, int time)
 	fin.close();
 	fout.close();
 
-	// delete the original file
+	// Delete the original file
 	remove(fileName);
-	// rename old to new
+	// Rename old to new
 	rename("temp.txt",fileName);
 }
 
@@ -2363,14 +2337,14 @@ void idle(void)
 			heliSpeed = currentSpeed / fps;
 			if (movingForward)
 			{
-				// move forward
+				// Move forward
 				moveHeliForward(heliSpeed, true);
 				heliLeanFront = -LEAN_FACTOR;
 			
 			}
 			else if (movingBack)
 			{
-				// move back
+				// Move back
 				moveHeliBack(heliSpeed, true);
 				heliLeanFront = LEAN_FACTOR;
 			}
@@ -2382,7 +2356,7 @@ void idle(void)
 
 			if (turningLeft)
 			{
-				// turn left
+				// Turn left
 				heli.rotY += rotSpeed;
 				// Adjust the rotor spin to counter heli spin
 				rotor += rotorSpeed - rotSpeed;
@@ -2390,7 +2364,7 @@ void idle(void)
 			}
 			else if (turningRight)
 			{
-				// turn right
+				// Turn right
 				heli.rotY -= rotSpeed;
 				// Adjust the rotor spin to counter heli spin
 				rotor += rotorSpeed + rotSpeed;
@@ -2406,7 +2380,7 @@ void idle(void)
 		}
 		else
 		{
-			//turn the rotor normally
+			// Turn the rotor normally
 			rotor += rotorSpeed;
 			heliLeanSide = 0;
 		}
@@ -2483,7 +2457,7 @@ void display(void)
 
 		//glUseProgramObjectARB(0);
 
-		//Draw Sky
+		// Draw Sky
 		glPushMatrix;
 		drawSky();
 		glPopMatrix;
@@ -2506,8 +2480,10 @@ void display(void)
 		{
 			glUseProgramObjectARB(shaderProgram);
 		}*/
+
 		// Draw the helicopter
 		drawHeli();
+
 		/*if (shaderOn)
 		{
 			glUseProgramObjectARB(0);
@@ -2536,10 +2512,11 @@ void display(void)
 	{
 		setOrthographicProjection();
 		if (light1)
-			glDisable(GL_LIGHT1);
+			glDisable(GL_LIGHT1);	// Disable light1
 		if (!light0)
-			glEnable(GL_LIGHT0);
+			glEnable(GL_LIGHT0);	// Enable light 2
 		drawFinishScreen();
+		// Return lighting to former state
 		if (light1)
 			glEnable(GL_LIGHT1);
 		if (!light0)
@@ -2549,23 +2526,23 @@ void display(void)
     glutSwapBuffers();
 }
 
-//adding menu
 
+// Creating menu
 void mymenu(int choice)
 {
 
 	switch (choice) {
-	case 1: shadingOn(); // Full Shading
+	case 1: shadingOn();	   // Full Shading
 		break;
-	case 2: wireFrameOn();  // Wireframe
+	case 2: wireFrameOn();     // Wireframe
 		break;
-	case 3: heliTexturesOn(); // enable texture mapping
+	case 3: heliTexturesOn();  // enable texture mapping
 		break;
 	case 4: heliTexturesOff(); // disable texture mapping
 		break;
-	case 5: pause = !pause; // Help/Credits/Scores
+	case 5: pause = !pause;    // Help/Credits/Scores
 		break;
-	case 6: exit(0);  // exit program
+	case 6: exit(0);           // exit program
 		break;
 	default: break;
 	}
