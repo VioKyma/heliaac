@@ -5,12 +5,40 @@ Group Members: Christopher Trott, Ashley Sexton and Aleesha Torkington
 Assignment 2.cpp
 Heliaac
 Created: 28/08/09
-Last Modified: 22/10/09 @ 20:00
+Last Modified: 27/10/09 @ 02:45
 
 Some of this code is taken from animlightpos.cpp on the LearnJCU resources page
 Some code to do with lighting was gained from the URL: http://www.falloutsoftware.com/tutorials/gl/gl8.htm
 Some code to do with text on screen gained from Lighthouse 3D @ URL: http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
 Bitmap.h and Bitmap.cpp found at: http://www.gamedev.net/reference/articles/article1966.asp
+
+/////----Part A Marks-----\\\\\
+Ground Object - drawGround() (line 1085)
+Helicopter - drawHeli()(line 611), drawHeliBody()(line 648), drawHeliRotor() (line 1051)
+Takeoff and landing - startHeli in idle (line 2299) and keyboard (line 1463) functions
+Flying Helicopter - moveHeliForward(), moveHeliBack(), moveHeliUp(), moveHeliDown() (line 1754 - 1791)
+Obstacles - checkHeliCollisions() (line 1344)
+Wireframe - wireframeOn() (line 1586)
+Fully Shaded - shadingOn() (line 1579)
+Lighting - in the init function (line 238)
+Dashboard - displayDashboard() (line 1935)
+Stop Helicopter - checkHeliCollisions() (line 1344)
+Goals - Checkpoints, landingPadB, Time
+Correct Commands - in the keyboard (line 1463) and special (line 1605) key functions
+Right Click Menu - in the main function (line 2579)
+Mouse Drag - in the mouse (line 1733) and mouseMotion (line 1720) functions
+Other controls and functions - spacebar/b accelerate/brake in the keyboard (line 1463) and special (line 1605) key functions
+Help Screen - displayHelp() (line 1868)
+Texture mapping - texture mapping on helicopter(switchable), ground, sky and buildings (load texture bmp - line 413)
+
+/////----Part B Marks-----\\\\\
+More Detailed Model - drawHeliBody() (line 648)
+More Realistic Movement - in the special (line 1605) key function
+Keyframed landing/takeoff - startHeli in idle (line 2299) and keyboard (line 1463) functions
+Random Creation of environment - Loads random map file
+GLSL Shaders - commented out for use on Lab computers (uncomment to use on other computers) (setupShaders - line 366)
+Extra Functionality - random map loading, sky box, zoomin/out, different preset camera views
+
 */
 
 #include<math.h>
