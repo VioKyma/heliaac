@@ -78,6 +78,7 @@ void resetPerspectiveProjection(void);
 void setOrthographicProjection(void);
 void renderBitmapString(float x, float y, void *font,char *string);
 void displayHelp(void);
+int cameraView = 1;
 float cosDeg(float degRot);
 float sinDeg(float degRot);
 GLuint loadTextureBMP(char * filename, int wrap, int width, int height);
@@ -181,7 +182,7 @@ int last_mouse_y = 0;
 bool leftMouseDown = false;
 
 bool fogOn = true;
-float pi = 3.1415926535897932384626433832795;
+const float PI = 3.1415926535897932384626433832795;
 
 const int MAX_TEXTURES = 10;
 GLuint textures[MAX_TEXTURES];
@@ -463,8 +464,8 @@ void drawSky()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[5]);			// Select The Sky Texture
 	glColor3f(0.33, 0.64, 1);
 	glBegin(GL_QUADS);							// Begin Drawing Quads
 	//top sky
@@ -1278,8 +1279,6 @@ void checkHeliLanding(void)
 	}
 }
 
-int cameraView = 1;
-
 // implementing different camera views
 void cameraView1()
 {
@@ -1373,14 +1372,14 @@ void checkHeliCollisions(void)
 // Converts degrees (in) to radians and returns the cosine (out)
 float cosDeg(float degRot)
 {
-    float radRot = degRot * pi/180;
+    float radRot = degRot * PI/180;
     return (cos(radRot));
 }
 
 // Converts degrees(in) to radians and returns the sine (out)
 float sinDeg(float degRot)
 {
-    float radRot = degRot * pi/180;
+    float radRot = degRot * PI/180;
 	return (sin(radRot));
 }
 
