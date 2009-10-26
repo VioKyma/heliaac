@@ -402,10 +402,6 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		/*// when texture area is small, bilinear filter the closest mipmap
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-		// when texture area is large, bilinear filter the first mipmap
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );*/
 
 		// if wrap is true, the texture wraps over at the edges (repeat)
 		//       ... false, the texture ends at the edges (clamp)
@@ -421,11 +417,6 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 		cout << "Could not load bitmap " << filename << ".\n";
 		return -1;
 	}
-
-	/*if ( gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, image->data ) )
-    {
-		cout << "Error creating mipmaps for texture: " << filename << ".\n";
-    }*/
 
 	if (image)
 	{
@@ -1337,9 +1328,17 @@ void checkHeliCollisions(void)
 
     if (collision)
     {
-		if (movingUp)
+		if (movingUp && movingForward || movingDown && movingForward) 
+		{
+			moveHeliBack(heliSpeed, false);
+		}
+		else if (movingUp && movingBack || movingDown && movingBack)
+		{
+			moveHeliForward(heliSpeed, false);
+		}
+		else if (movingUp)
         {
-            moveHeliUp(heliSpeed, false);
+            moveHeliDown(heliSpeed, false);
         }
         else if (movingDown)
         {
@@ -1990,7 +1989,6 @@ bool readMapFile(const char* fileName)
 		{
 			fin >> fInput;
 			bestTime = fInput;
-			cout << "bestTime Loaded: " << bestTime << endl;
 			fin.ignore(100, '\n');
 		}
 		else if ( strInput.compare("groundSize{") == 0 )
