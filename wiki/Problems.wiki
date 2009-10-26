@@ -35,4 +35,4 @@ I will have to change the numbers so that they start at one otherwise it's too c
 If anyone can jump on msn tonight, I have a question
 
 ----
- I found another bug that i'm not sure how to fix - if you run into a building, hold forward and press up, you appear below ground level
+ I found another bug that i'm not sure how to fix - if you run into a building, hold forward and press up, you appear below ground level (found a solution to this - just jump to top of building)
