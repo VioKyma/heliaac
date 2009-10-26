@@ -2175,9 +2175,22 @@ void writeTime(const char* fileName, int time)
 
 void drawFinishScreen()
 {
+	
 	const int X_SPACE = 50;
 	const int Y_SPACE = 50;
 	int row = 0;
+
+	glDisable(GL_DEPTH_TEST);
+
+	// Display a backing screen so that the text is readable
+	glColor4f(0.4, 0.4, 0.4, 1.0);	// Grey
+	glBegin(GL_QUADS);
+	glVertex2f(MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, MARGIN);
+	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
+	glVertex2f(MARGIN, windowHeight - MARGIN);
+	glEnd();
+
 	glColor4f(0.5, 1.0, 0.5, 1.0);	// Light Green
 	char* strFinishTime = new char[30];
 	int totalTime = gameTime + penaltyTime;
@@ -2218,14 +2231,7 @@ void drawFinishScreen()
 	// Otherwise, press ESC to quit
 	renderBitmapString(X_SPACE, Y_SPACE + (++row * 4*MARGIN), (void *)font, "Otherwise press ESC to quit.");
 
-	// Display a backing screen so that the text is readable
-	glColor4f(0.4, 0.4, 0.4, 1.0);	// Grey
-	glBegin(GL_QUADS);
-	glVertex2f(MARGIN, MARGIN);
-	glVertex2f(windowWidth - MARGIN, MARGIN);
-	glVertex2f(windowWidth - MARGIN, windowHeight - MARGIN);
-	glVertex2f(MARGIN, windowHeight - MARGIN);
-	glEnd();
+	glEnable(GL_DEPTH_TEST);
 }
 
 // These next three functions are taken from Lighthouse 3D tutorials:
