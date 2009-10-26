@@ -1927,7 +1927,14 @@ void displayDashboard()
 
 	// Display speed
 	char* strHeliSpeed = new char[12];
-	sprintf(strHeliSpeed, "Speed: %.2f", heliSpeed);
+	if ( movingForward || movingBack )
+	{
+		sprintf(strHeliSpeed, "Speed: %.2f", heliSpeed);
+	}
+	else
+	{
+		sprintf(strHeliSpeed, "Speed: %.2f", 0);
+	}
 	renderBitmapString(dashWidth / 2.3, dashHeight + 30, (void *)font, strHeliSpeed);
 
 	// Display altitude
