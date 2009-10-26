@@ -2,10 +2,10 @@
 
 =Aleesha:=
 
-  * Starting work on skids, tail rotor, etc. for new heli
-  * Body
-  * Transparency
-  * Fixing top rotor, adding tail rotor
+  * Zoom
+  * Polishing off project
+  * White spacing
+  * Commenting
 
 
 =Chris:=
