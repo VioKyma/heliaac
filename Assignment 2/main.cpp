@@ -649,6 +649,8 @@ void drawHeli()
 	glMaterialf(GL_FRONT, GL_SHININESS, genShininess);
 }
 
+
+
 // Draw the body
 void drawHeliBody()
 {
@@ -1088,6 +1090,8 @@ void drawHeliRotor()
 // Make a yellow ground square with 2 x groundSize width and length
 void drawGround(void)
 {
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glEnable(GL_TEXTURE_2D);
 	
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -1104,6 +1108,7 @@ void drawGround(void)
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_CULL_FACE);
 }
 
 void drawCheckpoint(int checkpoint)
@@ -1712,16 +1717,20 @@ void mouseMotion(int x, int y)
     {
         float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
 		float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
-        eye.rotY += rotateY;
+		eye.rotY += rotateY;
         eye.rotZ += rotateZ / 2.0;
         last_mouse_x = x;
 		last_mouse_y = y;
+
+		cout << "eye.rotX: " << eye.rotX << endl;
+		cout << "eye.rotY: " << eye.rotY << endl;
+		cout << "eye.rotZ: " << eye.rotZ << endl;
     }
 
-	if(eye.rotZ > 15 && heli.yPos < heli.ySize)
-	{
-		eye.rotZ = 15;
-	}
+	//if(eye.rotZ > 15 && heli.yPos < heli.ySize)
+	//{
+	//	eye.rotZ = 15;
+	//}
 }
 
 void mouse(int button, int state, int x, int y)
@@ -2465,7 +2474,7 @@ void display(void)
 		glRotatef(eye.rotZ, 0.0, 0.0, 1.0);
 		glTranslatef(-heli.xPos, -heli.yPos, -heli.zPos);
 
-		glUseProgramObjectARB(0);
+		//glUseProgramObjectARB(0);
 
 		//Draw Sky
 		glPushMatrix;
@@ -2558,16 +2567,16 @@ void mymenu(int choice)
 	}
 }
 
-void cleanUpShaders()
-{
-	glDetachObjectARB(shaderProgram, vertexShader);
-	glDetachObjectARB(shaderProgram, fragmentShader);
-
-	glDeleteObjectARB(vertexShader);
-	glDeleteObjectARB(fragmentShader);
-
-	glDeleteObjectARB(shaderProgram);
-}
+//void cleanUpShaders()
+//{
+//	glDetachObjectARB(shaderProgram, vertexShader);
+//	glDetachObjectARB(shaderProgram, fragmentShader);
+//
+//	glDeleteObjectARB(vertexShader);
+//	glDeleteObjectARB(fragmentShader);
+//
+//	glDeleteObjectARB(shaderProgram);
+//}
 
 int main(int argc, char** argv)
 {
@@ -2578,15 +2587,15 @@ int main(int argc, char** argv)
     glutCreateWindow("CP2060 Assignment 2 - Heliaac");
 	glewInit();
 
-	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
-	{
-		printf("Ready for GLSL\n");
-	}
-	else 
-	{
-		printf("Not totally ready :( \n");
-		exit(1);
-	}
+	//if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+	//{
+	//	printf("Ready for GLSL\n");
+	//}
+	//else 
+	//{
+	//	printf("Not totally ready :( \n");
+	//	exit(1);
+	//}
 
     init();
     glutDisplayFunc(display);
@@ -2599,7 +2608,7 @@ int main(int argc, char** argv)
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotion);
 
-	setupShaders();
+	//setupShaders();
 
 	// create sub menu 1
 	int subMenu1 = glutCreateMenu(mymenu);
@@ -2627,6 +2636,6 @@ int main(int argc, char** argv)
 
     glutMainLoop();
 
-	cleanUpShaders();
+	//cleanUpShaders();
     return 0;
 }
