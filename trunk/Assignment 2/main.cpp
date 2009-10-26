@@ -1498,7 +1498,7 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 			}
 			break;
 		case '4':
-			if (eye.yPos > skyHeight - 1)
+			if (eye.yPos > skyHeight - 10)
 				break;
 			else
 				//Zoom Out
