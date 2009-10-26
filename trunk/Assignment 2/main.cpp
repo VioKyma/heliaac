@@ -1461,6 +1461,7 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 	if (gameFinished && key == 13)
 	{
 		restartGame();
+		gameTime = 0;
 	}
 
     switch (key)
