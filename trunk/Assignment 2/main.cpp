@@ -439,7 +439,6 @@ GLuint loadTextureBMP( char * filename, int wrap, int width, int height )
 // Draw sky
 void drawSky()
 {
-	float roll = 0.0;
 	float skyz = 0.0;
 	float skyzb = 0.0;
 	float skyx = 0.0;
@@ -478,36 +477,32 @@ void drawSky()
 	glColor3f(0.33, 0.64, 1);
 	glBegin(GL_QUADS);							// Begin Drawing Quads
 	//top sky
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, groundSize);	// Top Left
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, groundSize);	// Top Right
-		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, skyHeight, -groundSize);	// Bottom Right
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(groundSize, skyHeight, -groundSize);	// Bottom Left
+		glTexCoord2f(0.0f,1.0f); glVertex3f(groundSize, skyHeight, groundSize);	// Top Left
+		glTexCoord2f(1.0f,1.0f); glVertex3f(-groundSize, skyHeight, groundSize);	// Top Right
+		glTexCoord2f(1.0f,0.0f); glVertex3f(-groundSize, skyHeight, -groundSize);	// Bottom Right
+		glTexCoord2f(0.0f,0.0f); glVertex3f(groundSize, skyHeight, -groundSize);	// Bottom Left
 	//right sky
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(-groundSize, skyHeight, skyz);	// Top Left
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(groundSize, skyHeight, skyz);	// Top Right
-		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(groundSize, 0, skyz);	// Bottom Right
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(-groundSize, 0, skyz);	// Bottom Left
+		glTexCoord2f(0.0f,1.0f); glVertex3f(-groundSize, skyHeight, skyz);	// Top Left
+		glTexCoord2f(1.0f,1.0f); glVertex3f(groundSize, skyHeight, skyz);	// Top Right
+		glTexCoord2f(1.0f,0.0f); glVertex3f(groundSize, 0, skyz);	// Bottom Right
+		glTexCoord2f(0.0f,0.0f); glVertex3f(-groundSize, 0, skyz);	// Bottom Left
 	//front sky
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyx, skyHeight, groundSize);	// Top Right
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyx, skyHeight, -groundSize);	// Top Left
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(skyx, 0, -groundSize);	// Bottom Left
-		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(skyx, 0, groundSize);	// Bottom Right
+		glTexCoord2f(1.0f,1.0f); glVertex3f(skyx, skyHeight, groundSize);	// Top Right
+		glTexCoord2f(0.0f,1.0f); glVertex3f(skyx, skyHeight, -groundSize);	// Top Left
+		glTexCoord2f(0.0f,0.0f); glVertex3f(skyx, 0, -groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,0.0f); glVertex3f(skyx, 0, groundSize);	// Bottom Right
 	// left sky
-		glTexCoord2f(1.5f,roll+1.0f); glVertex3f(groundSize, skyHeight, skyzb);		// Top Right
-		glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-groundSize, skyHeight, skyzb);		// Top Left
-		glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-groundSize, 0.0, skyzb);		// Bottom Left
-		glTexCoord2f(1.5f,roll+0.0f); glVertex3f(groundSize, 0.0, skyzb);		// Bottom Right
+		glTexCoord2f(1.5f,1.0f); glVertex3f(groundSize, skyHeight, skyzb);		// Top Right
+		glTexCoord2f(0.5f,1.0f); glVertex3f(-groundSize, skyHeight, skyzb);		// Top Left
+		glTexCoord2f(0.5f,0.0f); glVertex3f(-groundSize, 0.0, skyzb);		// Bottom Left
+		glTexCoord2f(1.5f,0.0f); glVertex3f(groundSize, 0.0, skyzb);		// Bottom Right
 	// back sky
 		// making sky roll toward viewer
-		glTexCoord2f(1.0f,roll/1.5f+1.0f); glVertex3f(skyxb,skyHeight,-groundSize);	// Top Right
-		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyxb,skyHeight,groundSize);	// Top Left
-		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(skyxb,0.0,groundSize);	// Bottom Left
-		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(skyxb,0.0,-groundSize);	// Bottom Right
-	// Bottom sky? No need
-		//glTexCoord2f(1.5f,roll+1.0f); glVertex3f( 28.0f,+7.0f,0.0f);		// Top Right
-		//glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-28.0f,+7.0f,0.0f);		// Top Left
-		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Bottom Left
-		//glTexCoord2f(1.5f,roll+0.0f); glVertex3f( 28.0f,+7.0f,-50.0f);		// Bottom Right
+		glTexCoord2f(1.0f,1.0f); glVertex3f(skyxb,skyHeight,-groundSize);	// Top Right
+		glTexCoord2f(0.0f,1.0f); glVertex3f(skyxb,skyHeight,groundSize);	// Top Left
+		glTexCoord2f(0.0f,0.0f); glVertex3f(skyxb,0.0,groundSize);	// Bottom Left
+		glTexCoord2f(1.0f,0.0f); glVertex3f(skyxb,0.0,-groundSize);	// Bottom Right
+
 	glEnd();	// Done Drawing Quads
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
@@ -1703,10 +1698,6 @@ void mouseMotion(int x, int y)
 		eye.rotZ += rotateZ;
         last_mouse_x = x;
 		last_mouse_y = y;
-
-		cout << "eye.rotX: " << eye.rotX << endl;
-		cout << "eye.rotY: " << eye.rotY << endl;
-		cout << "eye.rotZ: " << eye.rotZ << endl;
     }
 }
 
