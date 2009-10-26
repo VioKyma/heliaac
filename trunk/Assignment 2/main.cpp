@@ -1194,7 +1194,6 @@ void checkBounds(void)
         heli.zPos = groundSize;
         eye.zPos = groundSize + cameraDistance;
     }
-
 }
 
 bool checkBoxCollision(objectBox object1, objectBox object2)
@@ -1317,12 +1316,9 @@ void cameraView1()
 {
 	cameraView = 1;
 	cameraDistance = 6;
-	if (eye.yPos < skyHeight - 1)
-	{
-		eye.xPos = eye.xPos - 5;
-		eye.yPos = eye.yPos - 5;
-		eye.zPos = eye.zPos - 5;
-	}
+	eye.xPos = eye.xPos - 5;
+	eye.yPos = eye.yPos - 5;
+	eye.zPos = eye.zPos - 5;
 }
 
 void cameraView2()
@@ -1347,7 +1343,6 @@ void cameraView3()
 		eye.yPos = eye.yPos + 3;
 		eye.zPos = eye.zPos + 3;
 	}
-	
 }	
 
 void checkHeliCollisions(void)
