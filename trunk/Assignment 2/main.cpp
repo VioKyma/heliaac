@@ -503,7 +503,7 @@ void drawSky()
 		glTexCoord2f(0.0f,roll/1.5f+1.0f); glVertex3f(skyxb,skyHeight,groundSize);	// Top Left
 		glTexCoord2f(0.0f,roll/1.5f+0.0f); glVertex3f(skyxb,0.0,groundSize);	// Bottom Left
 		glTexCoord2f(1.0f,roll/1.5f+0.0f); glVertex3f(skyxb,0.0,-groundSize);	// Bottom Right
-	// Bottom sky?
+	// Bottom sky? No need
 		//glTexCoord2f(1.5f,roll+1.0f); glVertex3f( 28.0f,+7.0f,0.0f);		// Top Right
 		//glTexCoord2f(0.5f,roll+1.0f); glVertex3f(-28.0f,+7.0f,0.0f);		// Top Left
 		//glTexCoord2f(0.5f,roll+0.0f); glVertex3f(-28.0f,+7.0f,-50.0f);		// Bottom Left
@@ -603,21 +603,6 @@ void drawHeli()
     glRotatef(heliLeanFront, 0.0, 0.0, 1.0);
     glRotatef(heliLeanSide, 1.0, 0.0, 0.0);
 	
-	/*// Draw bounding box for collision testing
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(-heli.xSize, -heli.ySize, -heli.zSize);
-	glVertex3f(heli.xSize, -heli.ySize, -heli.zSize);
-	glVertex3f(heli.xSize, heli.ySize, -heli.zSize);
-	glVertex3f(-heli.xSize, heli.ySize, -heli.zSize);
-	glVertex3f(-heli.xSize, -heli.ySize, -heli.zSize);
-	glVertex3f(-heli.xSize, -heli.ySize, heli.zSize);
-	glVertex3f(heli.xSize, -heli.ySize, heli.zSize);
-	glVertex3f(heli.xSize, heli.ySize, heli.zSize);
-	glVertex3f(-heli.xSize, heli.ySize, heli.zSize);
-	glVertex3f(-heli.xSize, -heli.ySize, heli.zSize);
-	glEnd();*/
-
 	// Animate rotor
 	glPushMatrix();
     glTranslatef(0.0, 0.6, 0.0);
@@ -1426,10 +1411,6 @@ void restartGame()
 		points[num].activated = false;
 	}
 
-	// Reset time
-	gameTime = 0;
-	penaltyTime = 0;
-
 	// Reset heli position
 	heli.xPos = 0;
 	heli.yPos = groundHeight + heli.ySize;
@@ -1447,6 +1428,11 @@ void restartGame()
 	eye.yPos = 2;
 	eye.zPos = cameraDistance;
 	eye.rotY = 135;
+	
+	// Reset time
+	gameTime = 0;
+	penaltyTime = 0;
+	pause = true;
 }
 
 // Catches keyboard key presses
@@ -1461,7 +1447,6 @@ void keyboard(unsigned char key, int mouseX, int mouseY)
 	if (gameFinished && key == 13)
 	{
 		restartGame();
-		gameTime = 0;
 	}
 
     switch (key)
