@@ -1891,11 +1891,12 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F4 - Switch fog on and off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F5 - Switch GLSL shaders on helicopter on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F8 - Switch Light 0 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F9 - Switch Light 1 on/off");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "1 - Open windscreen");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "2 - Open door");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "3 - Zoom in");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "4 - Zoom out");
-	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "F9 - Switch Light 1 on/off");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "3/4 - Zoom in/out");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "spacebar/b - Accelerate/brake");
+	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "v - Switch camera position");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "a/z - Move helicopter up/down");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Directional Arrows - Move forward/backward and Turn left/right");
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "s/x - Start/stop engine");
