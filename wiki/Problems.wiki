@@ -35,4 +35,4 @@ I will have to change the numbers so that they start at one otherwise it's too c
 If anyone can jump on msn tonight, I have a question
 
 ----
-Is the map not working correctly after game restart? I get black floor on the medium map i think.. hoping i didn't break something
+ I found another bug that i'm not sure how to fix - if you run into a building, hold forward and press up, you appear below ground level
