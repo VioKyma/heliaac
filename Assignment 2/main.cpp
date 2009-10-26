@@ -1363,7 +1363,7 @@ void checkHeliCollisions(void)
     {
 		if (movingUp)
         {
-            moveHeliDown(heliSpeed, false);
+            moveHeliUp(heliSpeed, false);
         }
         else if (movingDown)
         {
