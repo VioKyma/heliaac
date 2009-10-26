@@ -1328,17 +1328,9 @@ void checkHeliCollisions(void)
 
     if (collision)
     {
-		if (movingUp && movingForward || movingDown && movingForward) 
-		{
-			moveHeliBack(heliSpeed, false);
-		}
-		else if (movingUp && movingBack || movingDown && movingBack)
-		{
-			moveHeliForward(heliSpeed, false);
-		}
-		else if (movingUp)
+		if (movingUp && movingForward)
         {
-            moveHeliDown(heliSpeed, false);
+            moveHeliBack(heliSpeed, false);
         }
         else if (movingDown)
         {
@@ -1365,6 +1357,17 @@ void checkHeliCollisions(void)
 			rotorSpeed = 0;
 		}
     }
+
+	if ( heli.yPos < groundHeight)
+	{
+		heli.yPos = groundHeight + heli.ySize;
+		eye.yPos = groundHeight + heli.ySize;
+	}
+	else if ( heli.yPos > skyHeight )
+	{
+		heli.yPos = skyHeight - heli.ySize;
+		eye.yPos = groundHeight + heli.ySize;
+	}
 }
 
 // Converts degrees (in) to radians and returns the cosine (out)
