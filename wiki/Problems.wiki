@@ -38,4 +38,4 @@ If anyone can jump on msn tonight, I have a question
  I found another bug that i'm not sure how to fix - if you run into a building, hold forward and press up, you appear below ground level (found a solution to this - just jump to top of building)
 
 ----
-When the user chooses to play again (pressing enter after finishing one game) the time that they wait on that instruction screen (telling them to exit or replay) is the time that comes up on the clock when they begin. This should reset to 0. Any solutions? Been trying and nothing seems to work..
+When the user chooses to play again (pressing enter after finishing one game) the time that they wait on that instruction screen (telling them to exit or replay) is the time that comes up on the clock when they begin. This should reset to 0. Any solutions? Been trying and nothing seems to work.. -- Game now pauses so the time doesn't increase
