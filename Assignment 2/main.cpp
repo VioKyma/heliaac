@@ -176,7 +176,7 @@ int rotSpeed = ROTATE_SPEED / fps;
 int currentSpeed = HELI_SPEED;
 float heliSpeed = currentSpeed / fps;
 
-bool pause = false;
+bool pause = true;
 bool wire = false;
 
 int last_mouse_x = 0;
@@ -648,7 +648,6 @@ void drawHeli()
     glPopMatrix();
 	glMaterialf(GL_FRONT, GL_SHININESS, genShininess);
 }
-
 
 
 // Draw the body
@@ -1715,10 +1714,10 @@ void mouseMotion(int x, int y)
 {
     if (leftMouseDown)
     {
-        float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
+		float rotateY = ( (float)x - (float)last_mouse_x) / (float)windowWidth * 360.0;
 		float rotateZ = ( (float)y - (float)last_mouse_y) / (float)windowHeight * 360.0;
 		eye.rotY += rotateY;
-        eye.rotZ += rotateZ / 2.0;
+		eye.rotZ += rotateZ;
         last_mouse_x = x;
 		last_mouse_y = y;
 
@@ -1937,6 +1936,12 @@ void displayHelp()
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, strDrawBestTime);
 	// Leave a gap
 	row++;
+
+	// Press any button to continue
+	renderBitmapString(windowWidth / 2.0 - 5 * HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Press any key to continue");
+	//Leave a gap
+	row++;
+
 
 	// Display who wrote the project and it's purpose
 	renderBitmapString(HELP_SPACE, HELP_YPOS + row++ * HELP_SPACE, (void *)font, "Written by Aleesha Torkington, Ashley Sexton and Christopher Trott");
@@ -2453,6 +2458,7 @@ void reshape(int w, int h)
 	windowHeight = h;
 }
 
+double up = 1.0;
 
 // Display the scene and it's components
 void display(void)
@@ -2465,7 +2471,7 @@ void display(void)
 
 	if ( !gameFinished )
 	{
-		gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, 1.0, 0.0);
+		gluLookAt(eye.xPos, eye.yPos, eye.zPos, heli.xPos, heli.yPos, heli.zPos, 0.0, up, 0.0);
 
 		// Rotate camera so that it is always behind the heli
 		glPushMatrix();
