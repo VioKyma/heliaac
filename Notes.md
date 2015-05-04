@@ -1,0 +1,48 @@
+#Notes about current state
+
+Heli body
+  * Old helicopter body is commented out
+  * New one is there (best to switch to wireframe, and click to move camera, heli is not yet positioned properly)
+  * Tail still needs to be put in the correct spot - but thought I would upload so everyone could have a look and make comments
+
+
+---
+
+
+  * Added iostream for testing
+  * Blade rotation doesn't increment slowly when held (?)
+  * Helicopter can not move in any way until at full speed, if you want to change this for testing purposes easiest thing is to just set bool helicopterOn to true
+
+
+---
+
+
+Just some notes on the checkpoints:
+  * They can only be rotated by right angles (90 degree increments) because of the collision detection right now. I hope to fix this, but for now it will have to do until other stuff is done.
+  * They start off red and turn to green when they have been passed through.
+
+
+---
+
+
+  * hey guys, I thought you would be more likely to read this than anything else. I cant come to the prac or anything today, I'm sick and going to the docs.
+
+  * Sorry I didn't make it in today either, Xander didn't go to sleep til 6am and I slept through my alarm (which doesn't really surprise me - probably should have just stayed awake) -- Chris
+
+
+---
+
+
+  * So I have a question for you guys, probably ask tomorrow during prac but thought I'd post it on here too. To do with the game logic, do we want the player to have to go through the check points in sequence eg you can't go through gate 2 til you go through gate 1 or just however they want to get through them? -- Chris
+
+
+---
+
+
+  * I've added a top, front and right sky (for testing) that move with the heli to stay in front of the clipping plane. There is a texture available (delete the comments around glEnable(..textures..) inside the drawSky fn to see). I don't think a texture will work with the current method of drawing the sky though.. unless there is a better way of doing this?
+
+
+---
+
+  * Hey guys, the latest version on here is the one I submitted at about 3:30 this morning.. we are done :D
+    * =D thanks heaps for submitting man. Feels so good to be finished at last

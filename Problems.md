@@ -1,0 +1,52 @@
+We don't have a space for general discussion, I thought this was better than email.
+
+I had Visual C++ 2008 Express Edition, which I used to do assignment 1.
+For some reason, it won't open anymore, and even if it did, I'm not sure whether I would be able to make changes and upload them here. Where did you both get your Visual Studio 2008 from? I want to try and start my part as soon as I can
+
+--Aleesha
+
+You can get it for free at msdnaa.jcu.edu.au (I think you might have to be on campus or use Remote Access, I'm not sure though) or I still have the iso..
+
+http://msdn70.e-academy.com/elms/Storefront/Home.aspx?campus=au_37771
+that should work actually
+
+Ashley
+
+Thanks :)
+--Aleesha
+
+
+
+---
+
+
+Is anyone else getting the error message "Repository folder has been successfully checked out but no one solution file found"? or know how to fix it? I can manually grab the files as a work around.
+
+-- I haven't had this problem but maybe if you start a fresh project... Or is that what you're doing? Chris
+
+---
+
+
+I'm not getting that problem, but I am getting another that wasn't there when I was looking at this at uni the other day.
+
+When you go through the the first checkpoint, one of the others also lights up green? Anyone getting this too?
+
+-- Yes I am. I wrote it so that if you go through checkpoint 2 without going through checkpoint 1, it will light up checkpoint 1 and penalize the player for missing a point. There are currently three points: 00, 01, 02. Chris
+I will have to change the numbers so that they start at one otherwise it's too confusing.
+
+
+---
+
+
+If anyone can jump on msn tonight, I have a question
+
+
+---
+
+> I found another bug that i'm not sure how to fix - if you run into a building, hold forward and press up, you appear below ground level (found a solution to this - just jump to top of building)
+
+
+---
+
+When the user chooses to play again (pressing enter after finishing one game) the time that they wait on that instruction screen (telling them to exit or replay) is the time that comes up on the clock when they begin. This should reset to 0. Any solutions? Been trying and nothing seems to work.. -- Game now pauses so the time doesn't increase.
+  * so obvious.. lol :) definately 11pm

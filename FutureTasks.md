@@ -1,0 +1,32 @@
+# Things To Do In Future #
+
+## LEFT TO DO: ##
+  * Move light1 to correct position (nose of heli, with cylinder?)
+  * F9 - switch light1 off -- DONE
+  * F10 - switch all lighting off -- DONE
+  * No lighting in orthographic projection -- DONE
+
+
+
+
+## Part A ##
+
+  * Opening door on heli  -- DONE
+  * Point A and point B  -- DONE
+  * Moving checkpoint (?)
+  * One more light (at point B? - moving?)
+  * Headlight on Helicopter (switchable on/off)
+
+## Part B ##
+
+  * Key-framed animation - e.g. takeoff/landing auto-pilot -- DONE
+  * Random/dynamic creation of environment (terrain, object locations) [discussion board for answer to our question](Check.md)
+  * Another helicopter using the same struct/class (not controlled the same) OR...
+  * GLSL programmable shaders
+
+
+  * I regards to the random generation of stuff, I was thinking that we could randomly choose a position of the next checkpoint wrt the last one. So this would mean that we could have just about any combination of paths and it would be entirely random... sort of. What do you think?
+  * Or do you think that we should load different maps from a file, each with their own best time?
+
+  * I'm not sure if you had seen Lindsay's reply:  "Hmmm. I think something more random than that would be better, but your suggestion would cover at least half of that from a marking point of view."
+  * I think the first suggestion you said would get us more marks?
